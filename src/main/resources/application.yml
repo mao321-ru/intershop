@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: intershop
+
+# Не используем 8080, т.к. он может быть занят
+server.port: 8085
