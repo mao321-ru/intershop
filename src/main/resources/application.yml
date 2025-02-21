@@ -1,6 +1,16 @@
 spring:
   application:
     name: intershop
+  datasource:
+    # Явно фиксируем использование PostgreSQL, в профиле должен быть указан url для подключения к БД
+    driver-class-name: org.postgresql.Driver
+    username: javadev
+    password: javadev
+  profiles.active: dev
+
+  # При отсутствии явно указанного диалекта он определяется при старте приложения запросом к БД, отсутствие подключения
+  # к БД приведет к фатальной ошибке, если диалект указан - в логе будет игнорируемая ошибка
+  #jpa.database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 # Не используем 8080, т.к. он может быть занят
 server.port: 8085

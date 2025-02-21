@@ -1,10 +1,8 @@
 package org.example.intershop;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class IntershopApplicationTests {
+class IntershopApplicationTests extends IntegrationTest {
 
 	@Test
 	void contextLoads() {
