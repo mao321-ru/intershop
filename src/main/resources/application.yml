@@ -1,3 +1,6 @@
+# Не используем 8080, т.к. он может быть занят
+server.port: 8085
+
 spring:
   application:
     name: intershop
@@ -6,21 +9,17 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: javadev
     password: javadev
+  jpa:
+    # Логирование SQL, выполняемого Hibernate
+    show-sql: true
+    # При отсутствии явно указанного диалекта он определяется при старте приложения запросом к БД, отсутствие
+    # подключения к БД приведет к фатальной ошибке, если диалект указан - в логе будет игнорируемая ошибка
+    #database-platform: org.hibernate.dialect.PostgreSQLDialect
+
   profiles.active: dev
-  # Обновление схемы (добавление таблиц) с помощью JPA
-  jpa.hibernate.ddl-auto: update
-  # Логирование SQL, выполняемого Hibernate
-  jpa.show-sql: true
 
   # Run SQL script to initialize database data
-  jpa.defer-datasource-initialization: true
   sql.init:
     encoding: utf-8
     mode: always
-
-  # При отсутствии явно указанного диалекта он определяется при старте приложения запросом к БД, отсутствие подключения
-  # к БД приведет к фатальной ошибке, если диалект указан - в логе будет игнорируемая ошибка
-  #jpa.database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-# Не используем 8080, т.к. он может быть занят
-server.port: 8085
+    schema-locations: classpath:schema.sql
