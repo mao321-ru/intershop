@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8" />
     <title>intershop: Витрина товаров</title>
-    <link rel="stylesheet" href="css/products.css" th:href="@{/css/index.css}" />
 </head>
 <body>
 <div class="header">
@@ -47,7 +46,7 @@
             <td class="product__inCartQuantity" th:text="${pr.inCartQuantity == 0 ? 'Добавить' : 'Удалить'}"></td>
             <td>
                 <form th:action="@{/cart/set}" method="post" style="display:inline;">
-                    <input name="product_id" type="hidden" th:value="${pr.productId}" />
+                    <input class="product__productId" name="product_id" type="hidden" th:value="${pr.productId}" />
                     <input name="quantity" th:value="${pr.inCartQuantity}" />
                     <button type="submit">Изменить</button>
                 </form>

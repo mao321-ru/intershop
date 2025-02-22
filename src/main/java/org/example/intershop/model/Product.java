@@ -1,6 +1,7 @@
 package org.example.intershop.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,10 +9,12 @@ import org.example.intershop.dto.ProductDto;
 
 import java.math.BigDecimal;
 
-@Data
-@NoArgsConstructor
 @Entity
 @Table( name = "products")
+@AllArgsConstructor
+@Builder
+@Data
+@NoArgsConstructor
 public class Product {
 
     @Id

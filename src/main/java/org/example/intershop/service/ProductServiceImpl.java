@@ -1,6 +1,7 @@
 package org.example.intershop.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
 import org.example.intershop.mapper.ProductMapper;
 import org.example.intershop.model.Product;
@@ -19,5 +20,10 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductDto> findProducts(Pageable pageable) {
         Page<Product> products = repo.findAll( pageable);
         return products.map( ProductMapper::toProductDto);
+    }
+
+    @Override
+    public void createProduct(ProductCreateDto dto) {
+        repo.save( ProductMapper.toProduct( dto));
     }
 }

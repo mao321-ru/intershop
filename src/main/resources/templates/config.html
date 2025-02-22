@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>intershop: Витрина товаров: Настройка</title>
+</head>
+<body>
+<div class="header">
+    <h3>Витрина товаров: Настройка</h3>
+</div>
+<div class="filter">
+    <form th:action="@{/config}" method="GET">
+        <input name="name_filter" placeholder="Поиск..." th:value="${nameFilter}" />
+        <button type="submit">?</button>
+    </form>
+</div>
+<div class="data">
+    <table>
+        <thead>
+        <tr>
+            <th>Картинка</th>
+            <th>Название</th>
+            <th>Цена</th>
+            <th>Управление</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="add_product">
+            <form th:action="@{|/config|}" method="post" enctype="multipart/form-data" style="display:inline;">
+            <td>
+                <input type="file" name="file" accept="image/*" />
+            </td>
+            <td>
+                <input class="product__productName" name='productName' />
+            </td>
+            <td>
+                <input class="product__price" name="price" />
+            </td>
+            <td>
+                <button type="submit">Добавить</button>
+            </td>
+            </form>
+        </tr>
+        <tr class="product" th:each="pr: ${products}">
+            <form th:action="@{|/products/${pr.productId}|}" method="post" enctype="multipart/form-data" style="display:inline;">
+            <td>
+                <img th:src="@{|/products/${pr.productId}/image|}" alt="product_image" />
+            </td>
+            <td>
+                <input class="product__productName" name='productName' th:value="${pr.productName}" />
+            </td>
+            <td>
+                <input class="product__price" name="price" th:value="${pr.price}" />
+            </td>
+            <td>
+                <input class="product__productId" name="product_id" type="hidden" th:value="${pr.productId}" />
+                <button type="submit">Изменить</button>
+            </td>
+            </form>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
