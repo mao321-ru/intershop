@@ -38,9 +38,11 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    // выполняем тесты даже при отсутствии изменений
+    outputs.upToDateWhen { false }
     // подробный вывод по выполнявшимся тестам в консоль
     testLogging {
-        //events "passed", "skipped", "failed", "standardOut", "standardError"
-        events "passed", "failed", "standardOut", "standardError"
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+        exceptionFormat "full"
     }
 }
