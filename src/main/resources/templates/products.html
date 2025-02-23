@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>intershop: Витрина товаров</title>
+    <link rel="stylesheet" href="css/products.css" th:href="@{/css/products.css}" />
 </head>
 <body>
 <div class="header">
@@ -39,7 +40,7 @@
         <tbody>
         <tr class="product" th:each="pr: ${products}">
             <td>
-                <img th:src="@{|/products/${pr.productId}/image|}" alt="product_image" />
+                <img class="product__image_img" th:if="${pr.isImage}" th:src="@{|/products/${pr.productId}/image|}" alt="product_image" />
             </td>
             <td class="product__productName" th:text="${pr.productName}"></td>
             <td class="product__price" th:text="${pr.price}"></td>

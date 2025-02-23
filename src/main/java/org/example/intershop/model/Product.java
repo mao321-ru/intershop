@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 import org.example.intershop.dto.ProductDto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table( name = "products")
+// @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
@@ -27,4 +29,6 @@ public class Product {
 
     private BigDecimal price;
 
+    @OneToMany( mappedBy = "productId", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ProductImage> images;
 }

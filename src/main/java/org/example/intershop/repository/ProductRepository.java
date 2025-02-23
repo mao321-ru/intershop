@@ -1,6 +1,7 @@
 package org.example.intershop.repository;
 
 import org.example.intershop.model.Product;
+import org.example.intershop.model.ProductImage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Override
     @NonNull
     Page<Product> findAll( Pageable pageable);
+
+    Product findByProductName(String productName);
 }

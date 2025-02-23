@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>intershop: Витрина товаров: Настройка</title>
+    <link rel="stylesheet" href="css/products.css" th:href="@{/css/products.css}" />
 </head>
 <body>
 <div class="header">
@@ -44,7 +45,7 @@
         <tr class="product" th:each="pr: ${products}">
             <form th:action="@{|/products/${pr.productId}|}" method="post" enctype="multipart/form-data" style="display:inline;">
             <td>
-                <img th:src="@{|/products/${pr.productId}/image|}" alt="product_image" />
+                <img class="product__image_img" th:if="${pr.isImage}" th:src="@{|/products/${pr.productId}/image|}" alt="product_image" />
             </td>
             <td>
                 <input class="product__productName" name='productName' th:value="${pr.productName}" />
@@ -54,6 +55,11 @@
             </td>
             <td>
                 <input class="product__productId" name="product_id" type="hidden" th:value="${pr.productId}" />
+                <input type="file" name="file" accept="image/*" />
+                <span th:if="${pr.isImage}">
+                    <input type="checkbox" name="delImage" />
+                    <label for="delImage">Удалить изображение</label>
+                </span>
                 <button type="submit">Изменить</button>
             </td>
             </form>
