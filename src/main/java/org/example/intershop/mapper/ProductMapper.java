@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
 import org.example.intershop.model.Product;
-import org.example.intershop.model.ProductImage;
+import org.example.intershop.model.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -17,7 +17,7 @@ public class ProductMapper {
                 .productId( p.getProductId())
                 .productName( p.getProductName())
                 .price( p.getPrice())
-                .isImage( ! p.getImages().isEmpty())
+                .isImage( p.getImage() != null)
                 .inCartQuantity( 0)
                 .build();
     }
@@ -25,19 +25,18 @@ public class ProductMapper {
     @SneakyThrows
     public static Product toProduct( ProductCreateDto dto) {
         MultipartFile f = dto.getFile();
+        String priceStr = dto.getPrice();
         return Product.builder()
                 .productName( dto.getProductName())
-                .price( new BigDecimal( dto.getPrice()))
-                .images(
+                .price( priceStr.isEmpty() ? null : new BigDecimal( priceStr))
+                .image(
                         f == null || f.isEmpty()
-                                ? List.of()
-                                : List.of(
-                                    ProductImage.builder()
+                                ? null
+                                : Image.builder()
                                         .origFilename( f.getOriginalFilename())
                                         .contentType( f.getContentType())
                                         .fileData( f.getBytes())
                                         .build()
-                                )
                 )
                 .build();
     }

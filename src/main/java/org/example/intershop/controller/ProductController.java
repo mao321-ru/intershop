@@ -2,7 +2,7 @@ package org.example.intershop.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.intershop.dto.ProductCreateDto;
-import org.example.intershop.model.ProductImage;
+import org.example.intershop.model.Image;
 import org.example.intershop.service.ProductService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +36,7 @@ public class ProductController {
     @GetMapping("/products/{productId}/image")
     @ResponseBody
     public ResponseEntity<InputStreamResource> getProductImage(@PathVariable("productId") long productId) {
-        Optional<ProductImage> optImg = srv.findProductImage( productId);
+        Optional<Image> optImg = srv.findProductImage( productId);
         if ( optImg.isPresent()) {
             var img = optImg.get();
             return ResponseEntity.ok()

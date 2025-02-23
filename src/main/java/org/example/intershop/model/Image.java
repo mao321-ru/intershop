@@ -1,24 +1,22 @@
 package org.example.intershop.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table( name = "product_images")
+@Table( name = "images")
 @AllArgsConstructor
 @Builder
 @Data
 @NoArgsConstructor
-public class ProductImage {
+public class Image {
     @Id
-    @Column( name = "product_id", nullable = false, unique = true)
-    long productId;
+    @GeneratedValue( strategy = GenerationType.IDENTITY)
+    @Column( name = "image_id")
+    long imageId;
 
     @Column( name = "orig_filename", nullable = false)
     String origFilename;

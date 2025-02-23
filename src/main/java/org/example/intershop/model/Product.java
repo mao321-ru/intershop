@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.intershop.dto.ProductDto;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,6 +28,7 @@ public class Product {
 
     private BigDecimal price;
 
-    @OneToMany( mappedBy = "productId", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ProductImage> images;
+    @OneToOne( cascade = CascadeType.ALL)
+    @JoinColumn( name = "image_id", referencedColumnName = "image_id")
+    private Image image;
 }

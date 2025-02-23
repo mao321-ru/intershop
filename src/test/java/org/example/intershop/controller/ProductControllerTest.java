@@ -1,8 +1,5 @@
 package org.example.intershop.controller;
 
-import org.example.intershop.dto.ProductCreateDto;
-import org.example.intershop.dto.ProductDto;
-import org.example.intershop.repository.ProductImageRepository;
 import org.example.intershop.repository.ProductRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -14,6 +11,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -30,9 +28,6 @@ public class ProductControllerTest extends ControllerTest {
 
     @Autowired
     private ProductRepository repo;
-
-    @Autowired
-    private ProductImageRepository imgRepo;
 
     @Test
     void findProducts_startPageProductsExists() throws Exception {
@@ -106,9 +101,7 @@ public class ProductControllerTest extends ControllerTest {
         var pr = repo.findByProductName( productName);
         assertNotNull( "Product not found", pr);
         var productId = pr.getProductId();
-
-        var img = imgRepo.findByProductId( productId);
-        assertNotNull( "Product image not found", img);
+        assertNotNull( "Product image not found", pr.getImage());
 
         mockMvc.perform( get( "/config"))
                 //.andDo( print()) // вывод запроса и ответа
