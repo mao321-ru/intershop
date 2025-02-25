@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -98,9 +97,9 @@ public class ProductControllerTest extends ControllerTest {
                 .andExpect( redirectedUrl( "/config"))
         ;
 
-        var pr = repo.findByProductName( productName);
+        var pr = repo.findByName( productName);
         assertNotNull( "Product not found", pr);
-        var productId = pr.getProductId();
+        var productId = pr.getId();
         assertNotNull( "Product image not found", pr.getImage());
 
         mockMvc.perform( get( "/config"))

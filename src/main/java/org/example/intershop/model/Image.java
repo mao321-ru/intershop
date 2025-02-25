@@ -16,7 +16,7 @@ public class Image {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
     @Column( name = "image_id")
-    long imageId;
+    Long id;
 
     @Column( name = "orig_filename", nullable = false)
     String origFilename;

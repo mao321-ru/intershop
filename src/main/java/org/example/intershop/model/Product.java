@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Entity
 @Table( name = "products")
@@ -21,10 +20,10 @@ public class Product {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
     @Column( name = "product_id")
-    private long productId;
+    private Long id;
 
     @Column( name = "product_name", nullable = false)
-    private String productName;
+    private String name;
 
     private BigDecimal price;
 

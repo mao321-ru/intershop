@@ -8,14 +8,13 @@ import org.example.intershop.model.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public class ProductMapper {
 
     public static ProductDto toProductDto( Product p) {
         return ProductDto.builder()
-                .productId( p.getProductId())
-                .productName( p.getProductName())
+                .productId( p.getId())
+                .productName( p.getName())
                 .price( p.getPrice())
                 .isImage( p.getImage() != null)
                 .inCartQuantity( 0)
@@ -27,7 +26,7 @@ public class ProductMapper {
         MultipartFile f = dto.getFile();
         String priceStr = dto.getPrice();
         return Product.builder()
-                .productName( dto.getProductName())
+                .name( dto.getProductName())
                 .price( priceStr.isEmpty() ? null : new BigDecimal( priceStr))
                 .image(
                         f == null || f.isEmpty()
