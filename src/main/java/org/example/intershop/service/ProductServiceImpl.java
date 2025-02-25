@@ -1,6 +1,7 @@
 package org.example.intershop.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
 import org.example.intershop.mapper.ProductMapper;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Log
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repo;
@@ -32,6 +34,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Image> findProductImage(long productId) {
-        return repo.findById( productId).map( Product::getImage);
+        return repo.findEntityGraphTypeFetchById( productId).map( Product::getImage);
     }
 }
