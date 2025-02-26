@@ -24,13 +24,14 @@ public class ProductController {
 
     private final ProductService srv;
 
-    @GetMapping( { "/", "/products"})
+    @GetMapping( { "/"})
     String findProducts(
         Model model
     ) {
         var products = srv.findProducts( PageRequest.of( 0, 1000));
         model.addAttribute( "products", products);
-        return "products";
+        model.addAttribute( "paging", products.getPageable());
+        return "main";
     }
 
     @GetMapping("/products/{productId}/image")

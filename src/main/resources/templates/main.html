@@ -1,17 +1,16 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <title>Витрина товаров</title>
 </head>
 
 <body>
     <!-- В href ссылка на страницу заказов -->
-    <a href="..." style="float:right;">
+    <a href="@{/orders}" style="float:right;">
         <b>ЗАКАЗЫ &cudarrr;</b>
     </a>
     <!-- В href ссылка на корзину -->
-    <a href="..." style="float:right;">
+    <a href="@{/cart}" style="float:right;">
         <b>КОРЗИНА &cudarrr;</b>
     </a>
     <table style="width:70%;margin-left:auto;margin-right:auto;">
@@ -21,7 +20,7 @@
                     <p>
                         <label for="search">Найти: </label>
                         <!-- В value значение со строкой поиска товара, если ничего не ищем, то пустая строка -->
-                        <input id="search" style="width:300px;" name="search" th:value="...">
+                        <input id="search" style="width:300px;" name="search" th:value="..." />
                         <button name="action">&#128269;</button>
                     </p>
                     <p>
@@ -45,44 +44,46 @@
                         </select>
                     </p>
                     <p>
-                    	<!-- 
-                    		В if true, если выбрана не первая страница.
-                    		В value номер предыдущей страницы.
-                    	-->
+                        <!--
+                            В if true, если выбрана не первая страница.
+                            В value номер предыдущей страницы.
+                        -->
                         <button th:if="..." name="pageNumber" th:value="...">&lt;</button>
                         <!-- В text номер текущей страницы -->
-                        <span th:text="${'Страница: '+paging.pageNumber()}"></span>
-                        <!-- 
-                    		В if true, если выбрана не последняя страница.
-                    		В value номер следующей страницы.
-                    	-->
+                        <span th:text="${'Страница: '+ ( paging.getPageNumber() + 1)}"></span>
+                        <!--
+                            В if true, если выбрана не последняя страница.
+                            В value номер следующей страницы.
+                        -->
                         <button th:if="..." name="pageNumber" th:value="...">&gt;</button>
                     </p>
                 </form>
             </td>
         </tr>
         <!-- В each итерируемся по строке/списку со списками из N (например, трех) товаров -->
-        <tr th:each="...">
-            <!-- В each итерируемся товарам в строке/списке из N (например, трех) товаров -->
+        <tr class="product" th:each="pr: ${products}">
+            <!-- В each итерируемся товарам в строке/списке из N (например, трех) товаров
             <td th:each="...">
+            -->
+            <td>
                 <table>
                     <tr>
                         <td>
                             <!-- В href ссылка на страницу с карточкой товара -->
-                            <a th:href="...">
+                            <a th:href="@{|/products/${pr.productId}|}">
                                 <!-- В src ссылка изображение товара -->
-                                <img width="300" height="300" th:src="...">
+                                <img width="300" height="300" class="product__image" th:if="${pr.isImage}" th:src="@{|/products/${pr.productId}/image|}" />
                             </a>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <!-- В text название товара -->
-                            <b th:text="..."></b>
+                            <b class="product__productName" th:text="${pr.productName}"></b>
                         </td>
                         <td>
-                       	    <!-- В text цена товара -->
-                            <b th:text="..."></b>
+                            <!-- В text цена товара -->
+                            <b class="product__price" th:text="${pr.price}"></b>
                         </td>
                     </tr>
                     <tr>
@@ -91,17 +92,17 @@
                     </tr>
                     <tr>
                         <td>
-                            <!-- 
-                    		В action ссылка на изменение количества товара в корзине.
-                    		Передается параметр запроса action=[minus|plus]
-                    	    -->
-                            <form th:action="..." method="post">
+                            <!--
+                            В action ссылка на изменение количества товара в корзине.
+                            Передается параметр запроса action=[minus|plus]
+                            -->
+                            <form th:action="@{/cart/set}" method="post">
                                 <button name="action" value="minus">-</button>
                                 <!-- В text количество товара в корзине -->
-                                <span th:text="..."></span>
+                                <span name="quantity" th:value="${pr.inCartQuantity}"></span>
                                 <button name="action" value="plus">+</button>
                                 <!-- В if true, если товар еще не был добавлен в корзину, false, если уже был -->
-                                <button name="action" value="plus" th:if="..." style="float:right;">В корзину</button>
+                                <button name="action" value="plus" th:if="${pr.inCartQuantity == 0}" style="float:right;">В корзину</button>
                             </form>
                         </td>
                     </tr>

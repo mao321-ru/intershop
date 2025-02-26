@@ -22,8 +22,13 @@ public class ProductControllerTest extends ControllerTest {
     // выбор всех элементов с товарами
     private final String PRODUCTS_XPATH = "//*[@class=\"product\"]";
 
-    // выбор элемента с указанным значением поля товара, например FIELD_XPF.formatted( "productName", "Мыло DURU")
-    private final String FIELD_XPF = PRODUCTS_XPATH + "//*[@class=\"product__%s\" and @value=\"%s\"]";
+    // выбор элемента для поля товара, например PR_FIELD_XPF.formatted( "productName")
+    private final String PR_FIELD_XPF = PRODUCTS_XPATH + "//*[@class=\"product__%s\"]";
+
+    // выбор элемента с указанным значением/текстом/ыsrc поля товара, например PR_VAL_XPF.formatted( "productName", "Мыло DURU")
+    private final String PR_VAL_XPF = PR_FIELD_XPF + "[@value=\"%s\"]";
+    private final String PR_TEXT_XPF = PR_FIELD_XPF + "[text()=\"%s\"]";
+    private final String PR_SRC_XPF = PR_FIELD_XPF + "[@src=\"%s\"]";
 
     @Autowired
     private ProductRepository repo;
@@ -71,11 +76,10 @@ public class ProductControllerTest extends ControllerTest {
         mockMvc.perform( get( "/config"))
                 //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isOk())
-                .andExpect( xpath( FIELD_XPF.formatted( "productName", productName)).nodeCount( 1))
-                .andExpect( xpath( FIELD_XPF.formatted( "price", price)).nodeCount( 1))
+                .andExpect( xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1))
+                .andExpect( xpath( PR_VAL_XPF.formatted( "price", price)).nodeCount( 1))
         ;
     }
-
 
     @Test
     void createProduct_WithImage() throws Exception {
@@ -101,19 +105,31 @@ public class ProductControllerTest extends ControllerTest {
         assertNotNull( "Product not found", pr);
         var productId = pr.getId();
         assertNotNull( "Product image not found", pr.getImage());
+        var imgPath = "/products/%d/image".formatted( productId);
 
+        // товар появился в настройках
         mockMvc.perform( get( "/config"))
                 //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isOk())
-                .andExpect( xpath( FIELD_XPF.formatted( "productName", productName)).nodeCount( 1))
-                .andExpect( xpath( FIELD_XPF.formatted( "price", price)).nodeCount( 1))
+                .andExpect( xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1))
+                .andExpect( xpath( PR_VAL_XPF.formatted( "price", price)).nodeCount( 1))
                 // выводится изображение товара
                 .andExpect( xpath(
-            FIELD_XPF.formatted( "productName", productName)
+            PR_VAL_XPF.formatted( "productName", productName)
                     + "/parent::*/preceding-sibling::*[child::img]"
                 ).nodeCount( 1))
         ;
 
+        // товар появился на главной странице
+        mockMvc.perform( get( "/"))
+                //.andDo( print()) // вывод запроса и ответа
+                .andExpect( status().isOk())
+                .andExpect( xpath( PR_TEXT_XPF.formatted( "productName", productName)).nodeCount( 1))
+                .andExpect( xpath( PR_TEXT_XPF.formatted( "price", price)).nodeCount( 1))
+                .andExpect( xpath( PR_SRC_XPF.formatted( "image", imgPath)).nodeCount( 1))
+        ;
+
+        // возврат правильного изображения товара
         mockMvc.perform( get( "/products/{productId}/image", productId))
                 //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isOk())
