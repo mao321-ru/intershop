@@ -1,3 +1,6 @@
+# Логирование транзакций
+#logging.level.org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/intershopdb_test

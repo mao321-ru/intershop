@@ -28,6 +28,7 @@ public class Product {
     private BigDecimal price;
 
     @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //@OneToOne( cascade = { CascadeType.DETACH, CascadeType.REMOVE }, fetch = FetchType.LAZY)
     @JoinColumn( name = "image_id", referencedColumnName = "image_id")
     private Image image;
 }

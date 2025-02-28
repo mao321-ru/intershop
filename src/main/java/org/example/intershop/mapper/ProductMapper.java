@@ -3,6 +3,7 @@ package org.example.intershop.mapper;
 import lombok.SneakyThrows;
 import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
+import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.model.Product;
 import org.example.intershop.model.Image;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,4 +40,28 @@ public class ProductMapper {
                 )
                 .build();
     }
+
+    @SneakyThrows
+    public static void changeProduct( Product pr, ProductUpdateDto dto) {
+        String s;
+        if( ( s = dto.getProductName()) != null && ! s.isBlank()) pr.setName( s.trim());
+        if( ( s = dto.getPrice()) != null && ! s.isBlank()) pr.setPrice( new BigDecimal( s.trim()));
+        if ( dto.getDelImage() != null && dto.getDelImage()) {
+            pr.setImage( null);
+        }
+        else {
+            MultipartFile f = dto.getFile();
+            if ( f != null && ! f.isEmpty()) {
+                Image img = pr.getImage();
+                if ( img == null) {
+                    img = new Image();
+                    pr.setImage( img);
+                }
+                img.setOrigFilename( f.getOriginalFilename());
+                img.setContentType( f.getContentType());
+                img.setFileData( f.getBytes());
+            }
+        }
+    }
+
 }

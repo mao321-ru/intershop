@@ -1,15 +1,43 @@
 insert into
-    products
+    images
 (
-    product_name,
-    price
+    orig_filename,
+    content_type,
+    file_data
 )
 select
     s.*
 from
     (
-    select 'Шампунь SUPER' as product_name, 10.81 as price
-    union all select 'Мыло DURU', 5.00
+    select
+        'red_pixel.png' as orig_filename,
+        'image/png' as content_type,
+        '\x89504E470D0A1A0A0000000D4948445200000001000000010802000000907753DE0000000C4944415408D763F8CFC000000301010018DD8DB0000000000049454E44AE426082'::bytea
+            as file_data
+    ) s
+where
+    s.orig_filename not in
+        (
+        select
+            t.orig_filename
+        from
+            images t
+        )
+;
+
+insert into
+    products
+(
+    product_name,
+    price,
+    image_id
+)
+select
+    s.*
+from
+    (
+    select 'Шампунь SUPER' as product_name, 10.81 as price, 1 as image_id
+    union all select 'Мыло DURU', 5.00, null
     ) s
 where
     s.product_name not in
