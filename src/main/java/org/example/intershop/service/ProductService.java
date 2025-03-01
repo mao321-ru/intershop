@@ -6,11 +6,12 @@ import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.model.Image;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.Optional;
 
 public interface ProductService {
-    Page<ProductDto> findProducts( Pageable pageable);
+    Slice<ProductDto> findProducts(String search, Pageable pageable);
 
     void createProduct(ProductCreateDto dto);
 

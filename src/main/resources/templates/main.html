@@ -20,27 +20,27 @@
                     <p>
                         <label for="search">Найти: </label>
                         <!-- В value значение со строкой поиска товара, если ничего не ищем, то пустая строка -->
-                        <input id="search" style="width:300px;" name="search" th:value="..." />
+                        <input id="search" style="width:300px;" name="search" th:value="${search}" />
                         <button name="action">&#128269;</button>
                     </p>
                     <p>
                         <label for="sort">Сортировка: </label>
                         <!-- В selected true, если выбран соответствующий пункт -->
                         <select id="sort" name="sort" onchange="this.form.submit()">
-                            <option value="NO" th:selected="...">нет</option>
-                            <option value="ALPHA" th:selected="...">по алфавиту</option>
-                            <option value="PRICE" th:selected="...">по цене</option>
+                            <option value="NO" th:selected="${sort == 'NO'}">нет</option>
+                            <option value="ALPHA" th:selected="${sort == 'ALPHA'}">по алфавиту</option>
+                            <option value="PRICE" th:selected="${sort == 'PRICE'}">по цене</option>
                         </select>
                     </p>
                     <p>
                         <label for="pageSize">Число товаров: </label>
                         <!-- В selected true, если выбран соответствующий пункт -->
                         <select id="pageSize" name="pageSize" onchange="this.form.submit()">
-                            <option value="5" th:selected="...">5</option>
-                            <option value="10" th:selected="...">10</option>
-                            <option value="20" th:selected="...">20</option>
-                            <option value="50" th:selected="...">50</option>
-                            <option value="100" th:selected="...">100</option>
+                            <option value="5" th:selected="${paging.getSize() == 5}">5</option>
+                            <option value="10" th:selected="${paging.getSize() == 10}">10</option>
+                            <option value="20" th:selected="${paging.getSize() == 20}">20</option>
+                            <option value="50" th:selected="${paging.getSize() == 50}">50</option>
+                            <option value="100" th:selected="${paging.getSize() == 100}">100</option>
                         </select>
                     </p>
                     <p>
@@ -48,14 +48,14 @@
                             В if true, если выбрана не первая страница.
                             В value номер предыдущей страницы.
                         -->
-                        <button th:if="..." name="pageNumber" th:value="...">&lt;</button>
+                        <button th:if="${paging.hasPrevious()}" name="pageNumber" th:value="${paging.getNumber() - 1}">&lt;</button>
                         <!-- В text номер текущей страницы -->
-                        <span th:text="${'Страница: '+ ( paging.getPageNumber() + 1)}"></span>
+                        <span th:text="${'Страница: '+ ( paging.getNumber() + 1)}"></span>
                         <!--
                             В if true, если выбрана не последняя страница.
                             В value номер следующей страницы.
                         -->
-                        <button th:if="..." name="pageNumber" th:value="...">&gt;</button>
+                        <button th:if="${paging.hasNext()}" name="pageNumber" th:value="${paging.getNumber() + 1}">&gt;</button>
                     </p>
                 </form>
             </td>
