@@ -16,10 +16,7 @@ spring:
     # подключения к БД приведет к фатальной ошибке, если диалект указан - в логе будет игнорируемая ошибка
     #database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-  profiles.active: dev
+  # явно указан путь master-файла Liquibase (при отсутствии файла будет фатальная ошибка)
+  liquibase.change-log: classpath:/db/changelog/db.changelog-master.yaml
 
-  # Run SQL script to initialize database data
-  sql.init:
-    encoding: utf-8
-    mode: always
-    schema-locations: classpath:schema.sql
+  profiles.active: dev
