@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductCreateDto {
     private final String productName;
     private final String price;
+    private final String description;
     private final MultipartFile file;
 }
 

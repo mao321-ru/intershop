@@ -48,6 +48,7 @@ public class ConfigControllerTest extends ControllerTest {
     void createProduct_NoImage() throws Exception {
         final String productName = "createProduct_NoImage";
         final String price = "904935.05";
+        final String description = "createProduct_NoImage desc";
         mockMvc.perform( multipart( "/config/products")
                         .file( new MockMultipartFile(
                             "file",
@@ -57,6 +58,7 @@ public class ConfigControllerTest extends ControllerTest {
                         ))
                         .param( "productName", productName)
                         .param( "price", price)
+                        .param( "description", description)
                 )
                 //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isFound())
@@ -67,6 +69,7 @@ public class ConfigControllerTest extends ControllerTest {
                 .andExpect( status().isOk())
                 .andExpect( xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1))
                 .andExpect( xpath( PR_VAL_XPF.formatted( "price", price)).nodeCount( 1))
+                .andExpect( xpath( PR_VAL_XPF.formatted( "description", description)).nodeCount( 1))
         ;
     }
 
@@ -74,6 +77,7 @@ public class ConfigControllerTest extends ControllerTest {
     void createProduct_WithImage() throws Exception {
         final String productName = "createProduct_WithImage";
         final String price = "7384877.00";
+        final String description = "createProduct_WithImage desc";
         byte[] fileData = "image_data".getBytes( StandardCharsets.UTF_8);
         mockMvc.perform( multipart( "/config/products")
                         .file( new MockMultipartFile(
@@ -84,6 +88,7 @@ public class ConfigControllerTest extends ControllerTest {
                         ))
                         .param( "productName", productName)
                         .param( "price", price)
+                        .param( "description", description)
                 )
                 //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isFound())
@@ -102,6 +107,7 @@ public class ConfigControllerTest extends ControllerTest {
                 .andExpect( status().isOk())
                 .andExpect( xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1))
                 .andExpect( xpath( PR_VAL_XPF.formatted( "price", price)).nodeCount( 1))
+                .andExpect( xpath( PR_VAL_XPF.formatted( "description", description)).nodeCount( 1))
                 // выводится изображение товара
                 .andExpect( xpath(
             PR_VAL_XPF.formatted( "productName", productName)
@@ -115,6 +121,7 @@ public class ConfigControllerTest extends ControllerTest {
                 .andExpect( status().isOk())
                 .andExpect( xpath( PR_TEXT_XPF.formatted( "productName", productName)).nodeCount( 1))
                 .andExpect( xpath( PR_TEXT_XPF.formatted( "price", price)).nodeCount( 1))
+                .andExpect( xpath( PR_TEXT_XPF.formatted( "description", description)).nodeCount( 1))
                 .andExpect( xpath( PR_SRC_XPF.formatted( "image", imgPath)).nodeCount( 1))
         ;
 
@@ -136,6 +143,7 @@ public class ConfigControllerTest extends ControllerTest {
 
         final String productName = "updateProduct_check";
         final String price = "90843.99";
+        final String description = "updateProduct_check desc";
         final String origFilename = "updateProduct_check.jpg";
         final String contentType = "image/jpg";
         final byte[] fileData = "updateProduct_check_img".getBytes( StandardCharsets.UTF_8);
@@ -152,6 +160,7 @@ public class ConfigControllerTest extends ControllerTest {
                         .param( "_method", "")
                         .param( "productName", productName)
                         .param( "price", price)
+                        .param( "description", description)
                 )
                 //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isFound())
@@ -162,6 +171,7 @@ public class ConfigControllerTest extends ControllerTest {
         assertNotNull( "Product not exists", pr);
         assertEquals( "Unexpected name", productName, pr.getName());
         assertEquals( "Unexpected price", price, pr.getPrice().toString());
+        assertEquals( "Unexpected description", description, pr.getDescription());
         var img = pr.getImage();
         assertNotNull( "Product image not exists", img);
         assertEquals( "Unexpected origFilename", origFilename, img.getOrigFilename());
@@ -177,6 +187,7 @@ public class ConfigControllerTest extends ControllerTest {
 
         final String productName = "updateProduct_setImage";
         final String price = "9348.01";
+        final String description = "createProduct_setImage desc";
         final String origFilename = "updateProduct_setImage.jpg";
         final String contentType = "image/jpg";
         final byte[] fileData = "updateProduct_setImage_img".getBytes( StandardCharsets.UTF_8);
@@ -193,6 +204,7 @@ public class ConfigControllerTest extends ControllerTest {
                         .param( "_method", "")
                         .param( "productName", productName)
                         .param( "price", price)
+                        .param( "description", description)
                 )
                 //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isFound())
@@ -203,6 +215,7 @@ public class ConfigControllerTest extends ControllerTest {
         assertNotNull( "Product not exists", pr);
         assertEquals( "Unexpected name", productName, pr.getName());
         assertEquals( "Unexpected price", price, pr.getPrice().toString());
+        assertEquals( "Unexpected description", description, pr.getDescription());
         var img = pr.getImage();
         assertNotNull( "Product image not exists", img);
         assertEquals( "Unexpected origFilename", origFilename, img.getOrigFilename());

@@ -15,6 +15,7 @@
             <th>Картинка</th>
             <th>Название</th>
             <th>Цена</th>
+            <th>Описание</th>
             <th>Управление</th>
         </tr>
         </thead>
@@ -28,6 +29,9 @@
             </td>
             <td>
                 <input type="number" step="0.01" min="0.01" class="product__price" name="price" required="" />
+            </td>
+            <td>
+                <input class="product__description" name="description" />
             </td>
             <td>
                 <input type="file" name="file" accept="image/*" />
@@ -45,6 +49,9 @@
             </td>
             <td>
                 <input type="number" step="0.01" min="0.01" class="product__price" name="price" required="" th:value="${pr.price}" />
+            </td>
+            <td>
+                <input class="product__description" name="description" required="" th:value="${pr.description}" />
             </td>
             <td>
                 <input class="product__productId" name="product_id" type="hidden" th:value="${pr.productId}" />

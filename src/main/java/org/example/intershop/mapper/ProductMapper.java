@@ -17,6 +17,7 @@ public class ProductMapper {
                 .productId( p.getId())
                 .productName( p.getName())
                 .price( p.getPrice())
+                .description( p.getDescription())
                 .isImage( p.getImage() != null)
                 .inCartQuantity( 0)
                 .build();
@@ -29,6 +30,7 @@ public class ProductMapper {
         return Product.builder()
                 .name( dto.getProductName())
                 .price( priceStr.isEmpty() ? null : new BigDecimal( priceStr))
+                .description( dto.getDescription())
                 .image(
                         f == null || f.isEmpty()
                                 ? null
@@ -46,6 +48,7 @@ public class ProductMapper {
         String s;
         if( ( s = dto.getProductName()) != null && ! s.isBlank()) pr.setName( s.trim());
         if( ( s = dto.getPrice()) != null && ! s.isBlank()) pr.setPrice( new BigDecimal( s.trim()));
+        pr.setDescription( dto.getDescription());
         if ( dto.getDelImage() != null && dto.getDelImage()) {
             pr.setImage( null);
         }
