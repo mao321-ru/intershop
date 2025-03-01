@@ -60,12 +60,10 @@
                 </form>
             </td>
         </tr>
-        <!-- В each итерируемся по строке/списку со списками из N (например, трех) товаров -->
-        <tr class="product" th:each="pr: ${products}">
-            <!-- В each итерируемся товарам в строке/списке из N (например, трех) товаров
-            <td th:each="...">
-            -->
-            <td>
+        <tr><td>
+        <!-- картинки товаров отображаются в 3 колонки за счет стиля -->
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div class="product" th:each="pr: ${products}">
                 <table>
                     <tr>
                         <td>
@@ -107,8 +105,9 @@
                         </td>
                     </tr>
                 </table>
-            </td>
-        </tr>
+            </div>
+        </div>
+        </td></tr>
     </table>
 </body>
 
