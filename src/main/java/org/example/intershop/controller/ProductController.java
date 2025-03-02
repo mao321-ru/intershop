@@ -10,16 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
 
 import jakarta.validation.constraints.Min;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,6 +43,35 @@ public class ProductController {
         model.addAttribute( "paging", paging);
         model.addAttribute( "products", paging.get());
         return "main";
+    }
+
+    @PostMapping( { "/main0/products/{productId}"})
+    RedirectView changeInCartQuantity0(
+            @RequestParam String search,
+            @RequestParam String sort,
+            @RequestParam String pageSize,
+            @RequestParam( defaultValue = "") String pageNumber,
+            @RequestParam String action
+    ) {
+        RedirectView rv = new RedirectView( "/");
+        rv.addStaticAttribute( "search", search);
+        return rv;
+    }
+
+    @PostMapping( { "/main/products/{productId}"})
+    String changeInCartQuantity(
+            @RequestParam String action,
+            @RequestParam String search,
+            @RequestParam String sort,
+            @RequestParam String pageSize,
+            @RequestParam String pageNumber,
+            RedirectAttributes ra
+    ) {
+        ra.addAttribute( "search", search);
+        ra.addAttribute( "sort", sort);
+        ra.addAttribute( "pageSize", pageSize);
+        ra.addAttribute( "pageNumber", pageNumber);
+        return "redirect:/";
     }
 
     @GetMapping("/products/{productId}/image")
