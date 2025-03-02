@@ -25,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Slice<ProductDto> findProducts(String search, Pageable pageable) {
-        Slice<Product> products = repo.findByNameContaining(search, pageable);
+        Slice<Product> products = repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
         return products.map( ProductMapper::toProductDto);
     }
 

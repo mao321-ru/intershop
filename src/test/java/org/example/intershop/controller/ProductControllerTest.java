@@ -33,4 +33,21 @@ public class ProductControllerTest extends ControllerTest {
         ;
     }
 
+    @Test
+    void findProducts_byNameOrDesc() throws Exception {
+        final String search = "findProducts_byNameOrDesc_search";
+        mockMvc.perform( get( "/")
+                        .param( "search", search)
+                        .param( "action", "")
+                        .param( "sort", "ALPHA")
+                        .param( "pageSize", "10")
+                )
+                //.andDo( print()) // вывод запроса и ответа
+                .andExpect( status().isOk())
+                .andExpect( content().contentType( "text/html;charset=UTF-8"))
+                // должны найти товары в тестовых данных
+                .andExpect( xpath( PRODUCTS_XPATH).nodeCount( 2))
+        ;
+    }
+
 }

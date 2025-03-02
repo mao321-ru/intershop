@@ -30,14 +30,17 @@ insert into
 (
     product_name,
     price,
+    description,
     image_id
 )
 select
     s.*
 from
     (
-    select 'Шампунь SUPER' as product_name, 10.81 as price, 1 as image_id
-    union all select 'Мыло DURU', 5.00, null
+    select 'Шампунь SUPER' as product_name, 10.81 as price, 'Шампунь с приятным запахом', 1 as image_id
+    union all select 'Мыло DURU', 5.00, 'Качественное недорогое мыло',  null
+    union all select 'Супер-пена (findProducts_byNameOrDesc_seaRch)', 16.00, 'Пена для ванны с запахом весеннего леса',  null
+    union all select 'Пена для ванны Forest', 15.00, 'Пена findProducts_byNameOrDesc_search с запахом леса',  null
     ) s
 where
     s.product_name not in
