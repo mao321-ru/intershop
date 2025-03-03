@@ -3,6 +3,7 @@ package org.example.intershop.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.model.Image;
+import org.example.intershop.model.Product;
 import org.example.intershop.service.ProductService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
@@ -45,28 +46,17 @@ public class ProductController {
         return "main";
     }
 
-    @PostMapping( { "/main0/products/{productId}"})
-    RedirectView changeInCartQuantity0(
-            @RequestParam String search,
-            @RequestParam String sort,
-            @RequestParam String pageSize,
-            @RequestParam( defaultValue = "") String pageNumber,
-            @RequestParam String action
-    ) {
-        RedirectView rv = new RedirectView( "/");
-        rv.addStaticAttribute( "search", search);
-        return rv;
-    }
-
     @PostMapping( { "/main/products/{productId}"})
     String changeInCartQuantity(
-            @RequestParam String action,
+            @PathVariable long productId,
+            @RequestParam ProductCartAction action,
             @RequestParam String search,
             @RequestParam String sort,
             @RequestParam String pageSize,
             @RequestParam String pageNumber,
             RedirectAttributes ra
     ) {
+        srv.changeInCartQuantity( productId, action.getDelta());
         ra.addAttribute( "search", search);
         ra.addAttribute( "sort", sort);
         ra.addAttribute( "pageSize", pageSize);

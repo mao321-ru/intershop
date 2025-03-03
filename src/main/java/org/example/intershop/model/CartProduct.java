@@ -9,30 +9,22 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table( name = "products")
+@Table( name = "cart_products")
 // @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @NoArgsConstructor
-public class Product {
+public class CartProduct {
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column( name = "product_id")
+    @Column( name = "cart_product_id")
     private Long id;
 
-    @Column( name = "product_name", nullable = false)
-    private String name;
+    private Integer quantity;
 
-    private BigDecimal price;
-
-    private String description;
-
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn( name = "image_id", referencedColumnName = "image_id")
-    private Image image;
-
-    @OneToOne( mappedBy = "product")
-    private CartProduct cartProduct;
+    @OneToOne
+    @JoinColumn( name = "product_id", referencedColumnName = "product_id", unique = true)
+    private Product product;
 }

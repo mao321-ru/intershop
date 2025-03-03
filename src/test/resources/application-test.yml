@@ -1,5 +1,6 @@
 # Логирование транзакций
 #logging.level.org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+logging.level.org.example.intershop: TRACE
 
 spring:
   datasource:

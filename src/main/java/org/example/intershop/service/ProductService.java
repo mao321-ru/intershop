@@ -20,4 +20,7 @@ public interface ProductService {
     void updateProduct(ProductUpdateDto pd);
 
     void deleteProduct(Long productId);
+
+    void changeInCartQuantity(long productId, int delta);
+
 }
