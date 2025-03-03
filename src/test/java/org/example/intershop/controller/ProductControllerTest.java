@@ -57,7 +57,6 @@ public class ProductControllerTest extends ControllerTest {
     @Test
     void changeInCartQuantity_check() throws Exception {
         long productId = EXISTS_PRODUCT_ID;
-        var pr = em.find( Product.class, productId);
         Consumer<String> act = ( action) -> {
             try {
                 mockMvc.perform(post("/main/products/{productId}", productId)
@@ -77,32 +76,28 @@ public class ProductControllerTest extends ControllerTest {
             }
         };
 
-        assertNull( "pre: Product already in cart", pr.getCartProduct());
+        var cp = em.find( Product.class, productId).getCartProduct();
+        assertNull( "pre: Product already in cart", cp);
         act.accept( "PLUS");
-        pr = em.find( Product.class, productId);
-        assertNotNull( "+1: Product not in cart", pr.getCartProduct());
-        assertEquals( "+1: Unexpected quantity after add to cart", (long)pr.getCartProduct().getQuantity(), 1);
-
-        // java.lang.StackOverflowError из-за зацикливания в toString для Product/CartProduct
-        //assertNotEquals( "Test toString", pr.getCartProduct().toString().length(), 0);
+        cp = em.find( Product.class, productId).getCartProduct();
+        assertNotNull( "+1: Product not in cart", cp);
+        assertEquals( "+1: Unexpected quantity after add to cart", (long)cp.getQuantity(), 1);
 
         act.accept( "PLUS");
-        pr = em.find( Product.class, productId);
-        assertNotNull( "+2: Product not in cart", pr.getCartProduct());
-        assertEquals( "+2: Unexpected quantity after add to cart", (long)pr.getCartProduct().getQuantity(), 2);
+        cp = em.find( Product.class, productId).getCartProduct();
+        assertNotNull( "+2: Product not in cart", cp);
+        assertEquals( "+2: Unexpected quantity after add to cart", (long)cp.getQuantity(), 2);
 
         act.accept( "MINUS");
-        pr = em.find( Product.class, productId);
-        assertNotNull( "+2-1: Product not in cart", pr.getCartProduct());
-        assertEquals( "+2-1: Unexpected quantity after add to cart", (long)pr.getCartProduct().getQuantity(), 1);
+        cp = em.find( Product.class, productId).getCartProduct();
+        assertNotNull( "+2-1: Product not in cart", cp);
+        assertEquals( "+2-1: Unexpected quantity in cart", (long)cp.getQuantity(), 1);
 
-        long cartProductId = pr.getCartProduct().getId();
+        long cartProductId = cp.getId();
         act.accept( "MINUS");
-        pr = em.find( Product.class, productId);
-        // java.lang.StackOverflowError из-за зацикливания в toString для Product/CartProduct
-        //assertNull( "+2-2: Product in cart", pr.getCartProduct());
-        assertTrue( "+2-2: Product in cart", pr.getCartProduct() == null);
-        var cp = em.find( CartProduct.class, cartProductId);
+        cp = em.find( Product.class, productId).getCartProduct();
+        assertNull( "+2-2: Product in cart", cp);
+        cp = em.find( CartProduct.class, cartProductId);
         assertNull( "+2-2: CartProduct not deleted", cp);
     }
 }

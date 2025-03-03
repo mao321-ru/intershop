@@ -1,20 +1,21 @@
 package org.example.intershop.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table( name = "cart_products")
+@NoArgsConstructor
 // @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class CartProduct {
 
     @Id
@@ -26,5 +27,19 @@ public class CartProduct {
 
     @OneToOne
     @JoinColumn( name = "product_id", referencedColumnName = "product_id", unique = true)
+    @ToString.Exclude
     private Product product;
+
+    @Override
+    public boolean equals( Object o) {
+        if( this == o) return true;
+        if( o == null || getClass() != o.getClass()) return false;
+        CartProduct other = (CartProduct) o;
+        return id != null && Objects.equals( id, other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash( id);
+    }
 }
