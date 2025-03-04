@@ -11,11 +11,9 @@ import org.example.intershop.model.CartProduct;
 import org.example.intershop.model.Product;
 import org.example.intershop.model.Image;
 import org.example.intershop.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -32,6 +30,11 @@ public class ProductServiceImpl implements ProductService {
     public Slice<ProductDto> findProducts(String search, Pageable pageable) {
         Slice<Product> products = repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
         return products.map( ProductMapper::toProductDto);
+    }
+
+    @Override
+    public Optional<ProductDto> getProduct(Long productId) {
+        return repo.findById( productId).map( ProductMapper::toProductDto);
     }
 
     @Override

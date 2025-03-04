@@ -1,51 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <title>Витрина товаров</title>
 </head>
-
 <body>
     <!-- В href ссылка на страницу заказов -->
-    <a href="..." style="float:right;">
-        <b>ЗАКАЗЫ &cudarrr;</b>
+    <a th:href="@{/orders}" style="float:right;">
+        <b>ЗАКАЗЫ &#10549;</b>
     </a>
     <!-- В href ссылка на корзину -->
-    <a href="..." style="float:right;">
-        <b>КОРЗИНА &cudarrr;</b>
+    <a th:href="@{/cart}" style="float:right;">
+        <b>КОРЗИНА &#10549;</b>
     </a>
     <!-- В href ссылка на главную страницу -->
-    <a href="..." style="float:right;">
-        <b>ГЛАВНАЯ &cudarrr;</b>
+    <a th:href="@{/}" style="float:right;">
+        <b>ГЛАВНАЯ &#10549;</b>
     </a>
-    <div style="width:70%;margin-left:auto;margin-right:auto;">
+    <div class="product" style="width:70%;margin-left:auto;margin-right:auto;">
         <p>
             <!-- В src ссылка изображение товара -->
-            <img width="300" height="300" th:src="...">
+            <img width="300" height="300" class="product__image" th:if="${pr.isImage}" th:src="@{|/products/${pr.productId}/image|}" />
         </p>
         <p>
             <!-- В text название товара -->
-            <b th:text="..."></b>
+            <b class="product__productName" th:text="${pr.productName}"></b>
             <!-- В text цена товара -->
-            <b th:text="..." style="text-align:right;"></b>
+            <b class="product__price" th:text="${pr.price}"></b>
         </p>
         <p>
             <!-- В text описание товара -->
-            <span th:text="..."></span>
+            <span class="product__description" th:text="${pr.description}"></span>
         </p>
-        <!-- 
+        <!--
 		В action ссылка на изменение количества товара в корзине.
 		Передается параметр запроса action=[minus|plus]
 	-->
-        <form th:action="..." method="post">
-            <button name="action" value="minus">-</button>
+        <form method="post">
+            <button th:if="${pr.inCartQuantity} > 0" name="action" value="minus">-</button>
             <!-- В text количество товара в корзине -->
-            <span th:text="..."></span>
-            <button name="action" value="plus">+</button>
+            <span class="product__inCartQuantity" th:if="${pr.inCartQuantity} > 0" name="quantity" th:text="${pr.inCartQuantity}"></span>
+            <button th:if="${pr.inCartQuantity} > 0" name="action" value="plus">+</button>
             <!-- В if true, если товар еще не был добавлен в корзину, false, если уже был -->
-            <button name="action" value="plus" th:if="..." style="float:right;">В корзину</button>
+            <button th:if="${pr.inCartQuantity == 0}" name="action" value="plus">В корзину</button>
         </form>
     </div>
 </body>
-
 </html>
