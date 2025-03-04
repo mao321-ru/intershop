@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -20,15 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Transactional
 public class ConfigControllerTest extends ControllerTest {
-
-    // выбор элемента для поля товара, например PR_FIELD_XPF.formatted( "productName")
-    private final String PR_FIELD_XPF = PRODUCTS_XPATH + "//*[@class=\"product__%s\"]";
-
-    // выбор элемента с указанным значением/текстом/src поля товара, например PR_VAL_XPF.formatted( "productName", "Мыло DURU")
-    private final String PR_VAL_XPF = PR_FIELD_XPF + "[@value=\"%s\"]";
-    private final String PR_TEXT_XPF = PR_FIELD_XPF + "[text()=\"%s\"]";
-    private final String PR_SRC_XPF = PR_FIELD_XPF + "[@src=\"%s\"]";
 
     @Autowired
     private ProductRepository repo;

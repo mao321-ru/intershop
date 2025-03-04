@@ -62,31 +62,20 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void changeInCartQuantity(long productId, int delta) {
-        log.trace( "changeInCartQuantity: " + productId + ", delta: " + delta);
         Product pr = repo.findById( productId).orElseThrow();
-        var cp = pr.getCartProduct();
+        CartProduct cp = pr.getCartProduct();
         int qty = ( cp != null ? cp.getQuantity() : 0) + delta;
         if( qty > 0) {
-            boolean isCreate = cp == null;
-            if( isCreate) {
+            if( cp == null) {
                 cp = new CartProduct();
+                pr.setCartProduct( cp);
                 cp.setProduct( pr);
-
             }
             cp.setQuantity( qty);
-            em.persist( cp);
-            log.trace( "cartProduct: " + cp.getId() + ": set qty: " + qty);
-            if ( isCreate) {
-                pr.setCartProduct( cp);
-                repo.save( pr);
-                log.trace( "save product: " + pr.getId());
-            }
         }
         else if ( cp != null) {
-            log.trace( "remove cartProduct: " + cp.getId());
             pr.setCartProduct( null);
-            repo.save( pr);
-            em.remove( cp);
         }
+        repo.save( pr);
     }
 }

@@ -24,6 +24,7 @@ public class ConfigController {
     String configProducts(
         Model model
     ) {
+        log.debug( "configProducts");
         var products = srv.findProducts( "", Pageable.unpaged());
         model.addAttribute( "products", products);
         return "config";
@@ -31,18 +32,21 @@ public class ConfigController {
 
     @PostMapping( "/config/products")
     public String createProduct( ProductCreateDto pd) {
+        log.debug( "createProduct");
         srv.createProduct( pd);
         return "redirect:/config";
     }
 
     @PostMapping(value = "/config/products/{productId}")
     public String updateProduct( ProductUpdateDto pd) {
+        log.debug( "updateProduct: productId=" + pd.getProductId());
         srv.updateProduct( pd);
         return "redirect:/config";
     }
 
     @PostMapping(value = "/config/products/{productId}", params = "_method=delete")
     public String deleteProduct( @PathVariable Long productId) {
+        log.debug( "deleteProduct: productId=" + productId);
         srv.deleteProduct( productId);
         return "redirect:/config";
     }

@@ -25,8 +25,8 @@ public class CartProduct {
 
     private Integer quantity;
 
-    @OneToOne
-    @JoinColumn( name = "product_id", referencedColumnName = "product_id", unique = true)
+    @OneToOne( fetch = FetchType.LAZY)
+    @JoinColumn( name = "product_id", referencedColumnName = "product_id", nullable = false, unique = true, updatable = false)
     @ToString.Exclude
     private Product product;
 

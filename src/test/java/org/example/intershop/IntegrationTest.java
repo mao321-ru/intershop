@@ -10,7 +10,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 // Общие настройки и т.д. для всех интеграционных тестов
 @SpringBootTest
 @ActiveProfiles("test")
-@Transactional
 public abstract class IntegrationTest {
 
     // Using Singleton DB Container for all tests

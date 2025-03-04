@@ -34,7 +34,7 @@ public class Product {
     @ToString.Exclude
     private Image image;
 
-    @OneToOne( mappedBy = "product")
+    @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private CartProduct cartProduct;
 

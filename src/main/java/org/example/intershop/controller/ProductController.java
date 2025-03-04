@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.model.Image;
 import org.example.intershop.model.Product;
+import org.example.intershop.service.CartProductService;
 import org.example.intershop.service.ProductService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +38,7 @@ public class ProductController {
         @RequestParam( defaultValue = "0") @Min(0) Integer pageNumber,
         Model model
     ) {
+        log.debug( "findProduct: pageNumber: " + pageNumber);
         search = search.trim();
         var paging = srv.findProducts( search, PageRequest.of( pageNumber, pageSize, sort.getSortValue()));
         model.addAttribute( "search", search);
@@ -56,6 +58,7 @@ public class ProductController {
             @RequestParam String pageNumber,
             RedirectAttributes ra
     ) {
+        log.debug( "changeInCartQuantity: productId: " + productId + ", action: " + action);
         srv.changeInCartQuantity( productId, action.getDelta());
         ra.addAttribute( "search", search);
         ra.addAttribute( "sort", sort);
@@ -67,6 +70,7 @@ public class ProductController {
     @GetMapping("/products/{productId}/image")
     @ResponseBody
     public ResponseEntity<InputStreamResource> getProductImage(@PathVariable("productId") long productId) {
+        log.debug( "getProductImage: productId: " + productId);
         Optional<Image> optImg = srv.findProductImage( productId);
         if ( optImg.isPresent()) {
             var img = optImg.get();

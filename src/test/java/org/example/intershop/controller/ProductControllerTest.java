@@ -4,10 +4,12 @@ import org.example.intershop.model.CartProduct;
 import org.example.intershop.model.Product;
 import org.example.intershop.repository.ProductRepository;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
@@ -53,7 +55,6 @@ public class ProductControllerTest extends ControllerTest {
         ;
     }
 
-
     @Test
     void changeInCartQuantity_check() throws Exception {
         long productId = EXISTS_PRODUCT_ID;
@@ -61,43 +62,61 @@ public class ProductControllerTest extends ControllerTest {
             try {
                 mockMvc.perform(post("/main/products/{productId}", productId)
                                 .param("action", action)
-                                .param("search", "")
-                                .param("action", "")
+                                .param("search", EXISTS_PRODUCT_NAME)
                                 .param("sort", "ALPHA")
                                 .param("pageSize", "10")
                                 .param("pageNumber", "0")
                         )
                         //.andDo( print()) // вывод запроса и ответа
                         .andExpect(status().isFound())
-                        .andExpect(redirectedUrl("/?search=&sort=ALPHA&pageSize=10&pageNumber=0"))
+                        .andExpect(redirectedUrl("/?search=%3F%3F%3F%3F%3F%3F%3F+SUPER&sort=ALPHA&pageSize=10&pageNumber=0"))
+                ;
+            } catch (Exception e) {
+                throw new RuntimeException( e);
+            }
+        };
+        Consumer<Integer> check = ( qty) -> {
+            try {
+                mockMvc.perform( get( "/")
+                                .param("search", EXISTS_PRODUCT_NAME)
+                                .param("sort", "ALPHA")
+                                .param("pageSize", "10")
+                                .param("pageNumber", "0")
+                        )
+                        //.andDo( print()) // вывод запроса и ответа
+                        .andExpect( status().isOk())
+                        .andExpect( content().contentType( "text/html;charset=UTF-8"))
+                        .andExpect( xpath( PRODUCTS_XPATH).nodeCount( 1))
+                        .andExpect( xpath( PR_FIELD_XPF.formatted( "inCartQuantity"))
+                                .nodeCount( qty > 0 ? 1 : 0))
+                        .andExpect( xpath( PR_TEXT_XPF.formatted( "inCartQuantity", qty))
+                                .nodeCount( qty > 0 ? 1 : 0))
                 ;
             } catch (Exception e) {
                 throw new RuntimeException( e);
             }
         };
 
-        var cp = em.find( Product.class, productId).getCartProduct();
+        var pr = em.find( Product.class, productId);
+        assertNotNull( "pre: Product not found", pr);
+        var cp = pr.getCartProduct();
         assertNull( "pre: Product already in cart", cp);
-        act.accept( "PLUS");
-        cp = em.find( Product.class, productId).getCartProduct();
-        assertNotNull( "+1: Product not in cart", cp);
-        assertEquals( "+1: Unexpected quantity after add to cart", (long)cp.getQuantity(), 1);
 
         act.accept( "PLUS");
-        cp = em.find( Product.class, productId).getCartProduct();
-        assertNotNull( "+2: Product not in cart", cp);
-        assertEquals( "+2: Unexpected quantity after add to cart", (long)cp.getQuantity(), 2);
+        check.accept( 1);
+
+        act.accept( "PLUS");
+        check.accept( 2);
 
         act.accept( "MINUS");
-        cp = em.find( Product.class, productId).getCartProduct();
-        assertNotNull( "+2-1: Product not in cart", cp);
-        assertEquals( "+2-1: Unexpected quantity in cart", (long)cp.getQuantity(), 1);
+        check.accept( 1);
 
-        long cartProductId = cp.getId();
+        long cartProductId = em.find( Product.class, productId).getCartProduct().getId();
         act.accept( "MINUS");
-        cp = em.find( Product.class, productId).getCartProduct();
-        assertNull( "+2-2: Product in cart", cp);
+        check.accept( 0);
+
         cp = em.find( CartProduct.class, cartProductId);
-        assertNull( "+2-2: CartProduct not deleted", cp);
+        assertNull( "CartProduct not deleted", cp);
     }
+
 }
