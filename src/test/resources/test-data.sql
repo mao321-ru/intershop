@@ -1,3 +1,12 @@
+delete from cart_products;
+delete from products;
+delete from images;
+
+alter sequence images_image_id_seq restart with 1;
+alter sequence products_product_id_seq restart with 1;
+alter sequence cart_products_cart_product_id_seq restart with 1;
+
+
 insert into
     images
 (
@@ -51,3 +60,9 @@ where
             products t
         )
 ;
+
+
+-- id для временных данных (создавемые в процессе тестов) начинаются с 1001
+alter sequence images_image_id_seq restart with 1001;
+alter sequence products_product_id_seq restart with 1001;
+alter sequence cart_products_cart_product_id_seq restart with 1001;

@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Transactional
 public class ConfigControllerTest extends ControllerTest {
 
     @Autowired
@@ -168,6 +167,8 @@ public class ConfigControllerTest extends ControllerTest {
         assertEquals( "Unexpected description", description, pr.getDescription());
         var img = pr.getImage();
         assertNotNull( "Product image not exists", img);
+        // обход LazyInitializationException
+        img = em.find( Image.class, img.getId());
         assertEquals( "Unexpected origFilename", origFilename, img.getOrigFilename());
         assertEquals( "Unexpected contentType", contentType, img.getContentType());
         assertTrue( "Unexpected fileData", Arrays.equals( fileData, img.getFileData()));
@@ -212,6 +213,8 @@ public class ConfigControllerTest extends ControllerTest {
         assertEquals( "Unexpected description", description, pr.getDescription());
         var img = pr.getImage();
         assertNotNull( "Product image not exists", img);
+        // обход LazyInitializationException
+        img = em.find( Image.class, img.getId());
         assertEquals( "Unexpected origFilename", origFilename, img.getOrigFilename());
         assertEquals( "Unexpected contentType", contentType, img.getContentType());
         assertTrue( "Unexpected fileData", Arrays.equals( fileData, img.getFileData()));
