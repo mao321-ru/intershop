@@ -8,12 +8,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.math.BigDecimal;
+
 // Общие настройки и т.д. для интеграционныйх тестов контроллеров
 public class ControllerTest extends IntegrationTest {
 
     // Тестовые данные: Id товара (с изображением)
     protected final long EXISTS_PRODUCT_ID = 1L;
     protected final String EXISTS_PRODUCT_NAME = "Шампунь SUPER";
+    protected final BigDecimal EXISTS_PRODUCT_PRICE = new BigDecimal( "10.81");
 
     // Тестовые данные: Id товара без изображения
     protected final long NO_IMAGE_PRODUCT_ID = 2L;

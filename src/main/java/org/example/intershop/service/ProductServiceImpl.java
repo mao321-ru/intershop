@@ -23,7 +23,6 @@ import java.util.Optional;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
-    private final EntityManager em;
     private final ProductRepository repo;
 
     @Override

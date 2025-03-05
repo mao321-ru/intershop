@@ -68,9 +68,9 @@
                     <tr>
                         <td>
                             <!-- В href ссылка на страницу с карточкой товара -->
-                            <a th:href="@{|/products/${pr.productId}|}">
+                            <a th:if="${pr.isImage}" th:href="@{|/products/${pr.productId}|}">
                                 <!-- В src ссылка изображение товара -->
-                                <img width="300" height="300" class="product__image" th:if="${pr.isImage}" th:src="@{|/products/${pr.productId}/image|}" />
+                                <img width="300" height="300" class="product__image" th:src="@{|/products/${pr.productId}/image|}" />
                             </a>
                         </td>
                     </tr>
