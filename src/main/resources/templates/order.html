@@ -7,51 +7,53 @@
 
 <body>
 <!-- В href ссылка на страницу заказов -->
-<a href="..." style="float:right;">
-    <b>ЗАКАЗЫ &cudarrr;</b>
+<a th:href="@{/orders}" style="float:right;">
+    <b>ЗАКАЗЫ &#10549;</b>
 </a>
 <!-- В href ссылка на корзину -->
-<a href="..." style="float:right;">
-    <b>КОРЗИНА &cudarrr;</b>
+<a th:href="@{/cart}" style="float:right;">
+    <b>КОРЗИНА &#10549;</b>
 </a>
 <!-- В href ссылка на главную страницу -->
-<a href="..." style="float:right;">
-    <b>ГЛАВНАЯ &cudarrr;</b>
+<a th:href="@{/}" style="float:right;">
+    <b>ГЛАВНАЯ &#10549;</b>
 </a>
 <!-- В if true, если перешли со страницы оформления заказа, false в остальных случаях -->
-<h1 style="text-align:center" th:if="...">Поздравляем! Успешная покупка! &#128578;</h1>
+<h1 th:if="newOrder" style="text-align:center">Поздравляем! Успешная покупка! &#128578;</h1>
 <table style="width:70%;margin-left:auto;margin-right:auto;">
     <tr>
         <td>
             <!-- В text номер заказа -->
-            <h2 th:text="..."></h2>
+            <h2 th:text="${order.orderNumber}"></h2>
         </td>
     </tr>
     <!-- Итерируемся по товарам из заказа -->
-    <tr th:each="...">
+    <tr class="product" th:each="pr: ${order.products}">
         <td>
             <table>
                 <tr>
                     <td>
                         <!-- В href ссылка на страницу с карточкой товара -->
-                        <a th:href="...">
+                        <a th:if="${pr.isImage}" th:href="@{|/products/${pr.productId}|}">
                             <!-- В src ссылка изображение товара -->
-                            <img width="300" height="300" th:src="...">
+                            <img width="300" height="300" class="product__image" th:src="@{|/products/${pr.productId}/image|}" />
                         </a>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         <!-- В text название товара -->
-                        <b th:text="..."></b>
+                        <a th:href="@{|/products/${pr.productId}|}">
+                            <b class="product__productName" th:text="${pr.productName}"></b>
+                        </a>
                     </td>
                     <td>
-                        <!-- В text описание товара -->
-                        <b th:text="..."></b>
+                        <!-- В text количество (а не описание) товара -->
+                        <b class="product__quantity" th:text="${pr.quantity}"></b>
                     </td>
                     <td>
-                        <!-- В text цена товара -->
-                        <b th:text="..."></b>
+                        <!-- В text сумма по товару (а не цена товара) -->
+                        <b class="product__amount" th:text="${pr.amount}"></b>
                     </td>
                 </tr>
             </table>
@@ -60,7 +62,7 @@
     <tr>
         <td>
             <!-- В text общая сумма заказа -->
-            <h3 th:text="..."></h3>
+            <h3 class="total" th:text="${order.total}"></h3>
         </td>
     </tr>
 </table>

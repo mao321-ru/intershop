@@ -21,6 +21,9 @@ public class ControllerTest extends IntegrationTest {
     // Тестовые данные: Id товара без изображения
     protected final long NO_IMAGE_PRODUCT_ID = 2L;
 
+    // Id непродававшегося товара (для проверки удаления)
+    protected final long UNSELLABLE_PRODUCT_ID = 5L;
+
     // выбор всех элементов с товарами
     protected final String PRODUCTS_XPATH = "//*[@class=\"product\"]";
 
@@ -31,6 +34,15 @@ public class ControllerTest extends IntegrationTest {
     protected final String PR_VAL_XPF = PR_FIELD_XPF + "[@value=\"%s\"]";
     protected final String PR_TEXT_XPF = PR_FIELD_XPF + "[text()=\"%s\"]";
     protected final String PR_SRC_XPF = PR_FIELD_XPF + "[@src=\"%s\"]";
+
+    protected final String TOTAL_XPATH = "//*[@class=\"total\"]";
+    protected final String TOTAL_TEXT_XPF = TOTAL_XPATH + "[text()=\"%s\"]";
+
+    // Тестовые данные: Id заказа
+    protected final long EXISTS_ORDER_ID = 1L;
+    protected final int EXISTS_ORDER_PRODUCT_COUNT = 2;
+    protected final BigDecimal EXISTS_ORDER_TOTAL = new BigDecimal( "25.02");
+
 
     @Autowired
     EntityManager em;

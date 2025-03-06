@@ -222,8 +222,8 @@ public class ConfigControllerTest extends ControllerTest {
 
     @Test
     void deleteProduct_check() throws Exception {
-        var pr = getProductWithImage();
-        var productId = pr.getId();
+        var productId = UNSELLABLE_PRODUCT_ID;
+        var pr = em.find( Product.class, productId);
         var imageId = pr.getImage().getId();
 
         mockMvc.perform( post( "/config/products/{productId}", productId)

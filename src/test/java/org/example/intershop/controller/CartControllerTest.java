@@ -15,9 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class CartControllerTest extends ControllerTest {
 
-    private final String TOTAL_XPATH = "//*[@class=\"total\"]";
-    private final String TOTAL_TEXT_XPF = TOTAL_XPATH + "[text()=\"%s\"]";
-
     @Test
     void findCartProducts_check() throws Exception {
         final long productId = EXISTS_PRODUCT_ID;
