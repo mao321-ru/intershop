@@ -46,4 +46,10 @@ public class CartController {
         return "redirect:/cart";
     }
 
+    @PostMapping( { "/cart/buy"})
+    String buy() {
+        log.debug( "buy");
+        long orderId = srv.buy();
+        return "redirect:/orders/" + orderId + "?isNew=1";
+    }
 }

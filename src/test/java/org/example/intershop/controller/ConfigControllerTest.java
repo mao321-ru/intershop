@@ -88,9 +88,9 @@ public class ConfigControllerTest extends ControllerTest {
                 .andExpect( redirectedUrl( "/config"))
         ;
 
-        var pr = repo.findByName( productName);
+        var productId = TEMP_DATA_START_ID;
+        var pr = em.find( Product.class, productId);
         assertNotNull( "Product not found", pr);
-        var productId = pr.getId();
         assertNotNull( "Product image not found", pr.getImage());
         var imgPath = "/products/%d/image".formatted( productId);
 

@@ -13,6 +13,9 @@ import java.math.BigDecimal;
 // Общие настройки и т.д. для интеграционныйх тестов контроллеров
 public class ControllerTest extends IntegrationTest {
 
+    // Стартвый Id последовательностей для временных (создаваемых в тесте) данных
+    protected final long TEMP_DATA_START_ID = 1001L;
+
     // Тестовые данные: Id товара (с изображением)
     protected final long EXISTS_PRODUCT_ID = 1L;
     protected final String EXISTS_PRODUCT_NAME = "Шампунь SUPER";

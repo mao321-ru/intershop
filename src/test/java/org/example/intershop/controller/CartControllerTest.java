@@ -1,16 +1,15 @@
 package org.example.intershop.controller;
 
-import org.example.intershop.repository.ProductRepository;
+import org.example.intershop.model.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class CartControllerTest extends ControllerTest {
@@ -60,6 +59,32 @@ public class CartControllerTest extends ControllerTest {
         // увеличили до 2 шт
         change.accept( productId, "plus");
         find.accept( 1, price.multiply( BigDecimal.TWO).toString());
+    }
+
+    @Test
+    void buy_check() throws Exception {
+        final long productId = EXISTS_PRODUCT_ID;
+        final BigDecimal price = EXISTS_PRODUCT_PRICE;
+        final long orderId = TEMP_DATA_START_ID;
+
+        mockMvc.perform(post("/cart/products/{productId}", productId)
+                    .param("action", "plus")
+                )
+                //.andDo( print()) // вывод запроса и ответа
+                .andExpect(status().isFound())
+        ;
+        mockMvc.perform(post("/cart/buy", productId))
+                //.andDo( print()) // вывод запроса и ответа
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/orders/" + orderId + "?isNew=1"))
+        ;
+
+        Order order = em.find( Order.class, orderId);
+        assertNotNull( "Order not found", order);
+        assertEquals( "Unexpected order number", (Long) TEMP_DATA_START_ID, order.getNumber());
+        assertEquals( "Unexpected products count", 1, order.getProducts().size());
+        assertEquals( "Unexpected product_id", (Long) productId, order.getProducts().getFirst().getProduct().getId());
+        assertEquals( "Unexpected amount", price, order.getProducts().getFirst().getAmount());
     }
 
 }

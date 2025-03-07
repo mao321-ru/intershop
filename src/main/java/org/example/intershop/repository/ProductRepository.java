@@ -15,7 +15,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @EntityGraph( attributePaths = "image")
     Optional<Product> findEntityGraphTypeFetchById( Long productId);
 
-    // использовал только в тесте
-    Product findByName(String name);
-
 }
