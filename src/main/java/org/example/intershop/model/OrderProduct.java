@@ -33,7 +33,7 @@ public class OrderProduct {
     @ToString.Exclude
     private Order order;
 
-    @OneToOne( fetch = FetchType.LAZY)
+    @OneToOne( fetch = FetchType.EAGER)
     @JoinColumn( name = "product_id", referencedColumnName = "product_id", nullable = false, updatable = false)
     @ToString.Exclude
     private Product product;

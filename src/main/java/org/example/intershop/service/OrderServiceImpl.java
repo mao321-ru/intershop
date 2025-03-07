@@ -27,6 +27,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDto> findOrders() {
-        return repo.findAll().stream().map( OrderMapper::toOrderDto).toList();
+        return repo.findAll( Sort.by( "number")).stream().map( OrderMapper::toOrderDto).toList();
     }
 }

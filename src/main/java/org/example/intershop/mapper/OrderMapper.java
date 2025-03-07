@@ -7,6 +7,7 @@ import org.example.intershop.model.OrderProduct;
 import org.example.intershop.model.Product;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 
 public class OrderMapper {
 
@@ -29,6 +30,7 @@ public class OrderMapper {
                 .products(
                     o.getProducts().stream()
                         .map( OrderMapper::toOrderProductDto)
+                        .sorted( Comparator.comparing( OrderProductDto::getProductName))
                         .toList()
                 )
                 .build();
