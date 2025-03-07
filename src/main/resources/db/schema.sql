@@ -31,6 +31,7 @@ create table if not exists cart_products(
 create table if not exists orders(
     order_id bigserial primary key,
     order_number bigserial not null,
+    order_total numeric(38,2) not null check( order_total >= 0),
     create_time timestamp with time zone default current_timestamp not null
 );
 

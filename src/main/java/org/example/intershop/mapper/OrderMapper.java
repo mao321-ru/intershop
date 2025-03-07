@@ -24,15 +24,11 @@ public class OrderMapper {
     public static OrderDto toOrderDto(Order o) {
         return OrderDto.builder()
                 .orderNumber( o.getNumber())
+                .total( o.getTotal())
                 .products(
                     o.getProducts().stream()
                         .map( OrderMapper::toOrderProductDto)
                         .toList()
-                )
-                .total(
-                    o.getProducts().stream()
-                        .map( OrderProduct::getAmount)
-                        .reduce( BigDecimal.ZERO, BigDecimal::add)
                 )
                 .build();
     }

@@ -45,7 +45,15 @@ union all select 'Пена для ванны Forest', 15.00, 'Пена findProdu
 union all select 'Непродававшийся (для удаления)', 18.00, 'Для тестирования удаления в deleteProduct_check', 2
 ;
 
-insert into orders ( order_number) values ( DEFAULT);
+insert into
+    orders
+(
+    order_total
+)
+values
+(
+    25.02
+);
 
 insert into
     order_products

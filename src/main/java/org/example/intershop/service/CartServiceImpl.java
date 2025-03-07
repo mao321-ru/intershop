@@ -46,17 +46,22 @@ public class CartServiceImpl implements CartService {
         List<CartProduct> products = repo.findAll();
         if( products.isEmpty()) throw new NoSuchElementException();
         Order order = new Order();
-        orderRepo.save( order);
-        order.setProducts( new ArrayList<>(
-            products.stream().map(
-                p -> OrderProduct.builder()
-                    .quantity( p.getQuantity())
-                    .amount( p.getProduct().getPrice().multiply( BigDecimal.valueOf( p.getQuantity())))
-                    .order( order)
-                    .product( p.getProduct())
-                    .build()
-            ).toList()
-        ));
+        order.setProducts(
+            products.stream()
+                .map( p ->
+                    OrderProduct.builder()
+                        .quantity( p.getQuantity())
+                        .amount( p.getProduct().getPrice().multiply( BigDecimal.valueOf( p.getQuantity())))
+                        .order( order)
+                        .product( p.getProduct())
+                        .build()
+                ).toList()
+        );
+        order.setTotal(
+            order.getProducts().stream()
+                .map( OrderProduct::getAmount)
+                .reduce( BigDecimal.ZERO, BigDecimal::add)
+        );
         orderRepo.save( order);
         return order.getId();
     }

@@ -3,6 +3,7 @@ package org.example.intershop.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,6 +26,9 @@ public class Order {
     // заполняется из последовательности БД
     @Column( name = "order_number", nullable = false, updatable = false, insertable = false)
     private Long number;
+
+    @Column( name = "order_total", nullable = false)
+    private BigDecimal total;
 
     @OneToMany( mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
