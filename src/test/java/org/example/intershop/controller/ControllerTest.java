@@ -46,6 +46,9 @@ public class ControllerTest extends IntegrationTest {
     protected final int EXISTS_ORDER_PRODUCT_COUNT = 2;
     protected final BigDecimal EXISTS_ORDER_TOTAL = new BigDecimal( "25.02");
 
+    // выбор всех элементов с заказами
+    protected final String ORDERS_XPATH = "//*[@class=\"order\"]";
+
 
     @Autowired
     EntityManager em;

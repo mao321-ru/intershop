@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface OrderService {
     Optional<OrderDto> getOrder(Long orderId);
 
+    List<OrderDto> findOrders();
+
 }

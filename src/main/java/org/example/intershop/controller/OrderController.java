@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.service.CartService;
 import org.example.intershop.service.OrderService;
 import org.example.intershop.service.ProductService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,15 @@ public class OrderController {
 
     private final OrderService srv;
 
+    @GetMapping( "/orders")
+    String findOrders(
+            Model model
+    ) {
+        log.debug( "findOrders");
+        model.addAttribute( "orders", srv.findOrders());
+        return "orders";
+    }
+
     @GetMapping( { "/orders/{orderId}"})
     String getOrder(
         @PathVariable Long orderId,
@@ -26,8 +36,8 @@ public class OrderController {
         Model model
     ) {
         log.debug( "getOrder: orderId: " + orderId);
-        var order = srv.getOrder( orderId).orElseThrow();
-        model.addAttribute( "order", order);
+        var ord = srv.getOrder( orderId).orElseThrow();
+        model.addAttribute( "ord", ord);
         model.addAttribute( "newOrder", isNew);
         return "order";
     }

@@ -24,4 +24,9 @@ public class OrderServiceImpl implements OrderService {
     public Optional<OrderDto> getOrder(Long orderId) {
         return repo.findById( orderId).map( OrderMapper::toOrderDto);
     }
+
+    @Override
+    public List<OrderDto> findOrders() {
+        return repo.findAll().stream().map( OrderMapper::toOrderDto).toList();
+    }
 }

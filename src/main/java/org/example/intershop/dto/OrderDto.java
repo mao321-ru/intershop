@@ -9,7 +9,8 @@ import java.util.List;
 @Builder
 @Data
 public class OrderDto {
-    private final List<OrderProductDto> products;
+    private final long orderId;
     private final long orderNumber;
     private final BigDecimal total;
+    private final List<OrderProductDto> products;
 }

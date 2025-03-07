@@ -7,34 +7,34 @@
 
 <body>
 <!-- В href ссылка на корзину -->
-<a href="..." style="float:right;">
-    <b>КОРЗИНА &cudarrr;</b>
+<a th:href="@{/cart}" style="float:right;">
+    <b>КОРЗИНА &#10549;</b>
 </a>
 <!-- В href ссылка на главную страницу -->
-<a href="..." style="float:right;">
-    <b>ГЛАВНАЯ &cudarrr;</b>
+<a th:href="@{/}" style="float:right;">
+    <b>ГЛАВНАЯ &#10549;</b>
 </a>
 <table style="width:70%;margin-left:auto;margin-right:auto;">
     <!-- Итерируемся по заказам -->
-    <tr th:each="...">
+    <tr class="order" th:each="ord: ${orders}">
         <td>
             <h2>
             	<!--
             		В text номер заказа.
-            		В href ссылка на страницу заказа. 
+            		В href ссылка на страницу заказа.
             	-->
-                <a th:text="..." th:href="..."></a>
+                <a th:text="|Заказ №${ord.orderNumber}|" th:href="@{|/orders/${ord.orderId}|}"></a>
             </h2>
             <table>
                 <!-- Итерируемся по товарам в заказе -->
-                <tr th:each="...">
+                <tr class="product" th:each="pr: ${ord.products}">
                     <!-- В text название товара, количество штук и стоимость -->
-                    <td th:text="..."></td>
+                    <td class="product__info" th:text="|${pr.productName} (${pr.quantity} шт.) ${pr.amount} руб.|"></td>
                 </tr>
             </table>
             <p>
                 <!-- В text общая сумма заказа -->
-                <b th:text="..."></b>
+                <b class="total" th:text="|Сумма: ${ord.total} руб.|"></b>
             </p>
         </td>
     </tr>

@@ -23,6 +23,7 @@ public class OrderMapper {
 
     public static OrderDto toOrderDto(Order o) {
         return OrderDto.builder()
+                .orderId( o.getId())
                 .orderNumber( o.getNumber())
                 .total( o.getTotal())
                 .products(

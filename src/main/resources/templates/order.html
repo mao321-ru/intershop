@@ -24,11 +24,11 @@
     <tr>
         <td>
             <!-- В text номер заказа -->
-            <h2 th:text="${order.orderNumber}"></h2>
+            <h2 th:text="${ord.orderNumber}"></h2>
         </td>
     </tr>
     <!-- Итерируемся по товарам из заказа -->
-    <tr class="product" th:each="pr: ${order.products}">
+    <tr class="product" th:each="pr: ${ord.products}">
         <td>
             <table>
                 <tr>
@@ -62,7 +62,7 @@
     <tr>
         <td>
             <!-- В text общая сумма заказа -->
-            <h3 class="total" th:text="${order.total}"></h3>
+            <h3 class="total" th:text="${ord.total}"></h3>
         </td>
     </tr>
 </table>
