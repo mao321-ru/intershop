@@ -1,15 +1,17 @@
 package org.example.intershop.service;
 
 import org.example.intershop.dto.OrderDto;
-import org.example.intershop.dto.ProductDto;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
+
+    public static record Orders(List<OrderDto> orders, BigDecimal total) {}
+
     Optional<OrderDto> getOrder(Long orderId);
 
-    List<OrderDto> findOrders();
+    Orders findOrders();
 
 }

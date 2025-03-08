@@ -34,8 +34,14 @@
             </table>
             <p>
                 <!-- В text общая сумма заказа -->
-                <b class="total" th:text="|Сумма: ${ord.total} руб.|"></b>
+                <b class="orders__total" th:text="|Сумма: ${ord.total} руб.|"></b>
             </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <!-- В text суммарная стоимость заказа -->
+            <h2 th:if="${!orders.isEmpty()}" class="total" th:text="|Итого: ${total} руб.|"></h2>
         </td>
     </tr>
 </table>

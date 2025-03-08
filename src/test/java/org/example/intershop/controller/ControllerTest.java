@@ -49,6 +49,8 @@ public class ControllerTest extends IntegrationTest {
     // выбор всех элементов с заказами
     protected final String ORDERS_XPATH = "//*[@class=\"order\"]";
 
+    protected final String ORDERS_TOTAL_XPATH = "//*[@class=\"orders__total\"]";
+
 
     @Autowired
     EntityManager em;

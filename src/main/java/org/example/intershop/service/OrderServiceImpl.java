@@ -2,8 +2,8 @@ package org.example.intershop.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.example.intershop.dto.OrderDto;
-import org.example.intershop.dto.ProductDto;
 import org.example.intershop.mapper.OrderMapper;
 import org.example.intershop.repository.OrderRepository;
 import org.springframework.data.domain.Sort;
@@ -26,7 +26,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> findOrders() {
-        return repo.findAll( Sort.by( "number")).stream().map( OrderMapper::toOrderDto).toList();
+    public Orders findOrders() {
+        List<OrderDto> orders = repo.findAll( Sort.by( "number")).stream().map( OrderMapper::toOrderDto).toList();
+        return new Orders(
+            orders,
+            orders.stream().map( OrderDto::getTotal).reduce( BigDecimal.ZERO, BigDecimal::add)
+        );
     }
 }

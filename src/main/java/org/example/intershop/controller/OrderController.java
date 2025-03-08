@@ -25,7 +25,9 @@ public class OrderController {
             Model model
     ) {
         log.debug( "findOrders");
-        model.addAttribute( "orders", srv.findOrders());
+        var o = srv.findOrders();
+        model.addAttribute( "orders", o.orders());
+        model.addAttribute( "total", o.total());
         return "orders";
     }
 
