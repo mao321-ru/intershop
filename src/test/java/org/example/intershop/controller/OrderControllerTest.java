@@ -21,7 +21,7 @@ public class OrderControllerTest extends ControllerTest {
     @Test
     void findOrders_check() throws Exception {
         mockMvc.perform( get( "/orders"))
-                .andDo( print()) // вывод запроса и ответа
+                //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isOk())
                 .andExpect( content().contentType( "text/html;charset=UTF-8"))
                 .andExpect( xpath( ORDERS_XPATH).nodeCount( Matchers.greaterThan( 0)))
@@ -41,8 +41,8 @@ public class OrderControllerTest extends ControllerTest {
                 .andExpect( status().isOk())
                 .andExpect( content().contentType( "text/html;charset=UTF-8"))
                 .andExpect( xpath( PRODUCTS_XPATH).nodeCount( EXISTS_ORDER_PRODUCT_COUNT))
-                .andExpect( xpath( TOTAL_TEXT_XPF.formatted( EXISTS_ORDER_TOTAL.toString()))
-                        .nodeCount( 1))
+                .andExpect( xpath( ORDERS_TOTAL_XPATH)
+                        .string( Matchers.containsString( EXISTS_ORDER_TOTAL.toString())))
         ;
     }
 

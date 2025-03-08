@@ -24,7 +24,7 @@
     <tr>
         <td>
             <!-- В text номер заказа -->
-            <h2 th:text="${ord.orderNumber}"></h2>
+            <h2 th:text="|Заказ №${ord.orderNumber}|"></h2>
         </td>
     </tr>
     <!-- Итерируемся по товарам из заказа -->
@@ -49,11 +49,11 @@
                     </td>
                     <td>
                         <!-- В text количество (а не описание) товара -->
-                        <b class="product__quantity" th:text="${pr.quantity}"></b>
+                        <b class="product__quantity" th:text="|${pr.quantity} шт.|"></b>
                     </td>
                     <td>
                         <!-- В text сумма по товару (а не цена товара) -->
-                        <b class="product__amount" th:text="${pr.amount}"></b>
+                        <b class="product__amount" th:text="|${pr.amount} руб.|"></b>
                     </td>
                 </tr>
             </table>
@@ -62,7 +62,7 @@
     <tr>
         <td>
             <!-- В text общая сумма заказа -->
-            <h3 class="total" th:text="${ord.total}"></h3>
+            <h3 class="orders__total" th:text="|Сумма: ${ord.total} руб.|"></h3>
         </td>
     </tr>
 </table>
