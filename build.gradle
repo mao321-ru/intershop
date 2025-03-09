@@ -47,4 +47,30 @@ tasks.named('test') {
         events "passed", "skipped", "failed", "standardOut", "standardError"
         exceptionFormat "full"
     }
+
+    //// вывод списка failed тестов в консоль после их выполнения
+    // (https://stackoverflow.com/questions/43917709/how-do-i-show-a-list-of-all-the-test-failures-after-completion-of-a-gradle-task)
+    // a collection to track failedTests
+    ext.failedTests = []
+
+    afterTest { descriptor, result ->
+        if (result.resultType == TestResult.ResultType.FAILURE) {
+            String failedTest = "${descriptor.className}::${descriptor.name}"
+            logger.debug("Adding " + failedTest + " to failedTests...")
+            failedTests << [failedTest]
+        }
+    }
+
+    afterSuite { suite, result ->
+        if (!suite.parent) { // will match the outermost suite
+            // logs each failed test
+            if (!failedTests.empty) {
+                logger.lifecycle("\n*** FAILED tests:")
+                failedTests.each { failedTest ->
+                    logger.lifecycle("${failedTest}")
+                }
+            }
+        }
+    }
+    ////
 }
