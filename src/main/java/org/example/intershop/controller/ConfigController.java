@@ -7,6 +7,7 @@ import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.service.ProductService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class ConfigController {
         Model model
     ) {
         log.debug( "configProducts");
-        var products = srv.findProducts( "", Pageable.unpaged());
+        var products = srv.findProducts( "", Pageable.unpaged( Sort.by("name")));
         model.addAttribute( "products", products);
         return "config";
     }
