@@ -7,8 +7,9 @@ import org.springframework.data.domain.Sort;
 @Getter
 @RequiredArgsConstructor
 public enum ProductCartAction {
+    DELETE( null),
     MINUS( -1),
     PLUS( 1);
 
-    private final int delta;
+    private final Integer delta;
 }

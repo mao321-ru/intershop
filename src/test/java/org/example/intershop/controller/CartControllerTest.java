@@ -1,6 +1,7 @@
 package org.example.intershop.controller;
 
 import org.example.intershop.model.Order;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CartControllerTest extends ControllerTest {
 
     @Test
-    void findCartProducts_check() throws Exception {
+    void changeQuantityCheck() throws Exception {
         final long productId = EXISTS_PRODUCT_ID;
         final String productName = EXISTS_PRODUCT_NAME;
         BigDecimal price = EXISTS_PRODUCT_PRICE;
@@ -28,7 +29,8 @@ public class CartControllerTest extends ControllerTest {
                         .andExpect(content().contentType("text/html;charset=UTF-8"))
                         .andExpect(xpath(PRODUCTS_XPATH).nodeCount(cnt))
                         .andExpect(xpath(TOTAL_XPATH).nodeCount(1))
-                        .andExpect(xpath(TOTAL_TEXT_XPF.formatted(total)).nodeCount(1))
+                        .andExpect( xpath( TOTAL_XPATH)
+                                .string( Matchers.containsString( total.toString())))
                 ;
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -50,7 +52,7 @@ public class CartControllerTest extends ControllerTest {
         };
 
         // изначально корзина пустая
-        find.accept( 0, "0");
+        find.accept( 0, " 0 ");
 
         // добавили товар в корзину
         change.accept( productId, "plus");
@@ -59,6 +61,12 @@ public class CartControllerTest extends ControllerTest {
         // увеличили до 2 шт
         change.accept( productId, "plus");
         find.accept( 1, price.multiply( BigDecimal.TWO).toString());
+
+        // увеличили-уменьшили-удалили
+        change.accept( productId, "plus");
+        change.accept( productId, "minus");
+        change.accept( productId, "delete");
+        find.accept( 0, " 0 ");
     }
 
     @Test

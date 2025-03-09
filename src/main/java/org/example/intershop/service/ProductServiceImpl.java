@@ -1,6 +1,5 @@
 package org.example.intershop.service;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.dto.ProductCreateDto;
@@ -63,10 +62,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void changeInCartQuantity(long productId, int delta) {
+    public void changeInCartQuantity(long productId, Integer delta) {
         Product pr = repo.findById( productId).orElseThrow();
         CartProduct cp = pr.getCartProduct();
-        int qty = ( cp != null ? cp.getQuantity() : 0) + delta;
+        // Число товаров, которое должно быть после изменения
+        int qty = delta == null ? 0 : ( cp != null ? cp.getQuantity() : 0) + delta;
         if( qty > 0) {
             if( cp == null) {
                 cp = new CartProduct();

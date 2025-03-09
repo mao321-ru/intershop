@@ -37,7 +37,7 @@
                     </td>
                     <td>
                         <!-- В text цена товара -->
-                        <b class="product__price" th:text="${pr.price}"></b>
+                        <b class="product__price" th:text="|${pr.price} руб.|"></b>
                     </td>
                 </tr>
                 <!-- В text описание товара -->
@@ -51,11 +51,11 @@
                     		Передается параметр запроса action=[minus|plus]
                     	-->
                         <form th:action="@{|/cart/products/${pr.productId}|}" method="post">
-                            <button th:if="${pr.inCartQuantity} > 0" name="action" value="minus">-</button>
+                            <button name="action" value="minus">-</button>
                             <!-- В text количество товара в корзине -->
                             <span class="product__inCartQuantity" th:if="${pr.inCartQuantity} > 0" name="quantity" th:text="${pr.inCartQuantity}"></span>
-                            <button th:if="${pr.inCartQuantity} > 0" name="action" value="plus">+</button>
-                            <button th:if="${pr.inCartQuantity == 0}" name="action" value="delete" style="float:right;">&cross;</button>
+                            <button name="action" value="plus">+</button>
+                            <button name="action" value="delete" style="float:right;">&#10007;</button>
                         </form>
                     </td>
                 </tr>
@@ -65,7 +65,7 @@
     <tr>
         <td style="text-align:right">
             <!-- В text суммарная стоимость заказа -->
-            <b class="total" th:text="${total}"></b>
+            <b class="total" th:text="|Итого: ${total} руб.|"></b>
         </td>
     </tr>
     <tr>

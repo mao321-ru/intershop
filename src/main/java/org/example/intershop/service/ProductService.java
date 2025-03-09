@@ -22,5 +22,5 @@ public interface ProductService {
 
     void deleteProduct(Long productId);
 
-    void changeInCartQuantity(long productId, int delta);
+    void changeInCartQuantity(long productId, Integer delta);
 }
