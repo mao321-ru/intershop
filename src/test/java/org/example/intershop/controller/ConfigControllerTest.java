@@ -19,6 +19,7 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class ConfigControllerTest extends ControllerTest {
@@ -99,7 +100,10 @@ public class ConfigControllerTest extends ControllerTest {
                 //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isOk())
                 .andExpect( xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1))
-                .andExpect( xpath( PR_VAL_XPF.formatted( "price", price)).nodeCount( 1))
+                .andExpect(
+                    xpath( PR_VAL_XPF.formatted( "price", price.toString()))
+                        .nodeCount( 1)
+                )
                 .andExpect( xpath( PR_VAL_XPF.formatted( "description", description)).nodeCount( 1))
                 // выводится изображение товара
                 .andExpect( xpath(
@@ -110,10 +114,10 @@ public class ConfigControllerTest extends ControllerTest {
 
         // товар появился на главной странице
         mockMvc.perform( get( "/"))
-                //.andDo( print()) // вывод запроса и ответа
+                .andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isOk())
                 .andExpect( xpath( PR_TEXT_XPF.formatted( "productName", productName)).nodeCount( 1))
-                .andExpect( xpath( PR_TEXT_XPF.formatted( "price", price)).nodeCount( 1))
+                .andExpect( xpath( PR_TEXT_XPF.formatted( "price", price.toString() + " руб.")).nodeCount( 1))
                 .andExpect( xpath( PR_TEXT_XPF.formatted( "description", description)).nodeCount( 1))
                 .andExpect( xpath( PR_SRC_XPF.formatted( "image", imgPath)).nodeCount( 1))
         ;

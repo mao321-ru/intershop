@@ -55,9 +55,9 @@ public class ProductControllerTest extends ControllerTest {
                         .andExpect( content().contentType( "text/html;charset=UTF-8"))
                         .andExpect( xpath( PRODUCTS_XPATH).nodeCount( 1))
                         .andExpect( xpath( PR_FIELD_XPF.formatted( "inCartQuantity"))
-                                .nodeCount( qty > 0 ? 1 : 0))
+                                .nodeCount( 1))
                         .andExpect( xpath( PR_TEXT_XPF.formatted( "inCartQuantity", qty))
-                                .nodeCount( qty > 0 ? 1 : 0))
+                                .nodeCount( 1))
                 ;
             } catch (Exception e) {
                 throw new RuntimeException( e);

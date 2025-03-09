@@ -83,7 +83,7 @@
                         </td>
                         <td>
                             <!-- В text цена товара -->
-                            <b class="product__price" th:text="${pr.price}"></b>
+                            <b class="product__price" th:text="|${pr.price} руб.|"></b>
                         </td>
                     </tr>
                     <tr>
@@ -96,12 +96,13 @@
                             В action ссылка на изменение количества товара в корзине.
                             Передается параметр запроса action=[minus|plus]
                             -->
-                            <button th:if="${pr.inCartQuantity} > 0" formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="minus">-</button>
+                            <button formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="minus">-</button>
                             <!-- В text количество товара в корзине -->
-                            <span class="product__inCartQuantity" th:if="${pr.inCartQuantity} > 0" name="quantity" th:text="${pr.inCartQuantity}"></span>
-                            <button th:if="${pr.inCartQuantity} > 0" formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="plus">+</button>
+                            <span class="product__inCartQuantity" name="quantity" th:text="${pr.inCartQuantity}"></span>
+                            <button formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="plus">+</button>
                             <!-- В if true, если товар еще не был добавлен в корзину, false, если уже был -->
                             <button th:if="${pr.inCartQuantity == 0}" formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="plus" style="float:right;">В корзину</button>
+                            <button th:if="${pr.inCartQuantity > 0}" formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="delete" style="float:right;">&#10007;</button>
                         </td>
                     </tr>
                 </table>
