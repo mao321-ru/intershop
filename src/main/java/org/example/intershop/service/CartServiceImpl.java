@@ -11,6 +11,7 @@ import org.example.intershop.model.OrderProduct;
 import org.example.intershop.model.Product;
 import org.example.intershop.repository.CartProductRepository;
 import org.example.intershop.repository.OrderRepository;
+import org.example.intershop.repository.ProductRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class CartServiceImpl implements CartService {
 
     private final CartProductRepository repo;
     private final OrderRepository orderRepo;
+    private final ProductRepository productRepo;
 
     @Override
     public CartInfo findCartProducts() {
@@ -43,11 +45,11 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public long buy() {
-        List<CartProduct> products = repo.findAll();
-        if( products.isEmpty()) throw new NoSuchElementException();
+        List<CartProduct> cartProducts = repo.findAll();
+        if( cartProducts.isEmpty()) throw new NoSuchElementException();
         Order order = new Order();
         order.setProducts(
-            products.stream()
+            cartProducts.stream()
                 .map( p ->
                     OrderProduct.builder()
                         .quantity( p.getQuantity())
@@ -63,6 +65,12 @@ public class CartServiceImpl implements CartService {
                 .reduce( BigDecimal.ZERO, BigDecimal::add)
         );
         orderRepo.save( order);
+        // очистка корзины
+        cartProducts.stream().forEach( cp -> {
+            var p = cp.getProduct();
+            p.setCartProduct( null);
+            productRepo.save( p);
+        });
         return order.getId();
     }
 
