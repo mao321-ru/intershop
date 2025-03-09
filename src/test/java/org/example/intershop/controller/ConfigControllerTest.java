@@ -114,7 +114,7 @@ public class ConfigControllerTest extends ControllerTest {
 
         // товар появился на главной странице
         mockMvc.perform( get( "/"))
-                .andDo( print()) // вывод запроса и ответа
+                //.andDo( print()) // вывод запроса и ответа
                 .andExpect( status().isOk())
                 .andExpect( xpath( PR_TEXT_XPF.formatted( "productName", productName)).nodeCount( 1))
                 .andExpect( xpath( PR_TEXT_XPF.formatted( "price", price.toString() + " руб.")).nodeCount( 1))
