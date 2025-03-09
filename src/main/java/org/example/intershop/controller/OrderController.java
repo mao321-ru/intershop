@@ -34,13 +34,13 @@ public class OrderController {
     @GetMapping( { "/orders/{orderId}"})
     String getOrder(
         @PathVariable Long orderId,
-        @RequestParam( required = false) Boolean isNew,
+        @RequestParam( defaultValue = "0") int isNew,
         Model model
     ) {
-        log.debug( "getOrder: orderId: " + orderId);
+        log.debug( "getOrder: orderId: " + orderId + ", isNew=" + isNew);
         var ord = srv.getOrder( orderId).orElseThrow();
         model.addAttribute( "ord", ord);
-        model.addAttribute( "newOrder", isNew);
+        model.addAttribute( "newOrder", isNew == 1);
         return "order";
     }
 
