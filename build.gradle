@@ -38,6 +38,11 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// Собираем исполняемый jar-файл
+bootJar {
+    launchScript()
+}
+
 tasks.named('test') {
     useJUnitPlatform()
     // выполняем тесты даже при отсутствии изменений
