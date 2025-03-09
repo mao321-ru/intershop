@@ -25,7 +25,7 @@
             <!-- В text название товара -->
             <b class="product__productName" th:text="${pr.productName}"></b>
             <!-- В text цена товара -->
-            <b class="product__price" th:text="${pr.price}"></b>
+            <b class="product__price" th:text="|${pr.price} руб.|"></b>
         </p>
         <p>
             <!-- В text описание товара -->
@@ -42,6 +42,7 @@
             <button th:if="${pr.inCartQuantity} > 0" name="action" value="plus">+</button>
             <!-- В if true, если товар еще не был добавлен в корзину, false, если уже был -->
             <button th:if="${pr.inCartQuantity == 0}" name="action" value="plus">В корзину</button>
+            <button th:if="${pr.inCartQuantity} > 0" name="action" value="delete">&#10007;</button>
         </form>
     </div>
 </body>
