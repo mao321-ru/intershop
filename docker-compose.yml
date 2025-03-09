@@ -1,0 +1,35 @@
+name: intershop
+services:
+  app:
+    container_name: intershop
+    image: intershop
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/intershopdb
+      SPRING_DATASOURCE_USERNAME: javadev
+      SPRING_DATASOURCE_PASSWORD: javadev
+      SERVER_PORT: 8080
+    depends_on:
+      - postgres
+  postgres:
+    container_name: postgres
+    image: postgres:17.2-alpine3.20
+    restart: always
+    # set shared memory limit (reason: https://hub.docker.com/_/postgres)
+    shm_size: 128mb
+    ports:
+      - "9432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      # run scripts for create user and database
+      - ./src/main/resources/db/init:/docker-entrypoint-initdb.d
+      - intershopdb-data:/var/lib/postgresql/data
+volumes:
+  intershopdb-data:
