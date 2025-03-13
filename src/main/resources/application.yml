@@ -6,17 +6,15 @@ server.port: 8085
 spring:
   application:
     name: intershop
-  datasource:
-    # Явно фиксируем использование PostgreSQL, в профиле должен быть указан url для подключения к БД
-    driver-class-name: org.postgresql.Driver
+  r2dbc:
     username: javadev
     password: javadev
-  jpa:
-    # Логирование SQL, выполняемого Hibernate
-    show-sql: true
-    # При отсутствии явно указанного диалекта он определяется при старте приложения запросом к БД, отсутствие
-    # подключения к БД приведет к фатальной ошибке, если диалект указан - в логе будет игнорируемая ошибка
-    #database-platform: org.hibernate.dialect.PostgreSQLDialect
+#  jpa:
+#    # Логирование SQL, выполняемого Hibernate
+#    show-sql: true
+#    # При отсутствии явно указанного диалекта он определяется при старте приложения запросом к БД, отсутствие
+#    # подключения к БД приведет к фатальной ошибке, если диалект указан - в логе будет игнорируемая ошибка
+#    #database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   # явно указан путь master-файла Liquibase (при отсутствии файла будет фатальная ошибка)
   liquibase.change-log: classpath:/db/changelog/db.changelog-master.yaml

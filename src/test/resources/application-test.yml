@@ -1,13 +1,13 @@
 # Логирование транзакций
+#logging.level.org.springframework: DEBUG
 #logging.level.org.springframework.orm.jpa.JpaTransactionManager: DEBUG
 logging.level.org.example.intershop: TRACE
 
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/intershopdb_test
-
   # Run SQL script to load test data
   sql.init:
     encoding: utf-8
     mode: always
     data-locations: classpath:test-data.sql
+    # временный способ развертывания схемы (пока не восстановлена Liquibase)
+    schema-locations: classpath:db/schema.sql

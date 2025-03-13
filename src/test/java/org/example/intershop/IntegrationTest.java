@@ -10,7 +10,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 // Общие настройки и т.д. для всех интеграционных тестов
 @SpringBootTest
 @ActiveProfiles("test")
-@Sql( scripts = {"/test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD )
+//@Sql( scripts = {"/test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD )
 public abstract class IntegrationTest {
 
     // Using Singleton DB Container for all tests
@@ -23,9 +23,15 @@ public abstract class IntegrationTest {
 
     @DynamicPropertySource
     static void configureDatasource(DynamicPropertyRegistry registry) {
-        registry.add( "spring.datasource.url", postgres::getJdbcUrl);
-        registry.add( "spring.datasource.username", postgres::getUsername);
-        registry.add( "spring.datasource.password", postgres::getPassword);
+        registry.add( "spring.r2dbc.url", () ->
+            "r2dbc:postgresql://%s:%s/%s".formatted(
+                postgres.getHost(),
+                postgres.getFirstMappedPort(),
+                postgres.getDatabaseName()
+            )
+        );
+        registry.add( "spring.r2dbc.username", postgres::getUsername);
+        registry.add( "spring.r2dbc.password", postgres::getPassword);
     }
 
 }

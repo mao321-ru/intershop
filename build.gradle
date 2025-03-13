@@ -5,13 +5,61 @@ plugins {
 }
 
 group = 'org.example'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
+// временное исключение исходников из компиляции (для поэтапного рефакторинга на Reactive Stack)
+sourceSets {
+    main {
+        java {
+            exclude 'org/example/intershop/controller/CartController.java'
+            exclude 'org/example/intershop/controller/ConfigController.java'
+            exclude 'org/example/intershop/controller/MainController.java'
+            exclude 'org/example/intershop/controller/OrderController.java'
+            exclude 'org/example/intershop/controller/ProductCartAction.java'
+            exclude 'org/example/intershop/controller/ProductController.java'
+            exclude 'org/example/intershop/controller/ProductSort.java'
+            exclude 'org/example/intershop/dto/OrderDto.java'
+            exclude 'org/example/intershop/dto/OrderProductDto.java'
+            exclude 'org/example/intershop/dto/ProductCreateDto.java'
+            exclude 'org/example/intershop/dto/ProductDto.java'
+            exclude 'org/example/intershop/dto/ProductUpdateDto.java'
+            exclude 'org/example/intershop/mapper/OrderMapper.java'
+            exclude 'org/example/intershop/mapper/ProductMapper.java'
+            exclude 'org/example/intershop/model/CartProduct.java'
+            exclude 'org/example/intershop/model/Image.java'
+            exclude 'org/example/intershop/model/Order.java'
+            exclude 'org/example/intershop/model/OrderProduct.java'
+            exclude 'org/example/intershop/model/Product.java'
+            exclude 'org/example/intershop/repository/CartProductRepository.java'
+            exclude 'org/example/intershop/repository/OrderRepository.java'
+            exclude 'org/example/intershop/repository/ProductRepository.java'
+            exclude 'org/example/intershop/service/CartService.java'
+            exclude 'org/example/intershop/service/CartServiceImpl.java'
+            exclude 'org/example/intershop/service/OrderService.java'
+            exclude 'org/example/intershop/service/OrderServiceImpl.java'
+            exclude 'org/example/intershop/service/ProductService.java'
+            exclude 'org/example/intershop/service/ProductServiceImpl.java'
+        }
+    }
+    test {
+        java {
+            exclude 'org/example/intershop/controller/CartControllerTest.java'
+            exclude 'org/example/intershop/controller/ConfigControllerTest.java'
+            exclude 'org/example/intershop/controller/ControllerTest.java'
+            exclude 'org/example/intershop/controller/MainControllerTest.java'
+            exclude 'org/example/intershop/controller/OrderControllerTest.java'
+            exclude 'org/example/intershop/controller/ProductControllerTest.java'
+        }
+    }
+}
+
+
 
 configurations {
     compileOnly {
@@ -24,17 +72,18 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.liquibase:liquibase-core'
+    runtimeOnly 'org.postgresql:r2dbc-postgresql'
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.testcontainers:junit-jupiter:1.20.4'
-    testImplementation 'org.testcontainers:postgresql:1.20.4'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:r2dbc'
+    testImplementation 'org.testcontainers:postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
