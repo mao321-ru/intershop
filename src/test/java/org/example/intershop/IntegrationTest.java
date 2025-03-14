@@ -14,7 +14,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import reactor.core.publisher.Mono;
 
 // Общие настройки и т.д. для всех интеграционных тестов
-@SpringBootTest
+@SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public abstract class IntegrationTest {
 

@@ -18,7 +18,6 @@ sourceSets {
     main {
         java {
             exclude 'org/example/intershop/controller/CartController.java'
-            exclude 'org/example/intershop/controller/ConfigController.java'
             exclude 'org/example/intershop/controller/MainController.java'
             exclude 'org/example/intershop/controller/OrderController.java'
             exclude 'org/example/intershop/controller/ProductCartAction.java'
@@ -27,31 +26,23 @@ sourceSets {
             exclude 'org/example/intershop/dto/OrderDto.java'
             exclude 'org/example/intershop/dto/OrderProductDto.java'
             exclude 'org/example/intershop/dto/ProductCreateDto.java'
-            exclude 'org/example/intershop/dto/ProductDto.java'
             exclude 'org/example/intershop/dto/ProductUpdateDto.java'
             exclude 'org/example/intershop/mapper/OrderMapper.java'
-            exclude 'org/example/intershop/mapper/ProductMapper.java'
             exclude 'org/example/intershop/model/CartProduct.java'
             exclude 'org/example/intershop/model/Image.java'
             exclude 'org/example/intershop/model/Order.java'
             exclude 'org/example/intershop/model/OrderProduct.java'
-            exclude 'org/example/intershop/model/Product.java'
             exclude 'org/example/intershop/repository/CartProductRepository.java'
             exclude 'org/example/intershop/repository/OrderRepository.java'
-            exclude 'org/example/intershop/repository/ProductRepository.java'
             exclude 'org/example/intershop/service/CartService.java'
             exclude 'org/example/intershop/service/CartServiceImpl.java'
             exclude 'org/example/intershop/service/OrderService.java'
             exclude 'org/example/intershop/service/OrderServiceImpl.java'
-            exclude 'org/example/intershop/service/ProductService.java'
-            exclude 'org/example/intershop/service/ProductServiceImpl.java'
         }
     }
     test {
         java {
             exclude 'org/example/intershop/controller/CartControllerTest.java'
-            exclude 'org/example/intershop/controller/ConfigControllerTest.java'
-            exclude 'org/example/intershop/controller/ControllerTest.java'
             exclude 'org/example/intershop/controller/MainControllerTest.java'
             exclude 'org/example/intershop/controller/OrderControllerTest.java'
             exclude 'org/example/intershop/controller/ProductControllerTest.java'

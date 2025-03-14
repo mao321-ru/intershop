@@ -1,12 +1,10 @@
 package org.example.intershop.controller;
 
-import jakarta.persistence.EntityManager;
+//import jakarta.persistence.EntityManager;
 import org.example.intershop.IntegrationTest;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.math.BigDecimal;
 
@@ -52,17 +50,11 @@ public class ControllerTest extends IntegrationTest {
     protected final String ORDERS_TOTAL_XPATH = "//*[@class=\"orders__total\"]";
 
 
-    @Autowired
-    EntityManager em;
+//    @Autowired
+//    EntityManager em;
+//
 
     @Autowired
-    protected WebApplicationContext webApplicationContext;
-
-    protected MockMvc mockMvc;
-
-    @BeforeEach
-    void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup( webApplicationContext).build();
-    }
+    WebTestClient wtc;
 
 }

@@ -1,12 +1,15 @@
 package org.example.intershop.model;
 
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-@Entity
+//@Entity
 @Table( name = "products")
 @NoArgsConstructor
 // @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
@@ -18,25 +21,27 @@ import java.util.Objects;
 public class Product {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column( name = "product_id")
+    //@GeneratedValue( strategy = GenerationType.IDENTITY)
+    //@Column( name = "product_id")
+    @Column( "product_id")
     private Long id;
 
-    @Column( name = "product_name", nullable = false)
+    //@Column( name = "product_name", nullable = false)
+    @Column( "product_name")
     private String name;
 
     private BigDecimal price;
 
     private String description;
 
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn( name = "image_id", referencedColumnName = "image_id")
-    @ToString.Exclude
-    private Image image;
-
-    @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private CartProduct cartProduct;
+//    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JoinColumn( name = "image_id", referencedColumnName = "image_id")
+//    @ToString.Exclude
+//    private Image image;
+//
+//    @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @ToString.Exclude
+//    private CartProduct cartProduct;
 
     @Override
     public boolean equals( Object o) {

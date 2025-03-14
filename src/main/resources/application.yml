@@ -1,4 +1,7 @@
-logging.level.org.example.intershop: DEBUG
+logging:
+  level:
+    org.springframework.r2dbc.core.DefaultDatabaseClient: DEBUG # логирование SQL-запросов
+    org.example.intershop: DEBUG
 
 # Не используем 8080, т.к. он может быть занят
 server.port: 8085
