@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
@@ -23,43 +24,43 @@ public class ProductController {
     private final ProductService srv;
 
     @GetMapping( { "/products/{productId}"})
-    String getProduct(
+    Mono<String> getProduct(
         @PathVariable Long productId,
         Model model
     ) {
         log.debug( "getProduct: productId: " + productId);
-        var pr = srv.getProduct( productId).orElseThrow();
+        var pr = srv.getProduct( productId);
         model.addAttribute( "pr", pr);
-        return "item";
+        return Mono.just( "item");
     }
 
-    @PostMapping( { "/products/{productId}"})
-    String changeInCartQuantity(
-        @PathVariable Long productId,
-        @RequestParam String action
-    ) {
-        log.debug( "changeInCartQuantity: productId: " + productId + ", action: " + action);
-        srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta());
-        return "redirect:/products/" + productId;
-    }
-
-    @GetMapping("/products/{productId}/image")
-    @ResponseBody
-    public ResponseEntity<InputStreamResource> getProductImage(
-        @PathVariable long productId
-    ) {
-        log.debug( "getProductImage: productId: " + productId);
-        Optional<Image> optImg = srv.findProductImage( productId);
-        if ( optImg.isPresent()) {
-            var img = optImg.get();
-            return ResponseEntity.ok()
-                    .contentLength( img.getFileData().length)
-                    .contentType(MediaType.parseMediaType( img.getContentType()))
-                    .body( new InputStreamResource( new ByteArrayInputStream( img.getFileData())));
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @PostMapping( { "/products/{productId}"})
+//    String changeInCartQuantity(
+//        @PathVariable Long productId,
+//        @RequestParam String action
+//    ) {
+//        log.debug( "changeInCartQuantity: productId: " + productId + ", action: " + action);
+//        srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta());
+//        return "redirect:/products/" + productId;
+//    }
+//
+//    @GetMapping("/products/{productId}/image")
+//    @ResponseBody
+//    public ResponseEntity<InputStreamResource> getProductImage(
+//        @PathVariable long productId
+//    ) {
+//        log.debug( "getProductImage: productId: " + productId);
+//        Optional<Image> optImg = srv.findProductImage( productId);
+//        if ( optImg.isPresent()) {
+//            var img = optImg.get();
+//            return ResponseEntity.ok()
+//                    .contentLength( img.getFileData().length)
+//                    .contentType(MediaType.parseMediaType( img.getContentType()))
+//                    .body( new InputStreamResource( new ByteArrayInputStream( img.getFileData())));
+//        }
+//        else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
 }

@@ -21,7 +21,6 @@ sourceSets {
             exclude 'org/example/intershop/controller/MainController.java'
             exclude 'org/example/intershop/controller/OrderController.java'
             exclude 'org/example/intershop/controller/ProductCartAction.java'
-            exclude 'org/example/intershop/controller/ProductController.java'
             exclude 'org/example/intershop/controller/ProductSort.java'
             exclude 'org/example/intershop/dto/OrderDto.java'
             exclude 'org/example/intershop/dto/OrderProductDto.java'
@@ -43,7 +42,6 @@ sourceSets {
             exclude 'org/example/intershop/controller/CartControllerTest.java'
             exclude 'org/example/intershop/controller/MainControllerTest.java'
             exclude 'org/example/intershop/controller/OrderControllerTest.java'
-            exclude 'org/example/intershop/controller/ProductControllerTest.java'
         }
     }
 }

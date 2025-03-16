@@ -12,12 +12,15 @@ import org.example.intershop.mapper.ProductMapper;
 //import org.example.intershop.model.Image;
 import org.example.intershop.repository.ProductRepository;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.NoSuchElementException;
 
 
 @Service
@@ -38,12 +41,14 @@ public class ProductServiceImpl implements ProductService {
 //        Slice<Product> products = repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
 //        return products.map( ProductMapper::toProductDto);
 //    }
-//
-//    @Override
-//    public Optional<ProductDto> getProduct(Long productId) {
-//        return repo.findById( productId).map( ProductMapper::toProductDto);
-//    }
-//
+
+    @Override
+    public Mono<ProductDto> getProduct(Long productId) {
+        return repo.findById( productId)
+                .switchIfEmpty( Mono.error( new NoSuchElementException( "Product not found")))
+                .map( ProductMapper::toProductDto);
+    }
+
     @Override
     @Transactional
     public Mono<ProductDto> createProduct(ProductCreateDto dto) {

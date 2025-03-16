@@ -15,9 +15,9 @@ public interface ProductService {
     Flux<ProductDto> findProducts(Sort sort);
 
 //    Slice<ProductDto> findProducts(String search, Pageable pageable);
-//
-//    Optional<ProductDto> getProduct(Long productId);
-//
+
+    Mono<ProductDto> getProduct(Long productId);
+
     Mono<ProductDto> createProduct(ProductCreateDto dto);
 //
 //    Optional<Image> findProductImage(long productId);
