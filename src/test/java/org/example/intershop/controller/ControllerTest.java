@@ -14,6 +14,9 @@ import java.math.BigDecimal;
 // Общие настройки и т.д. для интеграционныйх тестов контроллеров
 public class ControllerTest extends IntegrationTest {
 
+    // Неиспользуемое значение Id
+    protected final long NOT_EXISTS_DATA_ID = 999L;
+
     // Стартвый Id последовательностей для временных (создаваемых в тесте) данных
     protected final long TEMP_DATA_START_ID = 1001L;
 

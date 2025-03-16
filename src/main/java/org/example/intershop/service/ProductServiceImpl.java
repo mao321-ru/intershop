@@ -8,8 +8,9 @@ import org.example.intershop.dto.ProductDto;
 //import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.mapper.ProductMapper;
 //import org.example.intershop.model.CartProduct;
-//import org.example.intershop.model.Product;
-//import org.example.intershop.model.Image;
+import org.example.intershop.model.Product;
+import org.example.intershop.model.Image;
+import org.example.intershop.repository.ImageRepository;
 import org.example.intershop.repository.ProductRepository;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -29,6 +30,7 @@ import java.util.NoSuchElementException;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repo;
+    private final ImageRepository imageRepo;
 
     @Override
     public Flux<ProductDto> findProducts(Sort sort) {
@@ -56,11 +58,11 @@ public class ProductServiceImpl implements ProductService {
                 .map( ProductMapper::toProductDto);
     }
 
-//    @Override
-//    public Optional<Image> findProductImage(long productId) {
-//        return repo.findEntityGraphTypeFetchById( productId).map( Product::getImage);
-//    }
-//
+    @Override
+    public Mono<Image> findProductImage( long productId) {
+        return imageRepo.findByProductId( productId);
+    }
+
 //    @Override
 //    @Transactional
 //    public void updateProduct(ProductUpdateDto pd) {

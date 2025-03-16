@@ -43,24 +43,21 @@ public class ProductController {
 //        srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta());
 //        return "redirect:/products/" + productId;
 //    }
-//
-//    @GetMapping("/products/{productId}/image")
-//    @ResponseBody
-//    public ResponseEntity<InputStreamResource> getProductImage(
-//        @PathVariable long productId
-//    ) {
-//        log.debug( "getProductImage: productId: " + productId);
-//        Optional<Image> optImg = srv.findProductImage( productId);
-//        if ( optImg.isPresent()) {
-//            var img = optImg.get();
-//            return ResponseEntity.ok()
-//                    .contentLength( img.getFileData().length)
-//                    .contentType(MediaType.parseMediaType( img.getContentType()))
-//                    .body( new InputStreamResource( new ByteArrayInputStream( img.getFileData())));
-//        }
-//        else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+
+    @GetMapping("/products/{productId}/image")
+    @ResponseBody
+    public Mono<ResponseEntity<InputStreamResource>> getProductImage(
+        @PathVariable long productId
+    ) {
+        log.debug( "getProductImage: productId: " + productId);
+        return srv.findProductImage( productId)
+            .map( img ->
+                ResponseEntity.ok()
+                    .contentLength( img.getFileData().length)
+                    .contentType(MediaType.parseMediaType( img.getContentType()))
+                    .body( new InputStreamResource( new ByteArrayInputStream( img.getFileData())))
+            )
+            .defaultIfEmpty( ResponseEntity.notFound().build());
+    }
 
 }

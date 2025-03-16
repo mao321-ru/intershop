@@ -6,6 +6,7 @@ import org.example.intershop.repository.ProductRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testcontainers.shaded.com.google.common.net.MediaType;
 
 import java.util.function.Consumer;
 
@@ -41,11 +42,30 @@ public class ProductControllerTest extends ControllerTest {
 
     @Test
     void getProduct_notFound() throws Exception {
-        final long productId = 0L;
+        final long productId = NOT_EXISTS_DATA_ID;
         wtc.get().uri( "/products/{productId}", productId)
                 .exchange()
                 // TODO: выдавать NotFound
                 .expectStatus().is5xxServerError()
+        ;
+    }
+
+    @Test
+    void getProductImage_check() throws Exception {
+        final long productId = EXISTS_PRODUCT_ID;
+        wtc.get().uri( "/products/{productId}/image", productId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType( "image/png")
+        ;
+    }
+
+    @Test
+    void getProductImage_notFound() throws Exception {
+        final long productId = NOT_EXISTS_DATA_ID;
+        wtc.get().uri( "/products/{productId}/image", productId)
+                .exchange()
+                .expectStatus().isNotFound()
         ;
     }
 
