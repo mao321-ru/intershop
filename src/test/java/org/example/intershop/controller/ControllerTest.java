@@ -4,7 +4,10 @@ package org.example.intershop.controller;
 import org.example.intershop.IntegrationTest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
 import java.math.BigDecimal;
 
@@ -49,10 +52,8 @@ public class ControllerTest extends IntegrationTest {
 
     protected final String ORDERS_TOTAL_XPATH = "//*[@class=\"orders__total\"]";
 
-
-//    @Autowired
-//    EntityManager em;
-//
+    @Autowired
+    R2dbcEntityTemplate etm;
 
     @Autowired
     WebTestClient wtc;

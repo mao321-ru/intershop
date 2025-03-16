@@ -1,14 +1,27 @@
 package org.example.intershop.controller;
 
 //import jakarta.persistence.EntityManager;
-//import org.example.intershop.model.Image;
-//import org.example.intershop.model.Product;
+import org.example.intershop.model.Image;
+import org.example.intershop.model.Product;
 //import org.example.intershop.repository.ProductRepository;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+
+import static org.springframework.data.relational.core.query.Criteria.*;
+import static org.springframework.data.relational.core.query.Query.query;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.http.codec.multipart.FilePartEvent;
+import org.springframework.http.codec.multipart.FormPartEvent;
+import org.springframework.http.codec.multipart.PartEvent;
+import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Flux;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -26,67 +39,92 @@ public class ConfigControllerTest extends ControllerTest {
                 .expectBody()
                     //.consumeWith( System.out::println) // вывод запроса и ответа
                     // выводится хотя бы один товар
-                    .xpath( PRODUCTS_XPATH).nodeCount( Matchers.greaterThan( 0))
+                    .xpath( PRODUCTS_XPATH)
+                        .nodeCount( Matchers.greaterThan( 0))
+                    // у товара есть картинка
+                    .xpath( PR_SRC_XPF.formatted( "image", "/products/%d/image".formatted( EXISTS_PRODUCT_ID)))
+                        .nodeCount( 1)
         ;
     }
 
-//    @Test
-//    void createProduct_NoImage() throws Exception {
-//        final String productName = "createProduct_NoImage";
-//        final String price = "904935.05";
-//        final String description = "createProduct_NoImage desc";
-//        mockMvc.perform( multipart( "/config/products")
-//                        .file( new MockMultipartFile(
-//                            "file",
-//                            "",
-//                            "",
-//                            "".getBytes( StandardCharsets.UTF_8)
-//                        ))
-//                        .param( "productName", productName)
-//                        .param( "price", price)
-//                        .param( "description", description)
-//                )
-//                //.andDo( print()) // вывод запроса и ответа
-//                .andExpect( status().isFound())
-//                .andExpect( redirectedUrl( "/config"))
+    @Test
+    void createProduct_NoImage() throws Exception {
+        final String productName = "createProduct_NoImage";
+        final String price = "904935.05";
+        final String description = "createProduct_NoImage desc";
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        builder.part( "productName", productName);
+        builder.part( "price", price);
+        builder.part( "description", description);
+        builder.part( "file", new byte[]{})
+                // правильные заголовки, которые передаются если изображение не выбрано
+                .header( "Content-Disposition", "form-data; name=\"file\"; filename=\"\"")
+                .contentType( MediaType.APPLICATION_OCTET_STREAM)
+        ;
+        // смотрим что как передается "file"
+        //System.out.println( "\n\n* FILE *:\n" + builder.build().get( "file").toString());
+        wtc.post().uri( "/config/products")
+                .contentType( MediaType.MULTIPART_FORM_DATA)
+                .body( BodyInserters.fromMultipartData( builder.build()))
+                .exchange()
+                .expectStatus().isFound()
+                .expectHeader().valueEquals("Location", "/config")
+        ;
+        wtc.get().uri( "/config")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                    //.consumeWith( System.out::println) // вывод запроса и ответа
+                    .xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1)
+                    .xpath( PR_VAL_XPF.formatted( "price", price)).nodeCount( 1)
+                    .xpath( PR_VAL_XPF.formatted( "description", description)).nodeCount( 1)
+        ;
+    }
+
+    @Test
+    @Disabled
+    void createProduct_WithImage() throws Exception {
+        final String productName = "createProduct_WithImage";
+        final String price = "7384877.00";
+        final String description = "createProduct_WithImage desc";
+        final String filename = "createProduct_WithImage.png";
+        byte[] fileData = "image_data".getBytes( StandardCharsets.UTF_8);
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        builder.part( "productName", productName);
+        builder.part( "price", price);
+        builder.part( "description", description);
+        builder.part( "file", fileData)
+                // правильные заголовки, которые передаются если изображение не выбрано
+                .header( "Content-Disposition",
+                        "form-data; name=\"file\"; filename=\"%s\"".formatted( filename))
+                .contentType( MediaType.IMAGE_PNG)
+        ;
+// не получилось по модному
+//        builder.part( "file", new ByteArrayResource( fileData)  {
+//                    @Override
+//                    public String getFilename() { return filename; }
+//                }
+//            )
+//            .contentType( MediaType.APPLICATION_OCTET_STREAM)
 //        ;
-//        mockMvc.perform( get( "/config"))
-//                //.andDo( print()) // вывод запроса и ответа
-//                .andExpect( status().isOk())
-//                .andExpect( xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1))
-//                .andExpect( xpath( PR_VAL_XPF.formatted( "price", price)).nodeCount( 1))
-//                .andExpect( xpath( PR_VAL_XPF.formatted( "description", description)).nodeCount( 1))
-//        ;
-//    }
-//
-//    @Test
-//    void createProduct_WithImage() throws Exception {
-//        final String productName = "createProduct_WithImage";
-//        final String price = "7384877.00";
-//        final String description = "createProduct_WithImage desc";
-//        byte[] fileData = "image_data".getBytes( StandardCharsets.UTF_8);
-//        mockMvc.perform( multipart( "/config/products")
-//                        .file( new MockMultipartFile(
-//                                "file",
-//                                "createProduct_WithImage.png",
-//                                "image/png",
-//                                fileData
-//                        ))
-//                        .param( "productName", productName)
-//                        .param( "price", price)
-//                        .param( "description", description)
-//                )
-//                //.andDo( print()) // вывод запроса и ответа
-//                .andExpect( status().isFound())
-//                .andExpect( redirectedUrl( "/config"))
-//        ;
-//
-//        var productId = TEMP_DATA_START_ID;
-//        var pr = em.find( Product.class, productId);
-//        assertNotNull( "Product not found", pr);
-//        assertNotNull( "Product image not found", pr.getImage());
-//        var imgPath = "/products/%d/image".formatted( productId);
-//
+        //System.out.println( "\n\n* FILE *:\n" + builder.build().get( "file").toString());
+        wtc.post().uri( "/config/products")
+                .contentType( MediaType.MULTIPART_FORM_DATA)
+                .body( BodyInserters.fromMultipartData( builder.build()))
+                .exchange()
+                .expectStatus().isFound()
+                .expectHeader().valueEquals("Location", "/config")
+        ;
+
+        var productId = TEMP_DATA_START_ID;
+        var pr = etm.selectOne( query( where( "id").is( productId)), Product.class).block();
+
+        assertNotNull( "Product not found", pr);
+        assertNotNull( "Product image_id not found", pr.getImageId());
+        var imgPath = "/products/%d/image".formatted( productId);
+
 //        // товар появился в настройках
 //        mockMvc.perform( get( "/config"))
 //                //.andDo( print()) // вывод запроса и ответа
@@ -122,8 +160,8 @@ public class ConfigControllerTest extends ControllerTest {
 //                .andExpect(MockMvcResultMatchers.header().string("Content-Length", String.valueOf( fileData.length)))
 //                .andExpect( content().bytes( fileData))
 //        ;
-//    }
-//
+    }
+
 //    @Test
 //    void updateProduct_check() throws Exception {
 //        var pr = getProductWithImage();

@@ -1,11 +1,10 @@
 package org.example.intershop.mapper;
 
-//import org.example.intershop.dto.ProductCreateDto;
+import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
 //import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.model.Product;
-//import org.example.intershop.model.Image;
-//import org.springframework.web.multipart.MultipartFile;
+import org.example.intershop.model.Image;
 
 import lombok.SneakyThrows;
 
@@ -19,33 +18,32 @@ public class ProductMapper {
                 .productName( p.getName())
                 .price( p.getPrice())
                 .description( p.getDescription())
-//                .isImage( p.getImage() != null)
-                .isImage( false)
+                .isImage( p.getImageId() != null)
 //                .inCartQuantity( p.getCartProduct() != null ? p.getCartProduct().getQuantity() : 0)
                 .inCartQuantity( 0)
                 .build();
     }
 
-//    @SneakyThrows
-//    public static Product toProduct( ProductCreateDto dto) {
-//        MultipartFile f = dto.getFile();
-//        String priceStr = dto.getPrice();
-//        return Product.builder()
-//                .name( dto.getProductName())
-//                .price( priceStr.isEmpty() ? null : new BigDecimal( priceStr))
-//                .description( dto.getDescription())
-//                .image(
-//                        f == null || f.isEmpty()
-//                                ? null
-//                                : Image.builder()
-//                                        .origFilename( f.getOriginalFilename())
-//                                        .contentType( f.getContentType())
+    @SneakyThrows
+    public static Product toProduct( ProductCreateDto dto) {
+        var f = dto.getFile();
+        String priceStr = dto.getPrice();
+        return Product.builder()
+                .name( dto.getProductName())
+                .price( priceStr.isEmpty() ? null : new BigDecimal( priceStr))
+                .description( dto.getDescription())
+                .image(
+                        f == null || f.filename() == null || f.filename().isEmpty()
+                                ? null
+                                : Image.builder()
+                                        .origFilename( f.filename())
+                                        .contentType( f.headers().getContentType().toString())
 //                                        .fileData( f.getBytes())
-//                                        .build()
-//                )
-//                .build();
-//    }
-//
+                                        .build()
+                )
+                .build();
+    }
+
 //    @SneakyThrows
 //    public static void changeProduct( Product pr, ProductUpdateDto dto) {
 //        String s;

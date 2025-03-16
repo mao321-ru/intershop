@@ -3,7 +3,7 @@ package org.example.intershop.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-//import org.example.intershop.dto.ProductCreateDto;
+import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
 //import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.mapper.ProductMapper;
@@ -14,8 +14,10 @@ import org.example.intershop.repository.ProductRepository;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import reactor.core.publisher.Flux;
-//import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 
 @Service
@@ -42,12 +44,13 @@ public class ProductServiceImpl implements ProductService {
 //        return repo.findById( productId).map( ProductMapper::toProductDto);
 //    }
 //
-//    @Override
-//    @Transactional
-//    public void createProduct(ProductCreateDto dto) {
-//        repo.save( ProductMapper.toProduct( dto));
-//    }
-//
+    @Override
+    @Transactional
+    public Mono<ProductDto> createProduct(ProductCreateDto dto) {
+        return repo.save( ProductMapper.toProduct( dto))
+                .map( ProductMapper::toProductDto);
+    }
+
 //    @Override
 //    public Optional<Image> findProductImage(long productId) {
 //        return repo.findEntityGraphTypeFetchById( productId).map( Product::getImage);

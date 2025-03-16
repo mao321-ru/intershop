@@ -1,8 +1,9 @@
 package org.example.intershop.model;
 
-//import jakarta.persistence.*;
 import lombok.*;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -21,12 +22,9 @@ import java.util.Objects;
 public class Product {
 
     @Id
-    //@GeneratedValue( strategy = GenerationType.IDENTITY)
-    //@Column( name = "product_id")
     @Column( "product_id")
     private Long id;
 
-    //@Column( name = "product_name", nullable = false)
     @Column( "product_name")
     private String name;
 
@@ -34,10 +32,11 @@ public class Product {
 
     private String description;
 
-//    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn( name = "image_id", referencedColumnName = "image_id")
-//    @ToString.Exclude
-//    private Image image;
+    private Long imageId;
+
+    @Transient
+    private Image image;
+
 //
 //    @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
 //    @ToString.Exclude
