@@ -45,8 +45,7 @@ public class ProductControllerTest extends ControllerTest {
         final long productId = NOT_EXISTS_DATA_ID;
         wtc.get().uri( "/products/{productId}", productId)
                 .exchange()
-                // TODO: выдавать NotFound
-                .expectStatus().is5xxServerError()
+                .expectStatus().isNotFound()
         ;
     }
 

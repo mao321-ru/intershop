@@ -6,15 +6,16 @@ import org.example.intershop.model.Image;
 import org.example.intershop.model.Product;
 import org.example.intershop.service.ProductService;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,9 +30,10 @@ public class ProductController {
         Model model
     ) {
         log.debug( "getProduct: productId: " + productId);
-        var pr = srv.getProduct( productId);
-        model.addAttribute( "pr", pr);
-        return Mono.just( "item");
+        return srv.getProduct( productId)
+            .doOnNext( pr -> model.addAttribute( "pr", pr))
+            .map( pr -> "item")
+            .switchIfEmpty( Mono.error( new ResponseStatusException( HttpStatus.NOT_FOUND)));
     }
 
 //    @PostMapping( { "/products/{productId}"})
