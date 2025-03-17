@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -29,13 +30,13 @@ public class ConfigController {
     private final ProductService srv;
 
     @GetMapping( "/config")
-    Mono<String> configProducts(
-        Model model
-    ) {
+    Mono<Rendering> configProducts() {
         log.debug( "configProducts");
-        var products = srv.findProducts( Sort.by("name"));
-        model.addAttribute( "products", products);
-        return Mono.just( "config");
+        return Mono.just(
+            Rendering.view( "config")
+                .modelAttribute( "products", srv.findProducts( Sort.by("name")))
+                .build()
+        );
     }
 
     @PostMapping( "/config/products")
