@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+import org.springframework.web.reactive.result.view.Rendering;
+import org.springframework.web.reactive.result.view.script.RenderingContext;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
@@ -25,15 +27,17 @@ public class ProductController {
     private final ProductService srv;
 
     @GetMapping( { "/products/{productId}"})
-    Mono<String> getProduct(
-        @PathVariable Long productId,
-        Model model
+    Mono<Rendering> getProduct(
+        @PathVariable Long productId
     ) {
         log.debug( "getProduct: productId: " + productId);
         return srv.getProduct( productId)
-            .doOnNext( pr -> model.addAttribute( "pr", pr))
-            .map( pr -> "item")
-            .switchIfEmpty( Mono.error( new ResponseStatusException( HttpStatus.NOT_FOUND)));
+            .map( pr -> Rendering.view("item")
+                    .modelAttribute( "pr", pr)
+                    .build())
+            .defaultIfEmpty( Rendering.view( "not_found")
+                    .status( HttpStatus.NOT_FOUND)
+                    .build());
     }
 
 //    @PostMapping( { "/products/{productId}"})
