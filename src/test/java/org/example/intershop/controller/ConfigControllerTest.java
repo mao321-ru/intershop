@@ -83,7 +83,6 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
-    @Disabled
     void createProduct_WithImage() throws Exception {
         final String productName = "createProduct_WithImage";
         final String price = "7384877.00";
@@ -101,14 +100,6 @@ public class ConfigControllerTest extends ControllerTest {
                         "form-data; name=\"file\"; filename=\"%s\"".formatted( filename))
                 .contentType( MediaType.IMAGE_PNG)
         ;
-// не получилось по модному
-//        builder.part( "file", new ByteArrayResource( fileData)  {
-//                    @Override
-//                    public String getFilename() { return filename; }
-//                }
-//            )
-//            .contentType( MediaType.APPLICATION_OCTET_STREAM)
-//        ;
         //System.out.println( "\n\n* FILE *:\n" + builder.build().get( "file").toString());
         wtc.post().uri( "/config/products")
                 .contentType( MediaType.MULTIPART_FORM_DATA)
@@ -125,23 +116,22 @@ public class ConfigControllerTest extends ControllerTest {
         assertNotNull( "Product image_id not found", pr.getImageId());
         var imgPath = "/products/%d/image".formatted( productId);
 
-//        // товар появился в настройках
-//        mockMvc.perform( get( "/config"))
-//                //.andDo( print()) // вывод запроса и ответа
-//                .andExpect( status().isOk())
-//                .andExpect( xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1))
-//                .andExpect(
-//                    xpath( PR_VAL_XPF.formatted( "price", price.toString()))
-//                        .nodeCount( 1)
-//                )
-//                .andExpect( xpath( PR_VAL_XPF.formatted( "description", description)).nodeCount( 1))
-//                // выводится изображение товара
-//                .andExpect( xpath(
-//            PR_VAL_XPF.formatted( "productName", productName)
-//                    + "/parent::*/preceding-sibling::*[child::img]"
-//                ).nodeCount( 1))
-//        ;
-//
+        // товар появился в настройках
+        wtc.get().uri( "/config")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                .xpath( PR_VAL_XPF.formatted( "productName", productName)).nodeCount( 1)
+                .xpath( PR_VAL_XPF.formatted( "price", price)).nodeCount( 1)
+                .xpath( PR_VAL_XPF.formatted( "description", description)).nodeCount( 1)
+                // выводится изображение товара
+                .xpath(
+                    PR_VAL_XPF.formatted( "productName", productName)
+                        + "/parent::*/preceding-sibling::*[child::img]"
+                    ).nodeCount( 1)
+        ;
+
 //        // товар появился на главной странице
 //        mockMvc.perform( get( "/"))
 //                //.andDo( print()) // вывод запроса и ответа
@@ -151,15 +141,15 @@ public class ConfigControllerTest extends ControllerTest {
 //                .andExpect( xpath( PR_TEXT_XPF.formatted( "description", description)).nodeCount( 1))
 //                .andExpect( xpath( PR_SRC_XPF.formatted( "image", imgPath)).nodeCount( 1))
 //        ;
-//
-//        // возврат правильного изображения товара
-//        mockMvc.perform( get( "/products/{productId}/image", productId))
-//                //.andDo( print()) // вывод запроса и ответа
-//                .andExpect( status().isOk())
-//                .andExpect( content().contentType( "image/png"))
-//                .andExpect(MockMvcResultMatchers.header().string("Content-Length", String.valueOf( fileData.length)))
-//                .andExpect( content().bytes( fileData))
-//        ;
+
+        // возврат правильного изображения товара
+        wtc.get().uri( "/products/{productId}/image", productId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType( "image/png")
+                .expectHeader().contentLength( fileData.length)
+                .expectBody( String.class).isEqualTo( new String( fileData, "UTF-8"))
+        ;
     }
 
 //    @Test

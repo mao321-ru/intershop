@@ -7,7 +7,10 @@ import org.example.intershop.model.Product;
 import org.example.intershop.model.Image;
 
 import lombok.SneakyThrows;
+import org.springframework.core.io.buffer.DataBufferUtils;
 
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferUShort;
 import java.math.BigDecimal;
 
 public class ProductMapper {
@@ -38,7 +41,6 @@ public class ProductMapper {
                                 : Image.builder()
                                         .origFilename( f.filename())
                                         .contentType( f.headers().getContentType().toString())
-//                                        .fileData( f.getBytes())
                                         .build()
                 )
                 .build();

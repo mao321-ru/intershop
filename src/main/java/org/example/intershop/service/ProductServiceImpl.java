@@ -13,12 +13,15 @@ import org.example.intershop.model.Image;
 import org.example.intershop.repository.ImageRepository;
 import org.example.intershop.repository.ProductRepository;
 
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.io.IOException;
 
 
 @Service
@@ -50,8 +53,36 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Mono<ProductDto> createProduct(ProductCreateDto dto) {
-        return repo.save( ProductMapper.toProduct( dto))
-                .map( ProductMapper::toProductDto);
+        log.debug( "createProduct service: dto file: " + dto.getFile());
+        return
+            Mono.defer( () ->
+                dto.getFile().filename().isEmpty()
+                    ? Mono.empty()
+                    : DataBufferUtils.join( dto.getFile().content())
+            )
+            .flatMap( buf -> {
+                try {
+                    byte[] fileData = buf.asInputStream().readAllBytes();
+                    log.trace( "fileData: length: " + fileData.length);
+                    var img = ProductMapper.toProduct( dto).getImage();
+                    img.setFileData( fileData);
+                    return imageRepo.save( img);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                finally {
+                    // возможно явно освобождать не нужно...
+                    DataBufferUtils.release( buf);
+                }
+            })
+            .defaultIfEmpty( new Image())
+            .flatMap( img -> {
+                var pr = ProductMapper.toProduct( dto);
+                log.trace("pr: image_id: " + img.getId());
+                pr.setImageId( img.getId());
+                return repo.save( pr);
+            })
+            .map( ProductMapper::toProductDto);
     }
 
     @Override
