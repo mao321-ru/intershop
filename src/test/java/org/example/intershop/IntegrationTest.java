@@ -4,6 +4,8 @@ import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.r2dbc.connection.init.ScriptUtils;
@@ -16,6 +18,9 @@ import reactor.core.publisher.Mono;
 // Общие настройки и т.д. для всех интеграционных тестов
 @SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+// таймаут 15 сек ожидания ответа по запросу, т.к. при дефолтном 5 сек возникала ошибка при запуске 10-го автотеста
+// с неполным стеком ошибок
+@AutoConfigureWebTestClient( timeout = "15000")
 public abstract class IntegrationTest {
 
     // Using Singleton DB Container for all tests

@@ -8,7 +8,6 @@ import org.example.intershop.dto.ProductDto;
 //import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.mapper.ProductMapper;
 //import org.example.intershop.model.CartProduct;
-import org.example.intershop.model.Product;
 import org.example.intershop.model.Image;
 import org.example.intershop.repository.ImageRepository;
 import org.example.intershop.repository.ProductRepository;
@@ -97,13 +96,19 @@ public class ProductServiceImpl implements ProductService {
 //        ProductMapper.changeProduct( pr, pd);
 //        repo.save( pr);
 //    }
-//
-//    @Override
-//    @Transactional
-//    public void deleteProduct(Long productId) {
-//        repo.deleteById( productId);
-//    }
-//
+
+    @Override
+    @Transactional
+    public Mono<Boolean> deleteProduct(Long productId) {
+        return repo.findById( productId)
+            .flatMap( pr ->  repo.deleteById( productId).thenReturn( pr))
+            .flatMap( pr ->  pr.getImageId() != null
+                    ? imageRepo.deleteById( pr.getImageId()).thenReturn( Boolean.TRUE)
+                    : Mono.just( Boolean.TRUE)
+            )
+            .defaultIfEmpty( Boolean.FALSE);
+    }
+
 //    @Override
 //    @Transactional
 //    public void changeInCartQuantity(long productId, Integer delta) {

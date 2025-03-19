@@ -24,7 +24,6 @@ sourceSets {
             exclude 'org/example/intershop/controller/ProductSort.java'
             exclude 'org/example/intershop/dto/OrderDto.java'
             exclude 'org/example/intershop/dto/OrderProductDto.java'
-            exclude 'org/example/intershop/dto/ProductUpdateDto.java'
             exclude 'org/example/intershop/mapper/OrderMapper.java'
             exclude 'org/example/intershop/model/CartProduct.java'
             exclude 'org/example/intershop/model/Order.java'

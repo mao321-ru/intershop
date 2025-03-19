@@ -1,7 +1,7 @@
 package org.example.intershop.controller;
 
 import org.example.intershop.dto.ProductCreateDto;
-//import org.example.intershop.dto.ProductUpdateDto;
+import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
@@ -57,11 +57,17 @@ public class ConfigController {
 //        return "redirect:/config";
 //    }
 //
-//    @PostMapping(value = "/config/products/{productId}", params = "_method=delete")
-//    public String deleteProduct( @PathVariable Long productId) {
-//        log.debug( "deleteProduct: productId=" + productId);
-//        srv.deleteProduct( productId);
-//        return "redirect:/config";
-//    }
+    @PostMapping( "/config/products/{productId}")
+    public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable Long productId, ProductUpdateDto pd) {
+        log.debug( "deleteProduct: productId=" + productId + ", pd=" + pd);
+        return srv.deleteProduct( productId)
+                .map( deleted -> deleted
+                    ? ResponseEntity.status( HttpStatus.FOUND)
+                        .location( URI.create( "/config"))
+                        .build()
+                    : ResponseEntity.status( HttpStatus.NOT_FOUND)
+                        .build()
+                );
+    }
 
 }

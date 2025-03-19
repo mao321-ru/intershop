@@ -3,6 +3,8 @@ package org.example.intershop.controller;
 //import jakarta.persistence.EntityManager;
 import org.example.intershop.IntegrationTest;
 
+import org.example.intershop.model.Image;
+import org.example.intershop.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -10,6 +12,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
 import java.math.BigDecimal;
+
+import static org.springframework.data.relational.core.query.Criteria.where;
+import static org.springframework.data.relational.core.query.Query.query;
 
 // Общие настройки и т.д. для интеграционныйх тестов контроллеров
 public class ControllerTest extends IntegrationTest {
@@ -60,5 +65,13 @@ public class ControllerTest extends IntegrationTest {
 
     @Autowired
     WebTestClient wtc;
+
+    protected Product getProductById(Long productId) {
+        return etm.selectOne( query( where( "id").is( productId)), Product.class).block();
+    }
+
+    protected Image getImageById(Long imageId) {
+        return etm.selectOne( query( where( "id").is( imageId)), Image.class).block();
+    }
 
 }

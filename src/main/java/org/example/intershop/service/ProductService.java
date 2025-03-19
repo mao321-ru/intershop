@@ -23,8 +23,8 @@ public interface ProductService {
     Mono<Image> findProductImage(long productId);
 
 //    void updateProduct(ProductUpdateDto pd);
-//
-//    void deleteProduct(Long productId);
-//
+
+    Mono<Boolean> deleteProduct( Long productId);
+
 //    void changeInCartQuantity(long productId, Integer delta);
 }

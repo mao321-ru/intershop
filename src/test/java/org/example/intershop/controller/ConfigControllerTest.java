@@ -110,7 +110,7 @@ public class ConfigControllerTest extends ControllerTest {
         ;
 
         var productId = TEMP_DATA_START_ID;
-        var pr = etm.selectOne( query( where( "id").is( productId)), Product.class).block();
+        var pr = getProductById( productId);
 
         assertNotNull( "Product not found", pr);
         assertNotNull( "Product image_id not found", pr.getImageId());
@@ -244,23 +244,35 @@ public class ConfigControllerTest extends ControllerTest {
 //        assertTrue( "Unexpected fileData", Arrays.equals( fileData, img.getFileData()));
 //    }
 //
-//    @Test
-//    void deleteProduct_check() throws Exception {
-//        var productId = UNSELLABLE_PRODUCT_ID;
-//        var pr = em.find( Product.class, productId);
-//        var imageId = pr.getImage().getId();
-//
-//        mockMvc.perform( post( "/config/products/{productId}", productId)
-//                        .param( "_method", "delete")
-//                )
-//                //.andDo( print()) // вывод запроса и ответа
-//                .andExpect( status().isFound())
-//                .andExpect( redirectedUrl( "/config"));
-//
-//        assertNull( "Product not deleted", em.find( Product.class, productId));
-//        assertNull( "Image not deleted", em.find( Image.class, imageId));
-//    }
-//
+    @Test
+    void deleteProduct_check() throws Exception {
+        var productId = UNSELLABLE_PRODUCT_ID;
+        var pr = getProductById( productId);
+        var imageId = pr.getImageId();
+
+        wtc.post().uri( "/config/products/{productId}", productId)
+                .body( BodyInserters.fromMultipartData( "_method", "delete"))
+                .exchange()
+                .expectStatus().isFound()
+                .expectHeader().valueEquals("Location", "/config")
+        ;
+
+        assertNull( "Product not deleted", getProductById( productId));
+        assertNull( "Image not deleted", getImageById( imageId));
+    }
+
+    @Test
+    void deleteProduct_notFound() throws Exception {
+        var productId = NOT_EXISTS_DATA_ID;
+
+        wtc.post().uri( "/config/products/{productId}", productId)
+                .body( BodyInserters.fromMultipartData( "_method", "delete"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody( String.class).isEqualTo( null)
+        ;
+    }
+
 //    Product getProductWithImage() throws Exception {
 //        var productId = EXISTS_PRODUCT_ID;
 //        var pr = em.find( Product.class, productId);
