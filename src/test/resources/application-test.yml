@@ -2,7 +2,6 @@ logging:
   level:
     org.example.intershop: TRACE
     #org.springframework: DEBUG
-    #org.springframework.orm.jpa.JpaTransactionManager: DEBUG
     #io.r2dbc: DEBUG # и добавим больше деталей (не включать в настоящем приложении)
 
 # Стабильный порядок выполнения тестов в рамках тестовых классов (с сортировкой по имени)

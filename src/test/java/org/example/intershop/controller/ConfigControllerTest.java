@@ -1,6 +1,5 @@
 package org.example.intershop.controller;
 
-//import jakarta.persistence.EntityManager;
 import org.example.intershop.model.Image;
 import org.example.intershop.model.Product;
 //import org.example.intershop.repository.ProductRepository;
@@ -152,6 +151,37 @@ public class ConfigControllerTest extends ControllerTest {
         ;
     }
 
+    @Test
+    void createProduct_checkRollback() throws Exception {
+        final String productName = "createProduct_checkRollback";
+        // обеспечиваем ошибку при сохранении товара в БД (выполняется после сохранения изображения)
+        final String price = "";
+        final String description = "createProduct_checkRollback desc";
+        final String filename = "createProduct_checkRollback.png";
+        byte[] fileData = "image_data".getBytes( StandardCharsets.UTF_8);
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        builder.part( "productName", productName);
+        builder.part( "price", price);
+        builder.part( "description", description);
+        builder.part( "file", fileData)
+                // правильные заголовки, которые передаются если изображение не выбрано
+                .header( "Content-Disposition",
+                        "form-data; name=\"file\"; filename=\"%s\"".formatted( filename))
+                .contentType( MediaType.IMAGE_PNG)
+        ;
+        //System.out.println( "\n\n* FILE *:\n" + builder.build().get( "file").toString());
+        wtc.post().uri( "/config/products")
+                .contentType( MediaType.MULTIPART_FORM_DATA)
+                .body( BodyInserters.fromMultipartData( builder.build()))
+                .exchange()
+                .expectStatus().is5xxServerError()
+        ;
+
+        assertNull( "Product found", getProductById( TEMP_DATA_START_ID));
+        assertNull( "Image_id found", getImageById( TEMP_DATA_START_ID));
+    }
+
 //    @Test
 //    void updateProduct_check() throws Exception {
 //        var pr = getProductWithImage();
@@ -261,6 +291,7 @@ public class ConfigControllerTest extends ControllerTest {
         assertNull( "Image not deleted", getImageById( imageId));
     }
 
+
     @Test
     void deleteProduct_notFound() throws Exception {
         var productId = NOT_EXISTS_DATA_ID;
@@ -272,6 +303,7 @@ public class ConfigControllerTest extends ControllerTest {
                 .expectBody( String.class).isEqualTo( null)
         ;
     }
+
 
 //    Product getProductWithImage() throws Exception {
 //        var productId = EXISTS_PRODUCT_ID;
