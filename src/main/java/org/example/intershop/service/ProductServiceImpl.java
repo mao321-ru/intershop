@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
-//import org.example.intershop.dto.ProductUpdateDto;
+import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.mapper.ProductMapper;
 //import org.example.intershop.model.CartProduct;
 import org.example.intershop.model.Image;
@@ -14,6 +14,7 @@ import org.example.intershop.repository.ProductRepository;
 
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Optional;
 
 
 @Service
@@ -50,21 +52,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional
-    public Mono<ProductDto> createProduct(ProductCreateDto dto) {
-        log.debug( "createProduct service: dto file: " + dto.getFile());
-        return
-            Mono.defer( () ->
-                dto.getFile().filename().isEmpty()
-                    ? Mono.empty()
-                    : DataBufferUtils.join( dto.getFile().content())
+    public Mono<Image> findProductImage( long productId) {
+        return imageRepo.findByProductId( productId);
+    }
+
+    // В случае передачи пустого FilePart сохранение не выполняет и возвращает Image с указанным imageId
+    private Mono<Image> saveImage( Long imageId, FilePart f) {
+        return Mono.defer( () ->
+                f == null || f.filename() == null || f.filename().isEmpty()
+                        ? Mono.empty()
+                        : DataBufferUtils.join( f.content())
             )
             .flatMap( buf -> {
                 try {
                     byte[] fileData = buf.asInputStream().readAllBytes();
-                    log.trace( "fileData: length: " + fileData.length);
-                    var img = ProductMapper.toProduct( dto).getImage();
-                    img.setFileData( fileData);
+                    log.trace( "saveImage: fileData length: " + fileData.length);
+                    var img = Image.builder()
+                        .id( imageId)
+                        .origFilename( f.filename())
+                        .contentType( f.headers().getContentType().toString())
+                        .fileData( fileData)
+                        .build();
                     return imageRepo.save( img);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -74,32 +82,52 @@ public class ProductServiceImpl implements ProductService {
                     DataBufferUtils.release( buf);
                 }
             })
-            .defaultIfEmpty( new Image())
+            .defaultIfEmpty( Image.builder().id( imageId).build());
+    }
+
+    @Override
+    @Transactional
+    public Mono<ProductDto> createProduct(ProductCreateDto dto) {
+        log.debug( "createProduct service: dto file: " + dto.getFile());
+        return saveImage( null, dto.getFile())
             .flatMap( img -> {
                 var pr = ProductMapper.toProduct( dto);
-                log.trace("pr: image_id: " + img.getId());
                 pr.setImageId( img.getId());
+                log.trace("pr: image_id: " + pr.getImageId());
                 return repo.save( pr);
             })
             .map( ProductMapper::toProductDto);
     }
 
     @Override
-    public Mono<Image> findProductImage( long productId) {
-        return imageRepo.findByProductId( productId);
+    @Transactional
+    public Mono<Boolean> updateProduct( ProductUpdateDto dto) {
+        final boolean delImage = dto.getDelImage() != null && dto.getDelImage();
+        log.debug( "updateProduct: productId= " + dto.getProductId());
+        return repo.findById( dto.getProductId())
+                .flatMap( pr -> ! delImage
+                    ? saveImage( pr.getImageId(), dto.getFile())
+                        .map( img ->  {
+                            pr.setImageId( img.getId());
+                            return pr;
+                        })
+                    : Mono.just( pr)
+                )
+                .flatMap( pr -> {
+                    ProductMapper.changeProduct(pr, dto);
+                    Long delImageId = delImage ? pr.getImageId() : null;
+                    if ( delImageId != null) pr.setImageId( null);
+                    return repo.save( pr)
+                        .then( delImageId != null ? imageRepo.deleteById( delImageId) : Mono.empty())
+                        .thenReturn( Boolean.TRUE);
+                })
+                .defaultIfEmpty( Boolean.FALSE);
     }
-
-//    @Override
-//    @Transactional
-//    public void updateProduct(ProductUpdateDto pd) {
-//        Product pr = repo.findById( pd.getProductId()).orElseThrow();
-//        ProductMapper.changeProduct( pr, pd);
-//        repo.save( pr);
-//    }
 
     @Override
     @Transactional
     public Mono<Boolean> deleteProduct(Long productId) {
+        log.debug( "deleteProduct: productId= " + productId);
         return repo.findById( productId)
             .flatMap( pr ->  repo.deleteById( productId).thenReturn( pr))
             .flatMap( pr ->  pr.getImageId() != null

@@ -2,7 +2,7 @@ package org.example.intershop.service;
 
 import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
-//import org.example.intershop.dto.ProductUpdateDto;
+import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.model.Image;
 
 import org.springframework.data.domain.Sort;
@@ -22,7 +22,7 @@ public interface ProductService {
 
     Mono<Image> findProductImage(long productId);
 
-//    void updateProduct(ProductUpdateDto pd);
+    Mono<Boolean> updateProduct( ProductUpdateDto pd);
 
     Mono<Boolean> deleteProduct( Long productId);
 

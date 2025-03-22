@@ -50,18 +50,16 @@ public class ConfigController {
             );
     }
 
-//    @PostMapping(value = "/config/products/{productId}")
-//    public String updateProduct( ProductUpdateDto pd) {
-//        log.debug( "updateProduct: productId=" + pd.getProductId());
-//        srv.updateProduct( pd);
-//        return "redirect:/config";
-//    }
-//
     @PostMapping( "/config/products/{productId}")
-    public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable Long productId, ProductUpdateDto pd) {
-        log.debug( "deleteProduct: productId=" + productId + ", pd=" + pd);
-        return srv.deleteProduct( productId)
-                .map( deleted -> deleted
+    public Mono<ResponseEntity<Void>> changeProduct(@PathVariable Long productId, ProductUpdateDto pd) {
+        log.debug(
+            "changeProduct: productId=" + productId + ", method=" + pd.getMethod() + ", delImage=" + pd.getDelImage()
+                + ", pd.getProductId=" + pd.getProductId()
+        );
+        return ( "delete".equals( pd.getMethod())
+                    ? srv.deleteProduct( productId)
+                    : srv.updateProduct( pd)
+                ).map( deleted -> deleted
                     ? ResponseEntity.status( HttpStatus.FOUND)
                         .location( URI.create( "/config"))
                         .build()

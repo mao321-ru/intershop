@@ -34,8 +34,8 @@ public class Product {
 
     private Long imageId;
 
-    @Transient
-    private Image image;
+//    @Transient
+//    private Image image;
 
 //
 //    @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
