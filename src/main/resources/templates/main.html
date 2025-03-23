@@ -57,7 +57,7 @@
                         В if true, если выбрана не последняя страница.
                         В value номер следующей страницы.
                     -->
-                    <button th:if="${paging.hasNext()}" th:onclick="|document.querySelector('.form__pageNumber').value='${paging.getNumber()+1}'|">&gt;</button>
+                    <button class="form__nextPage" th:if="${paging.hasNext()}" th:onclick="|document.querySelector('.form__pageNumber').value='${paging.getNumber()+1}'|">&gt;</button>
                 </p>
             </td>
         </tr>

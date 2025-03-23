@@ -7,6 +7,8 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +49,31 @@ public class MainControllerTest extends ControllerTest {
         ;
     }
 
-//    @Test
+    @Test
+    void findProducts_nextPage() throws Exception {
+        BiConsumer<List<Integer>,List<Integer>> act = (pageNumSize, expCountNext) -> {
+            wtc.get()
+                    .uri( ub -> ub.path( "/")
+                            .queryParam( "pageNumber", pageNumSize.getFirst())
+                            .queryParam( "pageSize", pageNumSize.getLast())
+                            .build()
+                    )
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody()
+                    // число товаров на странице
+                    .xpath( PRODUCTS_XPATH).nodeCount( expCountNext.getFirst())
+                    // возможность перехода на следующую страницу
+                    .xpath( NEXT_PAGE_XPATH).nodeCount( expCountNext.getLast())
+            ;
+        };
+        int pageSize = PRODUCTS_COUNT - 1;
+        act.accept( List.of( 0, pageSize), List.of( pageSize, 1));
+        act.accept( List.of( 1, pageSize), List.of( 1, 0));
+        act.accept( List.of( 0, PRODUCTS_COUNT), List.of( PRODUCTS_COUNT, 0));
+    }
+
+///    @Test
 //    void changeInCartQuantity_check() throws Exception {
 //        long productId = EXISTS_PRODUCT_ID;
 //        Consumer<String> act = ( action) -> {

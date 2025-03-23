@@ -19,6 +19,9 @@ import static org.springframework.data.relational.core.query.Query.query;
 // Общие настройки и т.д. для интеграционныйх тестов контроллеров
 public class ControllerTest extends IntegrationTest {
 
+    // Чиспо товаров в тестовых данных (src/test/resources/test-data.sql)
+    protected final int PRODUCTS_COUNT = 5;
+
     // Неиспользуемое значение Id
     protected final long NOT_EXISTS_DATA_ID = 999L;
 
@@ -35,6 +38,9 @@ public class ControllerTest extends IntegrationTest {
 
     // Id непродававшегося товара (для проверки удаления)
     protected final long UNSELLABLE_PRODUCT_ID = 5L;
+
+    // элемент для перехода на следующую страницу
+    protected final String NEXT_PAGE_XPATH = "//*[@class=\"form__nextPage\"]";
 
     // выбор всех элементов с товарами
     protected final String PRODUCTS_XPATH = "//*[@class=\"product\"]";
