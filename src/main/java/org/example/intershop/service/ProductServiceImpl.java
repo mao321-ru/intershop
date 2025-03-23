@@ -9,11 +9,15 @@ import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.mapper.ProductMapper;
 //import org.example.intershop.model.CartProduct;
 import org.example.intershop.model.Image;
+import org.example.intershop.model.Product;
 import org.example.intershop.repository.ImageRepository;
 import org.example.intershop.repository.ProductRepository;
 
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.domain.*;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.Query;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,8 @@ import java.io.IOException;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
+    private final R2dbcEntityTemplate etm;
+
     private final ProductRepository repo;
     private final ImageRepository imageRepo;
 
@@ -40,12 +46,19 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Mono<Slice<ProductDto>> findProducts(String search, Pageable pageable) {
+        final String likeStr = search != null && ! search.isEmpty() ? "%" + search + "%" : "%";
         return
-            repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                search, search, pageable.getSort()
+            etm.select( Product.class)
+            .matching(
+                Query.query(
+                    Criteria.where( "product_name").like( likeStr).ignoreCase( true)
+                        .or( Criteria.where("description").like( likeStr).ignoreCase( true))
+                )
+                .sort( pageable.getSort())
+                .offset( pageable.getOffset())
+                .limit( pageable.getPageSize() + 1)
             )
-            .skip( pageable.getOffset())
-            .take( pageable.getPageSize() + 1)
+            .all()
             .collectList()
             .map( lst ->
                 new SliceImpl<>(
