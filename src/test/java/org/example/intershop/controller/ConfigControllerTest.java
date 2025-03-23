@@ -31,8 +31,6 @@ public class ConfigControllerTest extends ControllerTest {
         ;
     }
 
-
-
     @Test
     void createProduct_NoImage() throws Exception {
         final String productName = "createProduct_NoImage";
@@ -56,8 +54,6 @@ public class ConfigControllerTest extends ControllerTest {
                     .xpath( PR_VAL_XPF.formatted( "description", description)).nodeCount( 1)
         ;
     }
-
-
 
     @Test
     void createProduct_WithImage() throws Exception {
@@ -98,16 +94,6 @@ public class ConfigControllerTest extends ControllerTest {
                     ).nodeCount( 1)
         ;
 
-//        // товар появился на главной странице
-//        mockMvc.perform( get( "/"))
-//                //.andDo( print()) // вывод запроса и ответа
-//                .andExpect( status().isOk())
-//                .andExpect( xpath( PR_TEXT_XPF.formatted( "productName", productName)).nodeCount( 1))
-//                .andExpect( xpath( PR_TEXT_XPF.formatted( "price", price.toString() + " руб.")).nodeCount( 1))
-//                .andExpect( xpath( PR_TEXT_XPF.formatted( "description", description)).nodeCount( 1))
-//                .andExpect( xpath( PR_SRC_XPF.formatted( "image", imgPath)).nodeCount( 1))
-//        ;
-
         // возврат правильного изображения товара
         wtc.get().uri( "/products/{productId}/image", productId)
                 .exchange()
@@ -115,6 +101,18 @@ public class ConfigControllerTest extends ControllerTest {
                 .expectHeader().contentType( "image/png")
                 .expectHeader().contentLength( fileData.length)
                 .expectBody( String.class).isEqualTo( new String( fileData, "UTF-8"))
+        ;
+
+        // товар появился на витрине
+        wtc.get().uri( "/")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                .xpath( PR_TEXT_XPF.formatted( "productName", productName)).nodeCount( 1)
+                .xpath( PR_TEXT_XPF.formatted( "price", price + " руб.")).nodeCount( 1)
+                .xpath( PR_TEXT_XPF.formatted( "description", description)).nodeCount( 1)
+                .xpath( PR_SRC_XPF.formatted( "image", imgPath)).nodeCount( 1)
         ;
     }
 

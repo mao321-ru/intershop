@@ -13,6 +13,9 @@ import org.example.intershop.repository.ImageRepository;
 import org.example.intershop.repository.ProductRepository;
 
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
@@ -22,7 +25,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Optional;
 
 
 @Service
@@ -39,11 +41,14 @@ public class ProductServiceImpl implements ProductService {
         return products.map( ProductMapper::toProductDto);
     }
 
-//    @Override
-//    public Slice<ProductDto> findProducts(String search, Pageable pageable) {
-//        Slice<Product> products = repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
-//        return products.map( ProductMapper::toProductDto);
-//    }
+    @Override
+    public Mono<Slice<ProductDto>> findProducts(String search, Pageable pageable) {
+        return
+            repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase( search, search, pageable)
+                .map( ProductMapper::toProductDto)
+                .collectList()
+                .map( lst -> new SliceImpl<>( lst, pageable, true));
+    }
 
     @Override
     public Mono<ProductDto> getProduct(Long productId) {
