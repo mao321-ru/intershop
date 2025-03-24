@@ -15,9 +15,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.reactive.result.view.Rendering;
 import org.springframework.web.reactive.result.view.script.RenderingContext;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,15 +43,24 @@ public class ProductController {
                     .build());
     }
 
-//    @PostMapping( { "/products/{productId}"})
-//    String changeInCartQuantity(
-//        @PathVariable Long productId,
-//        @RequestParam String action
-//    ) {
-//        log.debug( "changeInCartQuantity: productId: " + productId + ", action: " + action);
-//        srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta());
-//        return "redirect:/products/" + productId;
-//    }
+    @PostMapping( { "/products/{productId}"})
+    public Mono<Void> changeInCartQuantity( @PathVariable long productId, ServerWebExchange exchange)
+    {
+        log.debug( "changeInCartQuantity: productId: " + productId);
+        return exchange.getFormData()
+            .flatMap( mvm -> {
+                final String action =  mvm.getFirst("action");
+                log.debug( "action: " + action);
+                return srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta())
+                    .thenReturn( mvm);
+            })
+            .flatMap( mvm -> {
+                var resp = exchange.getResponse();
+                resp.setStatusCode( HttpStatus.FOUND);
+                resp.getHeaders().setLocation( URI.create("/products/" + productId));
+                return resp.setComplete();
+            });
+    }
 
     @GetMapping("/products/{productId}/image")
     @ResponseBody

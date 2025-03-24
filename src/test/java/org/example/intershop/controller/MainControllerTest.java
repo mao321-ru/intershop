@@ -1,10 +1,8 @@
 package org.example.intershop.controller;
 
-//import org.example.intershop.model.CartProduct;
-//import org.example.intershop.model.Product;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
 
