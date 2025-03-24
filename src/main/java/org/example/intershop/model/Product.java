@@ -3,14 +3,12 @@ package org.example.intershop.model;
 import lombok.*;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-//@Entity
 @Table( name = "products")
 @NoArgsConstructor
 // @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
@@ -34,10 +32,9 @@ public class Product {
 
     private Long imageId;
 
-//    @Transient
-//    private Image image;
+    // вычисляемая колонка
+    private Integer inCartQuantity;
 
-//
 //    @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
 //    @ToString.Exclude
 //    private CartProduct cartProduct;

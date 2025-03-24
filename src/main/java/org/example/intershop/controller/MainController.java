@@ -5,11 +5,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.service.ProductService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,23 +48,30 @@ public class MainController {
             });
     }
 
-//    @PostMapping( { "/main/products/{productId}"})
-//    String changeInCartQuantity(
-//            @PathVariable long productId,
-//            @RequestParam String action,
-//            @RequestParam String search,
-//            @RequestParam String sort,
-//            @RequestParam String pageSize,
-//            @RequestParam String pageNumber,
-//            RedirectAttributes ra
-//    ) {
-//        log.debug( "changeInCartQuantity: productId: " + productId + ", action: " + action);
-//        srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta());
-//        ra.addAttribute( "search", search);
-//        ra.addAttribute( "sort", sort);
-//        ra.addAttribute( "pageSize", pageSize);
-//        ra.addAttribute( "pageNumber", pageNumber);
-//        return "redirect:/";
-//    }
-
+    @PostMapping( { "/main/products/{productId}"})
+    public Mono<Void> changeInCartQuantity( @PathVariable long productId, ServerWebExchange exchange)
+    {
+        log.debug( "changeInCartQuantity: productId: " + productId);
+        return exchange.getFormData()
+            .flatMap( mvm -> {
+                final String action =  mvm.getFirst("action");
+                log.debug( "action: " + action);
+                return
+                    srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta())
+                        .thenReturn( mvm);
+            })
+            .flatMap( mvm -> {
+                var resp = exchange.getResponse();
+                resp.setStatusCode( HttpStatus.FOUND);
+                resp.getHeaders().setLocation(
+                    UriComponentsBuilder.fromPath( "/")
+                        // сохраняем все параметры запроса кроме action
+                        .queryParams( mvm)
+                        .replaceQueryParam( "action")
+                        .build()
+                        .toUri()
+                );
+                return resp.setComplete();
+            });
+    }
 }

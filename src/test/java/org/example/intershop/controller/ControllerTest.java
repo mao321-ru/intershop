@@ -3,6 +3,7 @@ package org.example.intershop.controller;
 //import jakarta.persistence.EntityManager;
 import org.example.intershop.IntegrationTest;
 
+import org.example.intershop.model.CartProduct;
 import org.example.intershop.model.Image;
 import org.example.intershop.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,10 @@ public class ControllerTest extends IntegrationTest {
 
     protected Image getImageById(Long imageId) {
         return etm.selectOne( query( where( "id").is( imageId)), Image.class).block();
+    }
+
+    protected CartProduct getCartProductByProductId(Long productId) {
+        return etm.selectOne( query( where( "product_id").is( productId)), CartProduct.class).block();
     }
 
 }

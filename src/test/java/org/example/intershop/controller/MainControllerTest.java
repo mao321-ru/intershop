@@ -6,6 +6,7 @@ package org.example.intershop.controller;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -73,68 +74,68 @@ public class MainControllerTest extends ControllerTest {
         act.accept( List.of( 0, PRODUCTS_COUNT), List.of( PRODUCTS_COUNT, 0));
     }
 
-///    @Test
-//    void changeInCartQuantity_check() throws Exception {
-//        long productId = EXISTS_PRODUCT_ID;
-//        Consumer<String> act = ( action) -> {
-//            try {
-//                mockMvc.perform(post("/main/products/{productId}", productId)
-//                                .param("action", action)
-//                                .param("search", EXISTS_PRODUCT_NAME)
-//                                .param("sort", "ALPHA")
-//                                .param("pageSize", "10")
-//                                .param("pageNumber", "0")
-//                        )
-//                        //.andDo( print()) // вывод запроса и ответа
-//                        .andExpect(status().isFound())
-//                        .andExpect(redirectedUrl("/?search=%3F%3F%3F%3F%3F%3F%3F+SUPER&sort=ALPHA&pageSize=10&pageNumber=0"))
-//                ;
-//            } catch (Exception e) {
-//                throw new RuntimeException( e);
-//            }
-//        };
-//        Consumer<Integer> check = ( qty) -> {
-//            try {
-//                mockMvc.perform( get( "/")
-//                                .param("search", EXISTS_PRODUCT_NAME)
-//                                .param("sort", "ALPHA")
-//                                .param("pageSize", "10")
-//                                .param("pageNumber", "0")
-//                        )
-//                        //.andDo( print()) // вывод запроса и ответа
-//                        .andExpect( status().isOk())
-//                        .andExpect( content().contentType( "text/html;charset=UTF-8"))
-//                        .andExpect( xpath( PRODUCTS_XPATH).nodeCount( 1))
-//                        .andExpect( xpath( PR_FIELD_XPF.formatted( "inCartQuantity"))
-//                                .nodeCount( 1))
-//                        .andExpect( xpath( PR_TEXT_XPF.formatted( "inCartQuantity", qty))
-//                                .nodeCount( 1))
-//                ;
-//            } catch (Exception e) {
-//                throw new RuntimeException( e);
-//            }
-//        };
-//
-//        var pr = em.find( Product.class, productId);
-//        assertNotNull( "pre: Product not found", pr);
-//        var cp = pr.getCartProduct();
-//        assertNull( "pre: Product already in cart", cp);
-//
-//        act.accept( "plus");
-//        check.accept( 1);
-//
-//        act.accept( "plus");
-//        check.accept( 2);
-//
-//        act.accept( "minus");
-//        check.accept( 1);
-//
-//        long cartProductId = em.find( Product.class, productId).getCartProduct().getId();
-//        act.accept( "minus");
-//        check.accept( 0);
-//
-//        cp = em.find( CartProduct.class, cartProductId);
-//        assertNull( "CartProduct not deleted", cp);
-//    }
+    @Test
+    void changeInCartQuantity_check() throws Exception {
+        long productId = EXISTS_PRODUCT_ID;
+        Consumer<String> act = ( action) -> {
+            wtc.post().uri( "/main/products/{productId}", productId)
+                    .contentType( MediaType.APPLICATION_FORM_URLENCODED)
+                    .body( BodyInserters
+                        .fromFormData( "action", action)
+                        .with("search", EXISTS_PRODUCT_NAME)
+                        .with("sort", "ALPHA")
+                        .with("pageSize", "10")
+                        .with("pageNumber", "0")
+                    )
+                    .exchange()
+                    .expectStatus().isFound()
+                    .expectHeader().valueEquals(
+                        "Location",
+                        "/?search=%D0%A8%D0%B0%D0%BC%D0%BF%D1%83%D0%BD%D1%8C%20SUPER&sort=ALPHA&pageSize=10&pageNumber=0"
+                    )
+            ;
+        };
+        Consumer<Integer> check = ( qty) -> {
+            wtc.get()
+                    .uri( ub -> ub.path( "/")
+                            .queryParam( "search", EXISTS_PRODUCT_NAME)
+                            .queryParam( "sort", "ALPHA")
+                            .queryParam( "pageSize", "10")
+                            .queryParam( "pageNumber", "0")
+                            .build()
+                    )
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectHeader().contentType( "text/html")
+                    .expectBody()
+                    //.consumeWith( System.out::println) // вывод запроса и ответа
+                    .xpath( PRODUCTS_XPATH).nodeCount( 1)
+                    .xpath( PR_FIELD_XPF.formatted( "inCartQuantity"))
+                            .nodeCount( 1)
+                    .xpath( PR_TEXT_XPF.formatted( "inCartQuantity", qty))
+                            .nodeCount( 1)
+            ;
+        };
+
+        var pr = getProductById( productId);
+        assertNotNull( "pre: Product not found", pr);
+        var cp = getCartProductByProductId( productId);
+        assertNull( "pre: Product already in cart", cp);
+
+        act.accept( "plus");
+        check.accept( 1);
+
+        act.accept( "plus");
+        check.accept( 2);
+
+        act.accept( "minus");
+        check.accept( 1);
+
+        act.accept( "minus");
+        check.accept( 0);
+
+        cp = getCartProductByProductId( productId);
+        assertNull( "CartProduct not deleted", cp);
+    }
 
 }

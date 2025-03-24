@@ -28,5 +28,5 @@ public interface ProductService {
 
     Mono<Boolean> deleteProduct( Long productId);
 
-//    void changeInCartQuantity(long productId, Integer delta);
+    Mono<Void> changeInCartQuantity( Long productId, Integer delta);
 }

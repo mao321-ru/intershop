@@ -9,7 +9,8 @@ import org.springframework.data.domain.Sort;
 public enum ProductSort {
 
     NO( Sort.unsorted()),
-    ALPHA( Sort.by( Sort.Direction.ASC, "name")),
+    // в свойстве указывается имя колонки БД (а не имя поля в Java) в связи с ручным формированием SQL
+    ALPHA( Sort.by( Sort.Direction.ASC, "product_name")),
     PRICE( Sort.by( Sort.Direction.ASC, "price"));
 
     private final Sort sortValue;

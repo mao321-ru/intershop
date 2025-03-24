@@ -1,13 +1,12 @@
 package org.example.intershop.model;
 
-import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.stereotype.Service;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
-@Entity
 @Table( name = "cart_products")
 @NoArgsConstructor
 // @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
@@ -19,16 +18,12 @@ import java.util.Objects;
 public class CartProduct {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column( name = "cart_product_id")
+    @Column( "cart_product_id")
     private Long id;
 
     private Integer quantity;
 
-    @OneToOne( fetch = FetchType.LAZY)
-    @JoinColumn( name = "product_id", referencedColumnName = "product_id", nullable = false, unique = true, updatable = false)
-    @ToString.Exclude
-    private Product product;
+    private Long productId;
 
     @Override
     public boolean equals( Object o) {

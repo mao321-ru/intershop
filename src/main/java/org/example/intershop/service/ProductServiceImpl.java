@@ -8,8 +8,10 @@ import org.example.intershop.dto.ProductDto;
 import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.mapper.ProductMapper;
 //import org.example.intershop.model.CartProduct;
+import org.example.intershop.model.CartProduct;
 import org.example.intershop.model.Image;
 import org.example.intershop.model.Product;
+import org.example.intershop.repository.CartProductRepository;
 import org.example.intershop.repository.ImageRepository;
 import org.example.intershop.repository.ProductRepository;
 
@@ -26,6 +28,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -37,6 +41,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repo;
     private final ImageRepository imageRepo;
+    private final CartProductRepository cartRepo;
 
     @Override
     public Flux<ProductDto> findProducts(Sort sort) {
@@ -45,26 +50,53 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Mono<Slice<ProductDto>> findProducts(String search, Pageable pageable) {
+    public Mono<Slice<ProductDto>> findProducts(String search, Pageable pg) {
         final String likeStr = search != null && ! search.isEmpty() ? "%" + search + "%" : "%";
+        final String orderBy = pg.getSort().isUnsorted()
+                ? null
+                : pg.getSort().stream()
+                    .map( ord -> "p." + ord.getProperty() + ( ord.getDirection() == Sort.Direction.DESC ? " desc" : ""))
+                    .collect( Collectors.joining( ", "));
         return
-            etm.select( Product.class)
-            .matching(
-                Query.query(
-                    Criteria.where( "product_name").like( likeStr).ignoreCase( true)
-                        .or( Criteria.where("description").like( likeStr).ignoreCase( true))
-                )
-                .sort( pageable.getSort())
-                .offset( pageable.getOffset())
-                .limit( pageable.getPageSize() + 1)
+            etm.getDatabaseClient()
+            .sql(
+                """
+                select
+                    p.*,
+                    cp.quantity as in_cart_quantity
+                from
+                    products p
+                    left join cart_products cp
+                        on cp.product_id = p.product_id
+                where
+                    upper( p.product_name) like upper( :namePat)
+                    or upper( p.description) like upper( :descPat)
+                $(order)
+                limit $(limitCnt)
+                $(offset)
+                """
+                .replace( "$(order)", orderBy != null ? "order by " + orderBy : "")
+                .replace( "$(limitCnt)", String.valueOf( pg.getPageSize() + 1))
+                .replace( "$(offset)", pg.getOffset() > 0 ? "offset " + pg.getOffset() : "")
+            )
+            .bind( "namePat", likeStr)
+            .bind( "descPat", likeStr)
+            .map(( row, metadata) -> Product.builder()
+                .id( row.get( "product_id", Long.class))
+                .name( row.get( "product_name", String.class))
+                .price( row.get( "price", BigDecimal.class))
+                .description( row.get( "description", String.class))
+                .imageId( row.get( "image_id", Long.class))
+                .inCartQuantity( row.get( "in_cart_quantity", Integer.class))
+                .build()
             )
             .all()
             .collectList()
             .map( lst ->
                 new SliceImpl<>(
-                    lst.stream().limit( pageable.getPageSize()).map( ProductMapper::toProductDto).toList(),
-                    pageable,
-                   lst.size() > pageable.getPageSize()
+                    lst.stream().limit( pg.getPageSize()).map( ProductMapper::toProductDto).toList(),
+                    pg,
+                   lst.size() > pg.getPageSize()
                 )
             );
     }
@@ -141,7 +173,13 @@ public class ProductServiceImpl implements ProductService {
                     ProductMapper.changeProduct(pr, dto);
                     Long delImageId = delImage ? pr.getImageId() : null;
                     if ( delImageId != null) pr.setImageId( null);
-                    return repo.save( pr)
+                    return repo.setProduct(
+                            pr.getName(),
+                            pr.getPrice(),
+                            pr.getDescription(),
+                            pr.getImageId(),
+                            pr.getId()
+                        )
                         .then( delImageId != null ? imageRepo.deleteById( delImageId) : Mono.empty())
                         .thenReturn( Boolean.TRUE);
                 })
@@ -161,24 +199,34 @@ public class ProductServiceImpl implements ProductService {
             .defaultIfEmpty( Boolean.FALSE);
     }
 
-//    @Override
-//    @Transactional
-//    public void changeInCartQuantity(long productId, Integer delta) {
-//        Product pr = repo.findById( productId).orElseThrow();
-//        CartProduct cp = pr.getCartProduct();
-//        // Число товаров, которое должно быть после изменения
-//        int qty = delta == null ? 0 : ( cp != null ? cp.getQuantity() : 0) + delta;
-//        if( qty > 0) {
-//            if( cp == null) {
-//                cp = new CartProduct();
-//                pr.setCartProduct( cp);
-//                cp.setProduct( pr);
-//            }
-//            cp.setQuantity( qty);
-//        }
-//        else if ( cp != null) {
-//            pr.setCartProduct( null);
-//        }
-//        repo.save( pr);
-//    }
+    @Override
+    @Transactional
+    public Mono<Void> changeInCartQuantity( Long productId, Integer delta) {
+        return repo.findById( productId)
+                .flatMap( pr -> {
+                    log.debug( "inCartQuantity: " + pr.getInCartQuantity());
+                    Integer oldQty = pr.getInCartQuantity();
+                    // Число товаров, которое должно быть после изменения
+                    int qty = delta == null ? 0 : ( oldQty != null ? oldQty : 0) + delta;
+                    Mono<Void> res = null;
+                    if( qty > 0) {
+                        if( oldQty == null) {
+                            var cp = CartProduct.builder()
+                                    .productId( pr.getId())
+                                    .quantity( qty)
+                                    .build();
+                            res = cartRepo.save( cp).then();
+                        }
+                        else {
+                            res = cartRepo.setQuantity( pr.getId(), qty);
+                        }
+                    }
+                    else if ( oldQty != null) {
+                        res = cartRepo.deleteByProductId( pr.getId());
+                    }
+                    return res;
+                })
+                .then();
+    }
+
 }

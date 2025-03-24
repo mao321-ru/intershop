@@ -22,8 +22,7 @@ public class ProductMapper {
                 .price( p.getPrice())
                 .description( p.getDescription())
                 .isImage( p.getImageId() != null)
-//                .inCartQuantity( p.getCartProduct() != null ? p.getCartProduct().getQuantity() : 0)
-                .inCartQuantity( 0)
+                .inCartQuantity( p.getInCartQuantity() == null ? 0 : p.getInCartQuantity())
                 .build();
     }
 
