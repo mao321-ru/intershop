@@ -22,13 +22,17 @@ public class OrderProduct {
     @Column( "order_product_id")
     private Long id;
 
+    private Long orderId;
+
+    private Long productId;
+
     private Integer quantity;
 
     private BigDecimal amount;
 
-    private Long orderId;
-
-    private Long productId;
+    // вычисляемые колонки (из products)
+    private String productName;
+    private Long imageId;
 
     @Override
     public boolean equals( Object o) {

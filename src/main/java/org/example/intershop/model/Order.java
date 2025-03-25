@@ -2,10 +2,12 @@ package org.example.intershop.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 @Table( name = "orders")
@@ -28,6 +30,9 @@ public class Order {
 
     @Column( "order_total")
     private BigDecimal total;
+
+    @Transient
+    List<OrderProduct> products;
 
     @Override
     public boolean equals( Object o) {

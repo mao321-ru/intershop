@@ -13,24 +13,6 @@ java {
     }
 }
 
-// временное исключение исходников из компиляции (для поэтапного рефакторинга на Reactive Stack)
-sourceSets {
-    main {
-        java {
-            exclude 'org/example/intershop/controller/OrderController.java'
-            exclude 'org/example/intershop/service/OrderService.java'
-            exclude 'org/example/intershop/service/OrderServiceImpl.java'
-        }
-    }
-    test {
-        java {
-            exclude 'org/example/intershop/controller/OrderControllerTest.java'
-        }
-    }
-}
-
-
-
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
