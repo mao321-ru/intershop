@@ -12,5 +12,6 @@ public interface CartService {
 
     Mono<CartInfo> findCartProducts();
 
-//    long buy();
+    Mono<Long> buy();
+
 }

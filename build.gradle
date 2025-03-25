@@ -18,12 +18,6 @@ sourceSets {
     main {
         java {
             exclude 'org/example/intershop/controller/OrderController.java'
-            exclude 'org/example/intershop/dto/OrderDto.java'
-            exclude 'org/example/intershop/dto/OrderProductDto.java'
-            exclude 'org/example/intershop/mapper/OrderMapper.java'
-            exclude 'org/example/intershop/model/Order.java'
-            exclude 'org/example/intershop/model/OrderProduct.java'
-            exclude 'org/example/intershop/repository/OrderRepository.java'
             exclude 'org/example/intershop/service/OrderService.java'
             exclude 'org/example/intershop/service/OrderServiceImpl.java'
         }

@@ -2,14 +2,9 @@ package org.example.intershop.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.intershop.model.Image;
-import org.example.intershop.model.Product;
 import org.example.intershop.service.CartService;
 import org.example.intershop.service.ProductService;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.io.ByteArrayInputStream;
 import java.net.URI;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -62,10 +55,16 @@ public class CartController {
                 });
     }
 
- //   @PostMapping( { "/cart/buy"})
- //   String buy() {
- //       log.debug( "buy");
- //       long orderId = srv.buy();
- //       return "redirect:/orders/" + orderId + "?isNew=1";
- //   }
+    @PostMapping( { "/cart/buy"})
+    Mono<ResponseEntity<Object>> buy() {
+        log.debug( "buy");
+        return srv.buy()
+            .map( orderId ->
+                ResponseEntity.status( HttpStatus.FOUND)
+                    .location( URI.create( "/orders/" + orderId + "?isNew=1"))
+                    .build()
+            )
+            .defaultIfEmpty( ResponseEntity.notFound().build())
+        ;
+    }
 }

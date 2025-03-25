@@ -1,13 +1,13 @@
 package org.example.intershop.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 
-@Entity
 @Table( name = "orders")
 @NoArgsConstructor
 // @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
@@ -19,20 +19,15 @@ import java.util.Objects;
 public class Order {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column( name = "order_id")
+    @Column( "order_id")
     private Long id;
 
     // заполняется из последовательности БД
-    @Column( name = "order_number", nullable = false, updatable = false, insertable = false)
+    @Column( "order_number")
     private Long number;
 
-    @Column( name = "order_total", nullable = false)
+    @Column( "order_total")
     private BigDecimal total;
-
-    @OneToMany( mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private List<OrderProduct> products;
 
     @Override
     public boolean equals( Object o) {

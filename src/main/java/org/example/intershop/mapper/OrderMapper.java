@@ -12,13 +12,13 @@ import java.util.Comparator;
 public class OrderMapper {
 
     public static OrderProductDto toOrderProductDto( OrderProduct op) {
-        Product p = op.getProduct();
+//        Product p = op.getProduct();
         return OrderProductDto.builder()
-                .productId( p.getId())
-                .productName( p.getName())
+//                .productId( p.getId())
+//                .productName( p.getName())
                 .quantity( op.getQuantity())
                 .amount( op.getAmount())
-                .isImage( p.getImage() != null)
+//                .isImage( p.getImage() != null)
                 .build();
     }
 
@@ -27,12 +27,12 @@ public class OrderMapper {
                 .orderId( o.getId())
                 .orderNumber( o.getNumber())
                 .total( o.getTotal())
-                .products(
-                    o.getProducts().stream()
-                        .map( OrderMapper::toOrderProductDto)
-                        .sorted( Comparator.comparing( OrderProductDto::getProductName))
-                        .toList()
-                )
+//                .products(
+//                    o.getProducts().stream()
+//                        .map( OrderMapper::toOrderProductDto)
+//                        .sorted( Comparator.comparing( OrderProductDto::getProductName))
+//                        .toList()
+//                )
                 .build();
     }
 }

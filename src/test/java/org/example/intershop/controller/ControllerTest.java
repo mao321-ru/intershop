@@ -5,6 +5,7 @@ import org.example.intershop.IntegrationTest;
 
 import org.example.intershop.model.CartProduct;
 import org.example.intershop.model.Image;
+import org.example.intershop.model.Order;
 import org.example.intershop.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -83,6 +84,10 @@ public class ControllerTest extends IntegrationTest {
 
     protected CartProduct getCartProductByProductId(Long productId) {
         return etm.selectOne( query( where( "product_id").is( productId)), CartProduct.class).block();
+    }
+
+    protected Order getOrderById(Long orderId) {
+        return etm.selectOne( query( where( "id").is( orderId)), Order.class).block();
     }
 
 }

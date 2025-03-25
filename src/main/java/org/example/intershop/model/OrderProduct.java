@@ -1,13 +1,14 @@
 package org.example.intershop.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-@Entity
-@Table( name = "order_products", uniqueConstraints = { @UniqueConstraint( columnNames = { "order_id", "product_id"})})
+@Table( name = "order_products")
 @NoArgsConstructor
 // @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
 @AllArgsConstructor
@@ -18,25 +19,16 @@ import java.util.Objects;
 public class OrderProduct {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column( name = "order_product_id")
+    @Column( "order_product_id")
     private Long id;
 
-    @Column( nullable = false)
     private Integer quantity;
 
-    @Column( nullable = false)
     private BigDecimal amount;
 
-    @OneToOne( fetch = FetchType.LAZY)
-    @JoinColumn( name = "order_id", referencedColumnName = "order_id", nullable = false, updatable = false)
-    @ToString.Exclude
-    private Order order;
+    private Long orderId;
 
-    @OneToOne( fetch = FetchType.EAGER)
-    @JoinColumn( name = "product_id", referencedColumnName = "product_id", nullable = false, updatable = false)
-    @ToString.Exclude
-    private Product product;
+    private Long productId;
 
     @Override
     public boolean equals( Object o) {
