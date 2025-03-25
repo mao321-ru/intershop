@@ -8,13 +8,17 @@ import org.example.intershop.service.CartService;
 import org.example.intershop.service.ProductService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
 import java.util.Optional;
 
 @Controller
@@ -26,30 +30,42 @@ public class CartController {
     private final ProductService productSrv;
 
     @GetMapping( { "/cart"})
-    String findCartProducts(
+    Mono<String> findCartProducts(
         Model model
     ) {
         log.debug( "findCartProducts");
-        var cartInfo = srv.findCartProducts();
-        model.addAttribute( "products", cartInfo.products());
-        model.addAttribute( "total", cartInfo.total());
-        return "cart";
+        return
+            srv.findCartProducts()
+            .map( cartInfo -> {
+                model.addAttribute("products", cartInfo.products());
+                model.addAttribute("total", cartInfo.total());
+                return "cart";
+            });
     }
 
     @PostMapping( { "/cart/products/{productId}"})
-    String changeQuantity(
+    Mono<Void> changeQuantity(
         @PathVariable Long productId,
-        @RequestParam String action
+        ServerWebExchange exchange
     ) {
-        log.debug( "changeQuantity: productId: " + productId + ", action: " + action);
-        productSrv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta());
-        return "redirect:/cart";
+        log.debug( "changeQuantity: productId: " + productId);
+        return exchange.getFormData()
+                .flatMap( mvm -> {
+                    final String action =  mvm.getFirst("action");
+                    log.debug( "action: " + action);
+                    final Integer delta = ProductCartAction.valueOf( action.toUpperCase()).getDelta();
+                    var resp = exchange.getResponse();
+                    resp.setStatusCode( HttpStatus.FOUND);
+                    resp.getHeaders().setLocation( URI.create("/cart"));
+                    return productSrv.changeInCartQuantity( productId, delta)
+                        .then( resp.setComplete());
+                });
     }
 
-    @PostMapping( { "/cart/buy"})
-    String buy() {
-        log.debug( "buy");
-        long orderId = srv.buy();
-        return "redirect:/orders/" + orderId + "?isNew=1";
-    }
+ //   @PostMapping( { "/cart/buy"})
+ //   String buy() {
+ //       log.debug( "buy");
+ //       long orderId = srv.buy();
+ //       return "redirect:/orders/" + orderId + "?isNew=1";
+ //   }
 }

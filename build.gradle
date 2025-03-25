@@ -17,7 +17,6 @@ java {
 sourceSets {
     main {
         java {
-            exclude 'org/example/intershop/controller/CartController.java'
             exclude 'org/example/intershop/controller/OrderController.java'
             exclude 'org/example/intershop/dto/OrderDto.java'
             exclude 'org/example/intershop/dto/OrderProductDto.java'
@@ -25,15 +24,12 @@ sourceSets {
             exclude 'org/example/intershop/model/Order.java'
             exclude 'org/example/intershop/model/OrderProduct.java'
             exclude 'org/example/intershop/repository/OrderRepository.java'
-            exclude 'org/example/intershop/service/CartService.java'
-            exclude 'org/example/intershop/service/CartServiceImpl.java'
             exclude 'org/example/intershop/service/OrderService.java'
             exclude 'org/example/intershop/service/OrderServiceImpl.java'
         }
     }
     test {
         java {
-            exclude 'org/example/intershop/controller/CartControllerTest.java'
             exclude 'org/example/intershop/controller/OrderControllerTest.java'
         }
     }

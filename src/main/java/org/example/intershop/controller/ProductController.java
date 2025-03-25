@@ -44,21 +44,22 @@ public class ProductController {
     }
 
     @PostMapping( { "/products/{productId}"})
-    public Mono<Void> changeInCartQuantity( @PathVariable long productId, ServerWebExchange exchange)
+    public Mono<Void> changeInCartQuantity(
+        @PathVariable long productId,
+        ServerWebExchange exchange
+    )
     {
         log.debug( "changeInCartQuantity: productId: " + productId);
         return exchange.getFormData()
             .flatMap( mvm -> {
                 final String action =  mvm.getFirst("action");
                 log.debug( "action: " + action);
-                return srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta())
-                    .thenReturn( mvm);
-            })
-            .flatMap( mvm -> {
+                final Integer delta = ProductCartAction.valueOf( action.toUpperCase()).getDelta();
                 var resp = exchange.getResponse();
                 resp.setStatusCode( HttpStatus.FOUND);
                 resp.getHeaders().setLocation( URI.create("/products/" + productId));
-                return resp.setComplete();
+                return srv.changeInCartQuantity( productId, delta)
+                    .then( resp.setComplete());
             });
     }
 
