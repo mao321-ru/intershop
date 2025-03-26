@@ -1,6 +1,6 @@
 # intershop: "Витрина интернет-магазина"
 
-Демонстрационное веб-приложение с использованием Spring Boot / Spring Data JPA / Hibernate ORM.
+Демонстрационное веб-приложение с использованием Spring Boot / Spring WebFlux / Spring Data R2DBC / PostgreSQL.
 
 ## Установка приложения в Docker
 
@@ -73,7 +73,7 @@
 - запустить приложение в консоли командой (прервать выполнение можно по Ctrl-C)
 
 ```cmd
-  java -jar build/libs/intershop-0.0.1-SNAPSHOT.jar
+  java -jar build/libs/intershop-0.0.2-SNAPSHOT.jar
 ```
 
 После запуска приложение будет доступно по URL:
