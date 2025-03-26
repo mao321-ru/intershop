@@ -8,6 +8,9 @@ import org.example.intershop.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -31,11 +34,25 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Mono<Orders> findOrders() {
-        return Mono.empty();
-//        List<OrderDto> orders = repo.findAll( Sort.by( "number")).stream().map( OrderMapper::toOrderDto).toList();
-//        return new Orders(
-//            orders,
-//            orders.stream().map( OrderDto::getTotal).reduce( BigDecimal.ZERO, BigDecimal::add)
-//        );
+        return repo.findAll()
+            .flatMap( ord ->
+                repo.findOrderProductByOrderId( ord.getId())
+                    .collectList()
+                    .map( opl -> {
+                        ord.setProducts( opl);
+                        return OrderMapper.toOrderDto( ord);
+                    })
+            )
+            .collectList()
+            .map( orders -> {
+                // нужно сортировать здесь, т.к. .flatMap выполняется параллельно и порядок заказов в списке случаен
+                orders.sort( Comparator.comparingLong( OrderDto::getOrderNumber));
+                return
+                    new Orders(
+                        orders,
+                        orders.stream().map( OrderDto::getTotal).reduce( BigDecimal.ZERO, BigDecimal::add)
+                    );
+            })
+        ;
     }
 }
