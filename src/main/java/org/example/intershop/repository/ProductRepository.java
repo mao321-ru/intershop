@@ -1,7 +1,6 @@
 package org.example.intershop.repository;
 
 import org.example.intershop.model.Product;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;

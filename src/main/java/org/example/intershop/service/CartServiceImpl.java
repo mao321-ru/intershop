@@ -20,8 +20,6 @@ public class CartServiceImpl implements CartService {
 
     private final R2dbcEntityTemplate etm;
 
-    private final CartProductRepository repo;
-    //private final OrderRepository orderRepo;
     private final ProductRepository productRepo;
 
     @Override

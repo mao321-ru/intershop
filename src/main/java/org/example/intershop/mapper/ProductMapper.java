@@ -4,13 +4,9 @@ import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
 import org.example.intershop.dto.ProductUpdateDto;
 import org.example.intershop.model.Product;
-import org.example.intershop.model.Image;
 
 import lombok.SneakyThrows;
-import org.springframework.core.io.buffer.DataBufferUtils;
 
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferUShort;
 import java.math.BigDecimal;
 
 public class ProductMapper {

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface OrderService {
 
-    public static record Orders(List<OrderDto> orders, BigDecimal total) {}
+    record Orders(List<OrderDto> orders, BigDecimal total) {}
 
     Mono<OrderDto> getOrder(Long orderId);
 

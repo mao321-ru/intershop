@@ -35,10 +35,6 @@ public class Product {
     // вычисляемая колонка
     private Integer inCartQuantity;
 
-//    @OneToOne( mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @ToString.Exclude
-//    private CartProduct cartProduct;
-
     @Override
     public boolean equals( Object o) {
         if( this == o) return true;

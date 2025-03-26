@@ -4,10 +4,6 @@ import org.example.intershop.dto.OrderDto;
 import org.example.intershop.dto.OrderProductDto;
 import org.example.intershop.model.Order;
 import org.example.intershop.model.OrderProduct;
-import org.example.intershop.model.Product;
-
-import java.math.BigDecimal;
-import java.util.Comparator;
 
 public class OrderMapper {
 

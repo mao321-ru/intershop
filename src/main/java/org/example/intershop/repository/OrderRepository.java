@@ -2,7 +2,6 @@ package org.example.intershop.repository;
 
 import org.example.intershop.model.Order;
 import org.example.intershop.model.OrderProduct;
-import org.example.intershop.model.Product;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import reactor.core.publisher.Flux;
