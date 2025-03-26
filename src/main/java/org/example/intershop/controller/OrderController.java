@@ -35,8 +35,7 @@ public class OrderController {
     @GetMapping( { "/orders/{orderId}"})
     Mono<Rendering> getOrder(
         @PathVariable Long orderId,
-        @RequestParam( defaultValue = "0") int isNew,
-        Model model
+        @RequestParam( defaultValue = "0") int isNew
     ) {
         log.debug( "getOrder: orderId: " + orderId + ", isNew=" + isNew);
         return srv.getOrder( orderId)
