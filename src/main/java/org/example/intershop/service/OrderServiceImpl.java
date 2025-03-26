@@ -6,6 +6,7 @@ import org.example.intershop.dto.OrderDto;
 import org.example.intershop.mapper.OrderMapper;
 import org.example.intershop.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository repo;
 
     @Override
+    @Transactional( readOnly = true)
     public Mono<OrderDto> getOrder( Long orderId) {
         return repo.findById( orderId)
             .flatMap( ord ->
@@ -33,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional( readOnly = true)
     public Mono<Orders> findOrders() {
         return repo.findAll()
             .flatMap( ord ->

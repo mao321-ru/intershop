@@ -23,6 +23,7 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepo;
 
     @Override
+    @Transactional( readOnly = true)
     public Mono<CartInfo> findCartProducts() {
         return productRepo.findInCart()
             .map( ProductMapper::toProductDto)

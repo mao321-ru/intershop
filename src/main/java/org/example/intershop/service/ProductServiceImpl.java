@@ -41,12 +41,14 @@ public class ProductServiceImpl implements ProductService {
     private final CartProductRepository cartRepo;
 
     @Override
+    @Transactional( readOnly = true)
     public Flux<ProductDto> findProducts(Sort sort) {
         var products = repo.findAll( sort);
         return products.map( ProductMapper::toProductDto);
     }
 
     @Override
+    @Transactional( readOnly = true)
     public Mono<Slice<ProductDto>> findProducts(String search, Pageable pg) {
         final String likeStr = search != null && ! search.isEmpty() ? "%" + search + "%" : "%";
         final String orderBy = pg.getSort().isUnsorted()
@@ -99,12 +101,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional( readOnly = true)
     public Mono<ProductDto> getProduct(Long productId) {
         return repo.findById( productId)
                 .map( ProductMapper::toProductDto);
     }
 
     @Override
+    @Transactional( readOnly = true)
     public Mono<Image> findProductImage( long productId) {
         return imageRepo.findByProductId( productId);
     }
