@@ -56,13 +56,13 @@ public class CartController {
     }
 
     @PostMapping( { "/cart/buy"})
-    Mono<ResponseEntity<Object>> buy() {
+    Mono<ResponseEntity<Void>> buy() {
         log.debug( "buy");
         return srv.buy()
             .map( orderId ->
                 ResponseEntity.status( HttpStatus.FOUND)
                     .location( URI.create( "/orders/" + orderId + "?isNew=1"))
-                    .build()
+                    .<Void>build()
             )
             .defaultIfEmpty( ResponseEntity.notFound().build())
         ;
