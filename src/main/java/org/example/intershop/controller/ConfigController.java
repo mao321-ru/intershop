@@ -50,8 +50,8 @@ public class ConfigController {
     @PostMapping( "/config/products/{productId}")
     public Mono<ResponseEntity<Void>> changeProduct(@PathVariable Long productId, ProductUpdateDto pd) {
         log.debug(
-            "changeProduct: productId=" + productId + ", method=" + pd.getMethod() + ", delImage=" + pd.getDelImage()
-                + ", pd.getProductId=" + pd.getProductId()
+            "changeProduct: productId={}, method={}, delImage={}, pd.getProductId={}",
+                productId, pd.getMethod(), pd.getDelImage(), pd.getProductId()
         );
         return ( "delete".equals( pd.getMethod())
                     ? srv.deleteProduct( productId)

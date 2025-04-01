@@ -41,11 +41,11 @@ public class CartController {
         @PathVariable Long productId,
         ServerWebExchange exchange
     ) {
-        log.debug( "changeQuantity: productId: " + productId);
+        log.debug( "changeQuantity: productId: {}", productId);
         return exchange.getFormData()
                 .flatMap( mvm -> {
                     final String action =  mvm.getFirst("action");
-                    log.debug( "action: " + action);
+                    log.debug( "action: `{}`", action);
                     final Integer delta = ProductCartAction.valueOf( action.toUpperCase()).getDelta();
                     var resp = exchange.getResponse();
                     resp.setStatusCode( HttpStatus.FOUND);

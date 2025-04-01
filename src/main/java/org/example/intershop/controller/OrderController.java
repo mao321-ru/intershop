@@ -37,7 +37,7 @@ public class OrderController {
         @PathVariable Long orderId,
         @RequestParam( defaultValue = "0") int isNew
     ) {
-        log.debug( "getOrder: orderId: " + orderId + ", isNew=" + isNew);
+        log.debug( "getOrder: orderId: {}, isNew={}", orderId, isNew);
         return srv.getOrder( orderId)
             .map( ord ->
                 Rendering.view("order")

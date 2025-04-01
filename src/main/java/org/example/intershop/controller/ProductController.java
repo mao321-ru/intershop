@@ -27,7 +27,7 @@ public class ProductController {
     Mono<Rendering> getProduct(
         @PathVariable Long productId
     ) {
-        log.debug( "getProduct: productId: " + productId);
+        log.debug( "getProduct: productId: {}", productId);
         return srv.getProduct( productId)
             .map( pr -> Rendering.view("item")
                     .modelAttribute( "pr", pr)
@@ -43,11 +43,11 @@ public class ProductController {
         ServerWebExchange exchange
     )
     {
-        log.debug( "changeInCartQuantity: productId: " + productId);
+        log.debug( "changeInCartQuantity: productId: {}", productId);
         return exchange.getFormData()
             .flatMap( mvm -> {
                 final String action =  mvm.getFirst("action");
-                log.debug( "action: " + action);
+                log.debug( "action: `{}`", action);
                 final Integer delta = ProductCartAction.valueOf( action.toUpperCase()).getDelta();
                 var resp = exchange.getResponse();
                 resp.setStatusCode( HttpStatus.FOUND);
@@ -62,7 +62,7 @@ public class ProductController {
     public Mono<ResponseEntity<InputStreamResource>> getProductImage(
         @PathVariable long productId
     ) {
-        log.debug( "getProductImage: productId: " + productId);
+        log.debug( "getProductImage: productId: {}", productId);
         return srv.findProductImage( productId)
             .map( img ->
                 ResponseEntity.ok()

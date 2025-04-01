@@ -30,7 +30,7 @@ public class MainController {
         @RequestParam( defaultValue = "0") @Min(0) Integer pageNumber,
         Model model
     ) {
-        log.debug( "findProducts: pageNumber: " + pageNumber);
+        log.debug( "findProducts: pageNumber: {}", pageNumber);
         final String searchStr = search.trim();
         return
             srv.findProducts( searchStr, PageRequest.of( pageNumber, pageSize, sort.getSortValue()))
@@ -46,11 +46,11 @@ public class MainController {
     @PostMapping( { "/main/products/{productId}"})
     public Mono<Void> changeInCartQuantity( @PathVariable long productId, ServerWebExchange exchange)
     {
-        log.debug( "changeInCartQuantity: productId: " + productId);
+        log.debug( "changeInCartQuantity: productId: {}", productId);
         return exchange.getFormData()
             .flatMap( mvm -> {
                 final String action =  mvm.getFirst("action");
-                log.debug( "action: " + action);
+                log.debug( "action: `{}`", action);
                 return
                     srv.changeInCartQuantity( productId, ProductCartAction.valueOf( action.toUpperCase()).getDelta())
                         .thenReturn( mvm);

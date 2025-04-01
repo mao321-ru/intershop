@@ -123,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
             .flatMap( buf -> {
                 try {
                     byte[] fileData = buf.asInputStream().readAllBytes();
-                    log.trace( "saveImage: fileData length: " + fileData.length);
+                    log.trace( "saveImage: fileData length: {}", fileData.length);
                     var img = Image.builder()
                         .id( imageId)
                         .origFilename( f.filename())
@@ -145,12 +145,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Mono<ProductDto> createProduct(ProductCreateDto dto) {
-        log.debug( "createProduct service: dto file: " + dto.getFile());
+        log.debug( "createProduct service: dto file: {}", dto.getFile());
         return saveImage( null, dto.getFile())
             .flatMap( img -> {
                 var pr = ProductMapper.toProduct( dto);
                 pr.setImageId( img.getId());
-                log.trace("pr: image_id: " + pr.getImageId());
+                log.trace("pr: image_id: {}", pr.getImageId());
                 return repo.save( pr);
             })
             .map( ProductMapper::toProductDto);
@@ -160,7 +160,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Mono<Boolean> updateProduct( ProductUpdateDto dto) {
         final boolean delImage = dto.getDelImage() != null && dto.getDelImage();
-        log.debug( "updateProduct: productId= " + dto.getProductId());
+        log.debug( "updateProduct: productId= {}", dto.getProductId());
         return repo.findById( dto.getProductId())
                 .flatMap( pr -> ! delImage
                     ? saveImage( pr.getImageId(), dto.getFile())
@@ -190,7 +190,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Mono<Boolean> deleteProduct(Long productId) {
-        log.debug( "deleteProduct: productId= " + productId);
+        log.debug( "deleteProduct: productId= {}", productId);
         return repo.findById( productId)
             .flatMap( pr ->  repo.deleteById( productId).thenReturn( pr))
             .flatMap( pr ->  pr.getImageId() != null
@@ -205,7 +205,7 @@ public class ProductServiceImpl implements ProductService {
     public Mono<Void> changeInCartQuantity( Long productId, Integer delta) {
         return repo.findById( productId)
                 .flatMap( pr -> {
-                    log.debug( "inCartQuantity: " + pr.getInCartQuantity());
+                    log.debug( "inCartQuantity: {}", pr.getInCartQuantity());
                     Integer oldQty = pr.getInCartQuantity();
                     // Число товаров, которое должно быть после изменения
                     int qty = delta == null ? 0 : ( oldQty != null ? oldQty : 0) + delta;

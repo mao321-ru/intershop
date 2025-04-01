@@ -47,7 +47,7 @@ public class CartServiceImpl implements CartService {
                 .map( row -> row.get("order_id", Long.class))
                 .one()
             .flatMap( orderId -> {
-                    log.trace( "order inserted: orderId: " + orderId);
+                    log.trace( "order inserted: orderId: {}", orderId);
                     // добавляем товары из корзины в заказ
                     return dc.sql("""
                         insert into
@@ -71,7 +71,7 @@ public class CartServiceImpl implements CartService {
                             .bind( "orderId", orderId)
                             .fetch()
                             .rowsUpdated()
-                            .doOnNext( n -> log.trace( "products in order: " + n))
+                            .doOnNext( n -> log.trace( "products in order: {}", n))
                     // подсчитываем и сохраняем сумму заказа
                     .then( dc.sql("""
                         update
@@ -111,7 +111,7 @@ public class CartServiceImpl implements CartService {
                             .bind( "orderId", orderId)
                             .fetch()
                             .rowsUpdated()
-                            .doOnNext( n -> log.trace( "cart products deleted: " + n))
+                            .doOnNext( n -> log.trace( "cart products deleted: {}", n))
                     )
                     .thenReturn( orderId)
                 ;
