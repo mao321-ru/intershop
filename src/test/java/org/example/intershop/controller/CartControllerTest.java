@@ -70,7 +70,7 @@ public class CartControllerTest extends ControllerTest {
         var res = wtc.get().uri( "/cart")
             .exchange()
             .expectStatus().isOk()
-            .expectHeader().contentType( "text/html")
+            .expectHeader().contentType( "text/html;charset=UTF-8")
             .expectBody()
             //.consumeWith( System.out::println) // вывод запроса и ответа
             .xpath( PRODUCTS_XPATH).nodeCount( productCountExp)

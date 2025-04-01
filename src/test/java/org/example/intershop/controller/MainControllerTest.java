@@ -20,7 +20,7 @@ public class MainControllerTest extends ControllerTest {
         wtc.get().uri( "/")
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentType( "text/html")
+                .expectHeader().contentType( "text/html;charset=UTF-8")
                 .expectBody()
                 //.consumeWith( System.out::println) // вывод запроса и ответа
                 // выводится хотя бы один товар
@@ -104,7 +104,7 @@ public class MainControllerTest extends ControllerTest {
                     )
                     .exchange()
                     .expectStatus().isOk()
-                    .expectHeader().contentType( "text/html")
+                    .expectHeader().contentType( "text/html;charset=UTF-8")
                     .expectBody()
                     //.consumeWith( System.out::println) // вывод запроса и ответа
                     .xpath( PRODUCTS_XPATH).nodeCount( 1)

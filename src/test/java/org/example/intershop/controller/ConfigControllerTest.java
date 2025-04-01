@@ -19,7 +19,7 @@ public class ConfigControllerTest extends ControllerTest {
         wtc.get().uri( "/config")
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentType( "text/html")
+                .expectHeader().contentType( "text/html;charset=UTF-8")
                 .expectBody()
                     //.consumeWith( System.out::println) // вывод запроса и ответа
                     // выводится хотя бы один товар

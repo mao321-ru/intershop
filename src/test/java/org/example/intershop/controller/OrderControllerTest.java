@@ -10,7 +10,7 @@ public class OrderControllerTest extends ControllerTest {
         wtc.get().uri( "/orders")
             .exchange()
             .expectStatus().isOk()
-            .expectHeader().contentType( "text/html")
+            .expectHeader().contentType( "text/html;charset=UTF-8")
             .expectBody()
             //.consumeWith( System.out::println) // вывод запроса и ответа
             .xpath( ORDERS_XPATH).nodeCount( Matchers.greaterThan( 0))
@@ -25,7 +25,7 @@ public class OrderControllerTest extends ControllerTest {
         wtc.get().uri( "/orders/{orderId}", EXISTS_PRODUCT_ID)
             .exchange()
             .expectStatus().isOk()
-            .expectHeader().contentType( "text/html")
+            .expectHeader().contentType( "text/html;charset=UTF-8")
             .expectBody()
             //.consumeWith( System.out::println) // вывод запроса и ответа
             .xpath( PRODUCTS_XPATH).nodeCount( EXISTS_ORDER_PRODUCT_COUNT)
