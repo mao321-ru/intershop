@@ -1,5 +1,6 @@
 package org.example.intershop;
 
+import com.redis.testcontainers.RedisContainer;
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +23,18 @@ import reactor.core.publisher.Mono;
 @AutoConfigureWebTestClient( timeout = "15000")
 public abstract class IntegrationTest {
 
-    // Using Singleton DB Container for all tests
+    // Using Singleton Container for all tests
     static PostgreSQLContainer postgres = new PostgreSQLContainer( "postgres:17.2-alpine3.20");
+    static RedisContainer redis = new RedisContainer( "redis:7.4.2-bookworm");
 
     // Start containers and uses Ryuk Container to remove containers when JVM process running the tests exited
     static {
         postgres.start();
+        redis.start();
     }
 
     @DynamicPropertySource
-    static void configureDatasource(DynamicPropertyRegistry registry) {
+    static void registerDynamicProperties(DynamicPropertyRegistry registry) {
         registry.add( "spring.r2dbc.url", () ->
             "r2dbc:postgresql://%s:%s/%s".formatted(
                 postgres.getHost(),
@@ -41,6 +44,8 @@ public abstract class IntegrationTest {
         );
         registry.add( "spring.r2dbc.username", postgres::getUsername);
         registry.add( "spring.r2dbc.password", postgres::getPassword);
+
+        registry.add( "spring.data.redis.url", redis::getRedisURI);
     }
 
     // Решение из https://stackoverflow.com/questions/64115419/how-to-substitute-sql-in-tests-with-spring-data-r2dbc
