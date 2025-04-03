@@ -25,7 +25,7 @@ public abstract class IntegrationTest {
 
     // Using Singleton Container for all tests
     static PostgreSQLContainer postgres = new PostgreSQLContainer( "postgres:17.2-alpine3.20");
-    static RedisContainer redis = new RedisContainer( "redis:7.4.2-bookworm");
+    static RedisContainer redis = new RedisContainer( "redis:7.4.2-alpine3.21");
 
     // Start containers and uses Ryuk Container to remove containers when JVM process running the tests exited
     static {

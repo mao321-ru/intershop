@@ -6,6 +6,9 @@ logging:
 # Не используем 8080, т.к. он может быть занят
 server.port: 8085
 
+# время жизни элементов кэша (собственная настройка вместо не заработавшей spring.cache.redis.time-to-live)
+spring.cache.ttl: 10m
+
 spring:
   application:
     name: intershop

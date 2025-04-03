@@ -1,6 +1,6 @@
 # intershop: "Витрина интернет-магазина"
 
-Демонстрационное веб-приложение с использованием Spring Boot / Spring WebFlux / Spring Data R2DBC / PostgreSQL.
+Демонстрационное веб-приложение с использованием Spring Boot / Spring WebFlux / Spring Data R2DBC / PostgreSQL / Redis.
 
 ## Установка приложения в Docker
 
@@ -49,6 +49,7 @@
 
 Предварительные требования:
 - PostgreSQL 17.x (например PostgreSQL 17.2)
+- Redis (например, Redis 7.4.2)
 
 Порядок установки:
 
@@ -68,12 +69,20 @@
   psql postgresql://javadev@localhost:5432/postgres -f src/main/resources/db/init/20_intershopdb.sql
 ```
 
+- запустить Redis
+
+При доступности Docker можно запустить в контейнере командой:
+
+```cmd
+  docker run -d -p 6379:6379 redis:7.4.2-alpine3.21
+```
+
 - выполнить [сборку приложения](#Сборка-приложения)
 
 - запустить приложение в консоли командой (прервать выполнение можно по Ctrl-C)
 
 ```cmd
-  java -jar build/libs/intershop-0.0.2-SNAPSHOT.jar
+  java -jar build/libs/intershop-0.0.3-SNAPSHOT.jar
 ```
 
 После запуска приложение будет доступно по URL:

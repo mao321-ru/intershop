@@ -14,6 +14,8 @@ import org.example.intershop.repository.CartProductRepository;
 import org.example.intershop.repository.ImageRepository;
 import org.example.intershop.repository.ProductRepository;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.domain.*;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -101,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable( value = "product", key = "#productId")
     @Transactional( readOnly = true)
     public Mono<ProductDto> getProduct(Long productId) {
         return repo.findById( productId)
@@ -201,6 +204,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict( value = "product", key = "#productId")
     @Transactional
     public Mono<Void> changeInCartQuantity( Long productId, Integer delta) {
         return repo.findById( productId)

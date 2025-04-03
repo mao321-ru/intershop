@@ -4,9 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ProductControllerTest extends ControllerTest {
 
@@ -36,6 +39,38 @@ public class ProductControllerTest extends ControllerTest {
                 .exchange()
                 .expectStatus().isNotFound()
         ;
+    }
+
+    @Test
+    void getProduct_cache() throws Exception {
+        final long productId = EXISTS_PRODUCT_ID;
+        String cachedName = EXISTS_PRODUCT_NAME;
+
+        BiConsumer<String,String> nameCheck = ( name, step) -> {
+            wtc.get().uri( "/products/{productId}", productId)
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody()
+                    .xpath( PR_FIELD_XPF.formatted( "productName"))
+                    .string( s -> assertThat( s).as( step).isEqualTo( name))
+            ;
+        };
+
+        nameCheck.accept( cachedName, "Initial value");
+
+        // прямой update в БД: возвращаемое кэшированное значение не должно измениться
+        assertThat( etm.getDatabaseClient()
+                .sql( "update products set product_name = :productName where product_id = :productId")
+                    .bind( "productName", cachedName + ": direct DB updated")
+                    .bind( "productId", productId)
+                    .fetch()
+                    .rowsUpdated()
+                    .block()
+            )
+            .as( "DB updated rows count")
+            .isEqualTo( 1);
+        nameCheck.accept( cachedName, "Use cached value after direct DB update");
+
     }
 
     @Test

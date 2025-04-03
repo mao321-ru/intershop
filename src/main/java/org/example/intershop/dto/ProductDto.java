@@ -1,17 +1,21 @@
 package org.example.intershop.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 
+@NoArgsConstructor
+// @AllArgsConstructor требуется для @Builder после добавления @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
+@ToString
 public class ProductDto {
-    private final long productId;
-    private final String productName;
-    private final BigDecimal price;
-    private final String description;
-    private final boolean isImage;
-    private final int inCartQuantity;
+    private long productId;
+    private String productName;
+    private BigDecimal price;
+    private String description;
+    private boolean isImage;
+    private int inCartQuantity;
 }
