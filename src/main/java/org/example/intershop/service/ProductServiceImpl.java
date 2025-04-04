@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.dto.ProductCreateDto;
 import org.example.intershop.dto.ProductDto;
 import org.example.intershop.dto.ProductUpdateDto;
+import org.example.intershop.dto.SliceProductDto;
 import org.example.intershop.mapper.ProductMapper;
 import org.example.intershop.model.CartProduct;
 import org.example.intershop.model.Image;
@@ -16,6 +17,7 @@ import org.example.intershop.repository.ProductRepository;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.domain.*;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -50,8 +52,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable( value = "products", key = "{ #search, #pg.getPageSize(), #pg.getOffset(), #pg.getSort() }")
     @Transactional( readOnly = true)
-    public Mono<Slice<ProductDto>> findProducts(String search, Pageable pg) {
+    public Mono<SliceProductDto> findProducts(String search, Pageable pg) {
         final String likeStr = search != null && ! search.isEmpty() ? "%" + search + "%" : "%";
         final String orderBy = pg.getSort().isUnsorted()
                 ? null
@@ -94,11 +97,12 @@ public class ProductServiceImpl implements ProductService {
             .all()
             .collectList()
             .map( lst ->
-                new SliceImpl<>(
-                    lst.stream().limit( pg.getPageSize()).map( ProductMapper::toProductDto).toList(),
-                    pg,
-                   lst.size() > pg.getPageSize()
-                )
+                SliceProductDto.builder()
+                    .content( lst.stream().limit( pg.getPageSize()).map( ProductMapper::toProductDto).toList())
+                    .size( pg.getPageSize())
+                    .number( pg.getPageNumber())
+                    .isNext( lst.size() > pg.getPageSize())
+                    .build()
             );
     }
 
@@ -204,7 +208,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @CacheEvict( value = "product", key = "#productId")
+    @Caching( evict = {
+        @CacheEvict( value = "product", key = "#productId"),
+        @CacheEvict( value = "products", allEntries = true)
+    })
     @Transactional
     public Mono<Void> changeInCartQuantity( Long productId, Integer delta) {
         return repo.findById( productId)

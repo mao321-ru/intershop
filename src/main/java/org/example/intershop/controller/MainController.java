@@ -38,7 +38,7 @@ public class MainController {
                 model.addAttribute( "search", searchStr);
                 model.addAttribute( "sort", sort.name());
                 model.addAttribute( "paging", paging);
-                model.addAttribute( "products", paging.get());
+                model.addAttribute( "products", paging.getContent());
                 return "main";
             });
     }
