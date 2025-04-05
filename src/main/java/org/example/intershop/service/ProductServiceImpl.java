@@ -152,6 +152,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @Caching( evict = {
+            @CacheEvict( value = "products", allEntries = true)
+    })
     public Mono<ProductDto> createProduct(ProductCreateDto dto) {
         log.debug( "createProduct service: dto file: {}", dto.getFile());
         return saveImage( null, dto.getFile())
@@ -165,6 +168,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Caching( evict = {
+            @CacheEvict( value = "image", key = "#dto.getProductId()"),
+            @CacheEvict( value = "product", key = "#dto.getProductId()"),
+            @CacheEvict( value = "products", allEntries = true),
+            @CacheEvict( value = "cart", allEntries = true)
+    })
     @Transactional
     public Mono<Boolean> updateProduct( ProductUpdateDto dto) {
         final boolean delImage = dto.getDelImage() != null && dto.getDelImage();
@@ -196,6 +205,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Caching( evict = {
+            @CacheEvict( value = "image", key = "#productId"),
+            @CacheEvict( value = "product", key = "#productId"),
+            @CacheEvict( value = "products", allEntries = true),
+            @CacheEvict( value = "cart", allEntries = true)
+    })
     @Transactional
     public Mono<Boolean> deleteProduct(Long productId) {
         log.debug( "deleteProduct: productId= {}", productId);
