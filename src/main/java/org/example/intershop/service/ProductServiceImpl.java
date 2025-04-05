@@ -210,7 +210,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Caching( evict = {
         @CacheEvict( value = "product", key = "#productId"),
-        @CacheEvict( value = "products", allEntries = true)
+        @CacheEvict( value = "products", allEntries = true),
+        @CacheEvict( value = "cart", allEntries = true)
     })
     @Transactional
     public Mono<Void> changeInCartQuantity( Long productId, Integer delta) {

@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.mapper.ProductMapper;
 import org.example.intershop.repository.CartProductRepository;
 import org.example.intershop.repository.ProductRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepo;
 
     @Override
+    @Cacheable( value = "cart")
     @Transactional( readOnly = true)
     public Mono<CartInfo> findCartProducts() {
         return productRepo.findInCart()
@@ -37,6 +41,11 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Caching( evict = {
+            @CacheEvict( value = "product", allEntries = true),
+            @CacheEvict( value = "products", allEntries = true),
+            @CacheEvict( value = "cart", allEntries = true)
+    })
     @Transactional
     public Mono<Long> buy() {
         final DatabaseClient dc = etm.getDatabaseClient();
