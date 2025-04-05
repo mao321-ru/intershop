@@ -1,5 +1,5 @@
 FROM gradle:8.12.1-jdk21-alpine AS build
-COPY --chown=gradle:gradle . /home/gradle/src
+COPY --chown=gradle:gradle ./app /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle bootJar --no-daemon
 

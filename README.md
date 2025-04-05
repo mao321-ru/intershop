@@ -55,23 +55,23 @@
 
 - создать пользователя в PostgreSQL
 
-Пример создания пользователя javadev с паролем javadev скриптом src/main/resources/db/init/10_javadev.sql с помощью утилиты командой строки psql:
+Пример создания пользователя javadev с паролем javadev скриптом app/src/main/resources/db/init/10_javadev.sql с помощью утилиты командой строки psql:
 
 ```cmd
-  psql postgresql://postgres@localhost:5432/postgres -f src/main/resources/db/init/10_javadev.sql
+  psql postgresql://postgres@localhost:5432/postgres -f app/src/main/resources/db/init/10_javadev.sql
 ```
 
 - создать БД в PostgreSQL
 
-Пример создания БД intershopdb, принадлежащей пользователю javadev скриптом src/main/db/init/20_intershopdb.sql:
+Пример создания БД intershopdb, принадлежащей пользователю javadev скриптом app/src/main/db/init/20_intershopdb.sql:
 
 ```cmd
-  psql postgresql://javadev@localhost:5432/postgres -f src/main/resources/db/init/20_intershopdb.sql
+  psql postgresql://javadev@localhost:5432/postgres -f app/src/main/resources/db/init/20_intershopdb.sql
 ```
 
 - запустить Redis
 
-При доступности Docker можно запустить в контейнере командой:
+При доступности Docker можно запустить Redis в контейнере командой:
 
 ```cmd
   docker run -d -p 6379:6379 redis:7.4.2-alpine3.21
@@ -82,7 +82,7 @@
 - запустить приложение в консоли командой (прервать выполнение можно по Ctrl-C)
 
 ```cmd
-  java -jar build/libs/intershop-0.0.3-SNAPSHOT.jar
+  java -jar app/build/libs/intershop-0.0.3-SNAPSHOT.jar
 ```
 
 После запуска приложение будет доступно по URL:
