@@ -115,6 +115,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable( value = "image", key = "#productId")
     @Transactional( readOnly = true)
     public Mono<Image> findProductImage( long productId) {
         return imageRepo.findByProductId( productId);
