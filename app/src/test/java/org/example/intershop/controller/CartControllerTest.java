@@ -38,6 +38,18 @@ public class CartControllerTest extends ControllerTest {
     }
 
     @Test
+    void findCardProducts_buyEnabled() throws Exception {
+        final long productId = EXISTS_PRODUCT_ID;
+        final String productName = EXISTS_PRODUCT_NAME;
+        BigDecimal price = EXISTS_PRODUCT_PRICE;
+
+        // добавили товар в корзину
+        changeQty( productId, "plus");
+
+        buyState( true);
+    }
+
+    @Test
     void buy_check() throws Exception {
         final long productId = EXISTS_PRODUCT_ID;
         final BigDecimal price = EXISTS_PRODUCT_PRICE;
@@ -79,6 +91,21 @@ public class CartControllerTest extends ControllerTest {
         if( totalSubstrExp != null) {
             res.xpath(TOTAL_XPATH).string( Matchers.containsString( totalSubstrExp.toString()));
         }
+    }
+
+    // Проверка возможности покупки
+    private void buyState( boolean enabled) throws Exception {
+        wtc.get().uri( "/cart")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                // кнопка покупки есть и незаблокирована
+                .xpath( "//*[@class=\"buyButton\"]").nodeCount( 1)
+                .xpath( "//*[@class=\"buyButton\"][@disabled=\"disabled\"]").nodeCount( enabled ? 0 : 1)
+                // нет сообщения о причине запрета покупки
+                .xpath( "//*[@class=\"buyDisabledReason\"]").nodeCount( enabled ? 0 : 1)
+        ;
     }
 
     private void changeQty( long productId, String action) throws Exception {

@@ -16,7 +16,7 @@
 </a>
 <table style="width:70%;margin-left:auto;margin-right:auto;">
    <!-- Итерируемся по каждому товару -->
-    <tr class="product" th:each="pr: ${products}">
+    <tr class="product" th:each="pr: ${cart.products}">
         <td>
             <table>
                 <tr>
@@ -65,7 +65,7 @@
     <tr>
         <td style="text-align:right">
             <!-- В text суммарная стоимость заказа -->
-            <b class="total" th:text="|Итого: ${total} руб.|"></b>
+            <b class="total" th:text="|Итого: ${cart.total} руб.|"></b>
         </td>
     </tr>
     <tr>
@@ -74,8 +74,9 @@
             	В action ссылка на страницу оформления заказа.
             	В if true, если в корзине есть товары, false, если нет
             -->
-            <form th:if="${!products.isEmpty()}" th:action="@{|/cart/buy|}" method="post">
-                <button>Купить</button>
+            <form th:if="${!cart.products.isEmpty()}" th:action="@{|/cart/buy|}" method="post">
+                <button class="buyButton" th:disabled="${!cart.buyEnabled}">Купить</button>
+                <span th:if="${!cart.buyDisabledReason.isEmpty()}" class="buyDisabledReason" th:text="${cart.buyDisabledReason}"></span>
             </form>
         </td>
     </tr>

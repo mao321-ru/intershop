@@ -1,0 +1,57 @@
+openapi: 3.0.3
+info:
+  title: Payment service API
+  description: API сервиса платежей
+  version: 1.0.0
+tags:
+  - name: payment
+    description: Оплата покупок
+paths:
+  /api/balance:
+    get:
+      tags:
+        - payment
+      operationId: getBalance
+      summary: Получить баланс на счете
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+  /api/pay:
+    put:
+      tags:
+        - payment
+      operationId: pay
+      summary: Оплатить покупку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Purchase'
+      responses:
+        '200':
+          description: Платеж выполнен
+components:
+  schemas:
+    Balance:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+          example: 150.00
+      required:
+        - amount
+    Purchase:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+          example: 150.00
+      required:
+        - amount

@@ -1,3 +1,6 @@
+# URL платежного сервиса
+paysrv.url: http://localhost:8086
+
 spring:
   data:
     redis:

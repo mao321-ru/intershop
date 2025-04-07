@@ -1,9 +1,9 @@
 package org.example.intershop.service;
 
+import com.example.payclient.api.PaymentApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.mapper.ProductMapper;
-import org.example.intershop.repository.CartProductRepository;
 import org.example.intershop.repository.ProductRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.util.BitSet;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +26,12 @@ public class CartServiceImpl implements CartService {
 
     private final ProductRepository productRepo;
 
+    private final PaymentApi paySrv;
+
     @Override
     @Cacheable( value = "cart")
     @Transactional( readOnly = true)
-    public Mono<CartInfo> findCartProducts() {
+    public Mono<CartProducts> findCartProducts() {
         return productRepo.findInCart()
             .map( ProductMapper::toProductDto)
             .collectList()
@@ -36,8 +39,40 @@ public class CartServiceImpl implements CartService {
                 BigDecimal total = products.stream()
                     .map( p -> p.getPrice().multiply( BigDecimal.valueOf( p.getInCartQuantity())))
                     .reduce( BigDecimal.ZERO, BigDecimal::add);
-                return new CartInfo( products, total);
+                return new CartProducts( products, total);
             });
+    }
+
+    @Override
+    public Mono<Cart> getCart(Mono<CartProducts> cartProducts) {
+        return cartProducts
+            .flatMap( cp -> cp.products().isEmpty()
+                // в случае пустой корзины не обращаемся к платежному сервису
+                ? Mono.just( new Cart( cp.products(), cp.total(), true, ""))
+                // проверка баланса для оплаты корзины
+                : paySrv.getBalance()
+                    .map( bl -> {
+                        boolean enabled = cp.total().compareTo( BigDecimal.valueOf( bl.getAmount())) >= 0;
+                        return
+                            new Cart(
+                                cp.products(),
+                                cp.total(),
+                                enabled,
+                                enabled ? "" : "Недостаточно средств"
+                            );
+                    })
+                    .onErrorResume( e -> {
+                        log.debug( "Error on payment service: " + e.getMessage());
+                        return Mono.just(
+                            new Cart(
+                                cp.products(),
+                                cp.total(),
+                                false,
+                                "Платежный сервис: " + e.getMessage()
+                            )
+                        );
+                    })
+            );
     }
 
     @Override

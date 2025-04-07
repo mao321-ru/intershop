@@ -46,6 +46,9 @@ public abstract class IntegrationTest {
         registry.add( "spring.r2dbc.password", postgres::getPassword);
 
         registry.add( "spring.data.redis.url", redis::getRedisURI);
+
+        // нужно обернуть в контейнер
+        registry.add( "paysrv.url", () -> "http://localhost:18096");
     }
 
     // Решение из https://stackoverflow.com/questions/64115419/how-to-substitute-sql-in-tests-with-spring-data-r2dbc

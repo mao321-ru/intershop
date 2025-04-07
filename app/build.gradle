@@ -1,3 +1,9 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+plugins {
+    id "org.openapi.generator" version "7.12.0"
+}
+
 version = '0.0.3-SNAPSHOT'
 
 // используем в jar-файле вместо webapp
@@ -8,6 +14,8 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
+
+sourceSets.main.java.srcDir "$projectDir/build/generated/src/main/java"
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
@@ -22,4 +30,26 @@ dependencies {
     testImplementation 'org.testcontainers:r2dbc'
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'com.redis:testcontainers-redis:2.2.2'
+}
+
+tasks.register('buildClient', GenerateTask) {
+    generatorName.set("java")
+    inputSpec.set("$projectDir/../paysrv/src/main/resources/api-spec.yaml")
+    outputDir.set("$projectDir/build/generated")
+    ignoreFileOverride.set(".openapi-generator-java-sources.ignore")
+    modelPackage.set("com.example.payclient.domain")
+    invokerPackage.set("com.example.payclient")
+    apiPackage.set("com.example.payclient.api")
+    configOptions.set([
+            hideGenerationTimestamp: "true",
+            library                : "webclient",
+            useJakartaEe           : "true",
+            useTags                : "true",
+            openApiNullable        : "false",
+            serializableModel      : "true"
+    ])
+}
+
+tasks.named('compileJava') {
+    dependsOn(tasks.buildClient)
 }

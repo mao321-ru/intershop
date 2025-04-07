@@ -8,9 +8,21 @@ import java.util.List;
 
 public interface CartService {
 
-    public static record CartInfo(List<ProductDto> products, BigDecimal total) {}
+    record CartProducts(
+            List<ProductDto> products,
+            BigDecimal total
+    ) {}
 
-    Mono<CartInfo> findCartProducts();
+    record Cart(
+        List<ProductDto> products,
+        BigDecimal total,
+        boolean buyEnabled,
+        String buyDisabledReason
+    ) {}
+
+    Mono<CartProducts> findCartProducts();
+
+    Mono<Cart> getCart( Mono<CartProducts> cartProducts);
 
     Mono<Long> buy();
 

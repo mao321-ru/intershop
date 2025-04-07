@@ -28,10 +28,9 @@ public class CartController {
     ) {
         log.debug( "findCartProducts");
         return
-            srv.findCartProducts()
+            srv.getCart( srv.findCartProducts())
             .map( cartInfo -> {
-                model.addAttribute("products", cartInfo.products());
-                model.addAttribute("total", cartInfo.total());
+                model.addAttribute("cart", cartInfo);
                 return "cart";
             });
     }
