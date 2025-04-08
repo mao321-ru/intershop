@@ -1,9 +1,5 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
-plugins {
-    id "org.openapi.generator" version "7.12.0"
-}
-
 version = '0.0.3-SNAPSHOT'
 
 // используем в jar-файле вместо webapp

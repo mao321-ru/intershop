@@ -45,34 +45,38 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Mono<Cart> getCart(Mono<CartProducts> cartProducts) {
-        return cartProducts
-            .flatMap( cp -> cp.products().isEmpty()
+        return cartProducts.flatMap( cp -> {
+            log.debug("cart total: {}", cp.total());
+            return
+                cp.products().isEmpty()
                 // в случае пустой корзины не обращаемся к платежному сервису
-                ? Mono.just( new Cart( cp.products(), cp.total(), true, ""))
+                ? Mono.just(new Cart(cp.products(), cp.total(), true, ""))
                 // проверка баланса для оплаты корзины
                 : paySrv.getBalance()
-                    .map( bl -> {
-                        boolean enabled = cp.total().compareTo( BigDecimal.valueOf( bl.getAmount())) >= 0;
-                        return
+                .map(bl -> {
+                    Double balance = bl.getAmount();
+                    log.debug("balance: {}", balance);
+                    boolean enabled = cp.total().compareTo(BigDecimal.valueOf(balance)) <= 0;
+                    return
                             new Cart(
-                                cp.products(),
-                                cp.total(),
-                                enabled,
-                                enabled ? "" : "Недостаточно средств"
+                                    cp.products(),
+                                    cp.total(),
+                                    enabled,
+                                    enabled ? "" : "Недостаточно средств"
                             );
-                    })
-                    .onErrorResume( e -> {
-                        log.debug( "Error on payment service: " + e.getMessage());
-                        return Mono.just(
+                })
+                .onErrorResume(e -> {
+                    log.debug("Error on payment service: " + e.getMessage());
+                    return Mono.just(
                             new Cart(
-                                cp.products(),
-                                cp.total(),
-                                false,
-                                "Платежный сервис: " + e.getMessage()
+                                    cp.products(),
+                                    cp.total(),
+                                    false,
+                                    "Платежный сервис: " + e.getMessage()
                             )
-                        );
-                    })
-            );
+                    );
+                });
+        });
     }
 
     @Override

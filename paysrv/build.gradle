@@ -2,5 +2,38 @@ version = '0.0.1-SNAPSHOT'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.4.2'
+    implementation 'jakarta.validation:jakarta.validation-api:3.1.1'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.28'
     testImplementation 'io.projectreactor:reactor-test'
+}
+
+openApiGenerate {
+    generatorName.set("spring")
+    inputSpec.set("$projectDir/src/main/resources/api-spec.yaml")
+    outputDir.set("$projectDir/build/generated")
+    ignoreFileOverride.set(".openapi-generator-java-sources.ignore")
+    modelPackage.set("com.example.paysrv.domain")
+    invokerPackage.set("com.example.paysrv")
+    apiPackage.set("com.example.paysrv.api")
+    configOptions.set([
+            hideGenerationTimestamp: "true",
+            requestMappingMode: "controller",
+            interfaceOnly: "false",
+            library: "spring-boot",
+            reactive: "true",
+            useSpringBoot3: "true",
+            useJakartaEe: "true",
+            useTags: "true",
+            dateLibrary: "java8",
+            openApiNullable: "false",
+            serializableModel: "true",
+            returnSuccessCode: "true"
+            ])
+}
+
+sourceSets.main.java.srcDir "$projectDir/build/generated/src/main/java"
+
+tasks.named('compileJava') {
+    dependsOn(tasks.openApiGenerate)
 }
