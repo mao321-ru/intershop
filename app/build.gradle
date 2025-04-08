@@ -36,6 +36,8 @@ tasks.register('buildClient', GenerateTask) {
     modelPackage.set("com.example.payclient.domain")
     invokerPackage.set("com.example.payclient")
     apiPackage.set("com.example.payclient.api")
+    // Заменяем double на BigDecimal
+    typeMappings.put("double", "java.math.BigDecimal")
     configOptions.set([
             hideGenerationTimestamp: "true",
             library                : "webclient",

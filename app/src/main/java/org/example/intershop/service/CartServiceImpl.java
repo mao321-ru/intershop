@@ -54,9 +54,9 @@ public class CartServiceImpl implements CartService {
                 // проверка баланса для оплаты корзины
                 : paySrv.getBalance()
                 .map(bl -> {
-                    Double balance = bl.getAmount();
+                    BigDecimal balance = bl.getAmount();
                     log.debug("balance: {}", balance);
-                    boolean enabled = cp.total().compareTo(BigDecimal.valueOf(balance)) <= 0;
+                    boolean enabled = cp.total().compareTo( balance) <= 0;
                     return
                             new Cart(
                                     cp.products(),

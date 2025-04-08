@@ -16,10 +16,12 @@ openApiGenerate {
     modelPackage.set("com.example.paysrv.domain")
     invokerPackage.set("com.example.paysrv")
     apiPackage.set("com.example.paysrv.api")
+    // Заменяем double на BigDecimal
+    typeMappings.put("double", "java.math.BigDecimal")
     configOptions.set([
             hideGenerationTimestamp: "true",
             requestMappingMode: "controller",
-            interfaceOnly: "false",
+            interfaceOnly: "true",
             library: "spring-boot",
             reactive: "true",
             useSpringBoot3: "true",
