@@ -1,3 +1,8 @@
+logging:
+  level:
+    org.example.paysrv: DEBUG
+    #org.springframework: DEBUG
+
 spring:
   application:
     name: paysrv
