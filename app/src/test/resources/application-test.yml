@@ -9,6 +9,9 @@ junit.jupiter.testmethod.order.default: org.junit.jupiter.api.MethodOrderer$Disp
 # Настройка порядка выполнения тестовых классов (оставил, но по факту не работает похоже)
 junit.jupiter.testclass.order.default: org.junit.jupiter.api.ClassOrderer$OrderAnnotation
 
+# URL тестового платежного сервиса
+paysrv.url: http://localhost:18086
+
 spring:
   # Run SQL script to load test data
   sql.init:
