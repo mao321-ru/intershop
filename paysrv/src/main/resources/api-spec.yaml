@@ -35,6 +35,8 @@ paths:
       responses:
         '200':
           description: Платеж выполнен
+        '400':
+          description: Некорректный запрос (в т.ч. недостаточно средств для выполнения платежа)
 components:
   schemas:
     Balance:

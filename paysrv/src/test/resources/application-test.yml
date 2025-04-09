@@ -1,0 +1,12 @@
+# Начальный баланс (для настройки упрощенной реализации)
+paysrv.init.balance: 100.75
+
+logging:
+  level:
+    org.example.paysrv: TRACE
+    #org.springframework: DEBUG
+
+# Стабильный порядок выполнения тестов в рамках тестовых классов (с сортировкой по имени)
+junit.jupiter.testmethod.order.default: org.junit.jupiter.api.MethodOrderer$DisplayName
+# Настройка порядка выполнения тестовых классов (оставил, но по факту не работает похоже)
+junit.jupiter.testclass.order.default: org.junit.jupiter.api.ClassOrderer$OrderAnnotation

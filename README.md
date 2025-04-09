@@ -28,7 +28,15 @@
 - Java 21 (например, Eclipse Temurin OpenJDK 21.0.5+11)
 - Docker (для создания и подключения к тестовой БД PostgreSQL)
 
-Тесты запускаются командой:
+Порядок выполнения:
+
+- запустить в консоли платежный сервис для использования в тестах
+
+```cmd
+  ./gradlew paysrv:bootRun --args="--spring.profiles.active=apptest"
+```
+
+- запустить в другой консоли тесты командой
 
 ```cmd
   ./gradlew cleanTest test

@@ -1,8 +1,10 @@
 package org.example.paysrv.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.example.paysrv.api.PaymentApi;
 import org.example.paysrv.domain.Balance;
 import org.example.paysrv.domain.Purchase;
+import org.example.paysrv.service.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
@@ -13,15 +15,18 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 public class PaymentApiController implements PaymentApi {
+
+    private final PaymentService srv;
 
     @Override
     public Mono<ResponseEntity<Balance>> getBalance(
             final ServerWebExchange exchange
     ) {
-        log.debug( "getBalance");
-        Balance balance = new Balance( BigDecimal.valueOf( 200.15));
+        Balance balance = srv.getBalance();
+        log.debug( "getBalance: amount: {}", balance.getAmount());
         return Mono.just( ResponseEntity.ok( balance));
     }
 
@@ -32,7 +37,11 @@ public class PaymentApiController implements PaymentApi {
     ) {
         return purchase
             .doOnNext( p -> log.debug( "pay: amount: {}", p.getAmount()))
-            .thenReturn( ResponseEntity.ok().build());
+            .map( p->
+                srv.pay( p)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.badRequest().build()
+            );
     }
 
 }
