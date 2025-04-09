@@ -66,4 +66,17 @@ public class CartController {
             .defaultIfEmpty( ResponseEntity.notFound().build())
         ;
     }
+
+    // Более информационное сообщение об ошибке, т.ч. для ошибок платежного сервиса
+    @ExceptionHandler( RuntimeException.class)
+    public Mono<ResponseEntity<String>> handleException( RuntimeException e) {
+        return Mono.just(
+            ResponseEntity.internalServerError().body(
+                e.getCause() != null
+                    ? "%s: %s".formatted( e.getMessage(), e.getCause().getMessage())
+                    : e.getMessage()
+            )
+        );
+    }
+
 }

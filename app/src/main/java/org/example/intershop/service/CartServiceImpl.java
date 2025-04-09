@@ -1,6 +1,7 @@
 package org.example.intershop.service;
 
 import com.example.payclient.api.PaymentApi;
+import com.example.payclient.domain.Purchase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.mapper.ProductMapper;
@@ -138,8 +139,14 @@ public class CartServiceImpl implements CartService {
                             o.order_id = :orderId
                         """)
                             .bind( "orderId", orderId)
-                            .fetch()
-                            .rowsUpdated()
+                            .filter( s -> s.returnGeneratedValues("order_total"))
+                            .map( row -> row.get("order_total", BigDecimal.class))
+                            .one()
+                            .doOnNext( total -> log.trace( "amount for pay: {}", total))
+                    )
+                    // списание платы через платежный сервис
+                    .flatMap( total -> paySrv.pay( new Purchase().amount( total))
+                        .onErrorMap( e -> new RuntimeException( "Error on pay request", e))
                     )
                     // удаляем из корзины товары, которые добавили в заказ
                     .then( dc.sql("""
