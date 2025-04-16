@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 public class MainControllerTest extends ControllerTest {
 
@@ -102,19 +104,37 @@ public class MainControllerTest extends ControllerTest {
     }
 
     @Test
-    void changeInCartQuantity_noAuth() throws Exception {
+    void changeInCartQuantity_noCsrf() throws Exception {
         wtc.post().uri( "/main/products/{productId}", EXISTS_PRODUCT_ID)
                 .contentType( MediaType.APPLICATION_FORM_URLENCODED)
                 .body( BodyInserters
                         .fromFormData( "action", "plus")
-                        .with("search", EXISTS_PRODUCT_NAME)
+                        .with("search", "")
                         .with("sort", "ALPHA")
                         .with("pageSize", "10")
                         .with("pageNumber", "0")
                 )
                 .exchange()
                 .expectStatus().isForbidden()
-                .expectBody().consumeWith( System.out::println) // вывод запроса и ответа
+                .expectBody().consumeWith( b -> assertThat( b.getResponseBody()).asString().contains( "CSRF token"))
+        ;
+    }
+
+    @Test
+    void changeInCartQuantity_noAuth() throws Exception {
+        wtc.mutateWith( csrf())
+                .post().uri( "/main/products/{productId}", EXISTS_PRODUCT_ID)
+                .contentType( MediaType.APPLICATION_FORM_URLENCODED)
+                .body( BodyInserters
+                        .fromFormData( "action", "plus")
+                        .with("search", "")
+                        .with("sort", "ALPHA")
+                        .with("pageSize", "10")
+                        .with("pageNumber", "0")
+                )
+                .exchange()
+                .expectStatus().isFound()
+                .expectHeader().valueEquals( "Location", "/login" )
         ;
     }
 
@@ -123,7 +143,8 @@ public class MainControllerTest extends ControllerTest {
     void changeInCartQuantity_check() throws Exception {
         long productId = EXISTS_PRODUCT_ID;
         Consumer<String> act = ( action) -> {
-            wtc.post().uri( "/main/products/{productId}", productId)
+            wtc.mutateWith( csrf())
+                    .post().uri( "/main/products/{productId}", productId)
                     .contentType( MediaType.APPLICATION_FORM_URLENCODED)
                     .body( BodyInserters
                         .fromFormData( "action", action)

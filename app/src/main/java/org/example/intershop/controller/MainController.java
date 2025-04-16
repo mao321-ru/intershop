@@ -60,9 +60,10 @@ public class MainController {
                 resp.setStatusCode( HttpStatus.FOUND);
                 resp.getHeaders().setLocation(
                     UriComponentsBuilder.fromPath( "/")
-                        // сохраняем все параметры запроса кроме action
+                        // сохраняем все параметры запроса кроме action и _csrf
                         .queryParams( mvm)
                         .replaceQueryParam( "action")
+                        .replaceQueryParam( "_csrf")
                         .build()
                         .toUri()
                 );

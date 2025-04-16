@@ -68,6 +68,8 @@
             </td>
         </tr>
         <tr><td>
+        <!-- включается динамически при выполнении POST-запросов для передачи CSRF-токена в параметре -->
+        <input sec:authorize="isAuthenticated()" class="form__csrf" disabled="disabled" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <!-- картинки товаров отображаются в 3 колонки за счет стиля -->
         <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
             <div class="product" th:each="pr: ${products}">
@@ -103,13 +105,13 @@
                             В action ссылка на изменение количества товара в корзине.
                             Передается параметр запроса action=[minus|plus]
                             -->
-                            <button formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="minus">-</button>
+                            <button formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" onclick="document.querySelector('.form__csrf').disabled = false;" name="action" value="minus">-</button>
                             <!-- В text количество товара в корзине -->
                             <span class="product__inCartQuantity" name="quantity" th:text="${pr.inCartQuantity}"></span>
-                            <button formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="plus">+</button>
+                            <button formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" onclick="document.querySelector('.form__csrf').disabled = false;" name="action" value="plus">+</button>
                             <!-- В if true, если товар еще не был добавлен в корзину, false, если уже был -->
-                            <button th:if="${pr.inCartQuantity == 0}" formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="plus" style="float:right;">В корзину</button>
-                            <button th:if="${pr.inCartQuantity > 0}" formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" name="action" value="delete" style="float:right;">&#10007;</button>
+                            <button th:if="${pr.inCartQuantity == 0}" formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" onclick="document.querySelector('.form__csrf').disabled = false;" name="action" value="plus" style="float:right;">В корзину</button>
+                            <button th:if="${pr.inCartQuantity > 0}" formmethod="post" th:formaction="@{|/main/products/${pr.productId}|}" onclick="document.querySelector('.form__csrf').disabled = false;" name="action" value="delete" style="float:right;">&#10007;</button>
                         </td>
                     </tr>
                 </table>
