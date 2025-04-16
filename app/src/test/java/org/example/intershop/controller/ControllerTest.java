@@ -41,11 +41,26 @@ public class ControllerTest extends IntegrationTest {
     // элемент для перехода на следующую страницу
     protected final String NEXT_PAGE_XPATH = "//*[@class=\"form__nextPage\"]";
 
+    // ссылки на login и logoff
+    protected final String LOGIN_LINK_XPATH = "//a[@href=\"/login\"]";
+    protected final String LOGOUT_LINK_XPATH = "//a[@href=\"/logout\"]";
+
+    // ссылка на Корзину
+    protected final String CART_LINK_XPATH = "//a[@href=\"/cart\"]";
+
+    // ссылка на Заказы
+    protected final String ORDERS_LINK_XPATH = "//a[@href=\"/orders\"]";
+
     // выбор всех элементов с товарами
     protected final String PRODUCTS_XPATH = "//*[@class=\"product\"]";
 
     // выбор элемента для поля товара, например PR_FIELD_XPF.formatted( "productName")
     protected final String PR_FIELD_XPF = PRODUCTS_XPATH + "//*[@class=\"product__%s\"]";
+
+    // выбор элемента с указанным значением/текстом/src поля товара, например PR_VAL_XPF.formatted( "productName", "Мыло DURU")
+
+    // выбор элементов изменения количества товара в корзине
+    protected final String PRODUCT_IN_CART_XPATH = PR_FIELD_XPF.formatted( "inCart");
 
     // выбор элемента с указанным значением/текстом/src поля товара, например PR_VAL_XPF.formatted( "productName", "Мыло DURU")
     protected final String PR_VAL_XPF = PR_FIELD_XPF + "[@value=\"%s\"]";

@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <title>Витрина товаров</title>
 </head>
 <body>
-    <!-- В href ссылка на страницу заказов -->
-    <a th:href="@{/orders}" style="float:right;">
+    <a sec:authorize="isAuthenticated()" th:href="@{/orders}" style="float:right;">
         <b>ЗАКАЗЫ &#10549;</b>
     </a>
-    <!-- В href ссылка на корзину -->
-    <a th:href="@{/cart}" style="float:right;">
+    <a sec:authorize="isAuthenticated()" th:href="@{/cart}" style="float:right;">
         <b>КОРЗИНА &#10549;</b>
     </a>
-    <!-- В href ссылка на главную страницу -->
     <a th:href="@{/}" style="float:right;">
         <b>ГЛАВНАЯ &#10549;</b>
     </a>
@@ -36,7 +33,7 @@
 		В action ссылка на изменение количества товара в корзине.
 		Передается параметр запроса action=[minus|plus]
 	-->
-        <form method="post">
+        <form sec:authorize="isAuthenticated()" class="product__inCart" method="post">
             <button name="action" value="minus">-</button>
             <!-- В text количество товара в корзине -->
             <span class="product__inCartQuantity" name="quantity" th:text="${pr.inCartQuantity}"></span>

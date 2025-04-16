@@ -1,7 +1,9 @@
 package org.example.intershop.controller;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.function.BiConsumer;
@@ -14,21 +16,51 @@ import static org.junit.Assert.assertNull;
 public class ProductControllerTest extends ControllerTest {
 
     @Test
-    void getProduct_check() throws Exception {
+    void getProduct_noAuth() throws Exception {
+        final long productId = EXISTS_PRODUCT_ID;
+        wtc.get().uri( "/products/{productId}", productId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType( "text/html;charset=UTF-8")
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                // выводится хотя бы один товар
+                .xpath( PRODUCTS_XPATH).nodeCount( 1)
+                .xpath( PR_TEXT_XPF.formatted( "productName", EXISTS_PRODUCT_NAME))
+                .nodeCount( 1)
+                // у товара есть картинка
+                .xpath( PR_SRC_XPF.formatted( "image", "/products/%d/image".formatted( productId)))
+                .nodeCount( 1)
+                // связанные с авторизацией ссылки
+                .xpath( CART_LINK_XPATH).nodeCount( 0)
+                .xpath( ORDERS_LINK_XPATH).nodeCount( 0)
+                // присутствуют элементы для изменения количества товара в корзине
+                .xpath( PRODUCT_IN_CART_XPATH).nodeCount( 0)
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
+    void getProduct_auth() throws Exception {
         final long productId = EXISTS_PRODUCT_ID;
         wtc.get().uri( "/products/{productId}", productId)
             .exchange()
             .expectStatus().isOk()
             .expectHeader().contentType( "text/html;charset=UTF-8")
             .expectBody()
-                //.consumeWith( System.out::println) // вывод запроса и ответа
-                // выводится хотя бы один товар
-                .xpath( PRODUCTS_XPATH).nodeCount( 1)
-                .xpath( PR_TEXT_XPF.formatted( "productName", EXISTS_PRODUCT_NAME))
-                    .nodeCount( 1)
-                // у товара есть картинка
-                .xpath( PR_SRC_XPF.formatted( "image", "/products/%d/image".formatted( productId)))
-                    .nodeCount( 1)
+            //.consumeWith( System.out::println) // вывод запроса и ответа
+            // выводится хотя бы один товар
+            .xpath( PRODUCTS_XPATH).nodeCount( 1)
+            .xpath( PR_TEXT_XPF.formatted( "productName", EXISTS_PRODUCT_NAME))
+                .nodeCount( 1)
+            // у товара есть картинка
+            .xpath( PR_SRC_XPF.formatted( "image", "/products/%d/image".formatted( productId)))
+                .nodeCount( 1)
+            // связанные с авторизацией ссылки
+            .xpath( CART_LINK_XPATH).nodeCount( 1)
+            .xpath( ORDERS_LINK_XPATH).nodeCount( 1)
+            // присутствуют элементы для изменения количества товара в корзине
+            .xpath( PRODUCT_IN_CART_XPATH).nodeCount( 1)
         ;
     }
 

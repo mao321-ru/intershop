@@ -4,6 +4,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertNull;
 public class MainControllerTest extends ControllerTest {
 
     @Test
-    void findProducts_startPageProductsExists() throws Exception {
+    void findProducts_noAuth() throws Exception {
         wtc.get().uri( "/")
                 .exchange()
                 .expectStatus().isOk()
@@ -25,6 +26,34 @@ public class MainControllerTest extends ControllerTest {
                 //.consumeWith( System.out::println) // вывод запроса и ответа
                 // выводится хотя бы один товар
                 .xpath( PRODUCTS_XPATH).nodeCount( Matchers.greaterThan( 0))
+                // связанные с авторизацией ссылки
+                .xpath( LOGIN_LINK_XPATH).nodeCount( 1)
+                .xpath( LOGOUT_LINK_XPATH).nodeCount( 0)
+                .xpath( CART_LINK_XPATH).nodeCount( 0)
+                .xpath( ORDERS_LINK_XPATH).nodeCount( 0)
+                // отсутствуют элементы для изменения количества товара в корзине
+                .xpath( PRODUCT_IN_CART_XPATH).nodeCount( 0)
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
+    void findProducts_auth() throws Exception {
+        wtc.get().uri( "/")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType( "text/html;charset=UTF-8")
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                // выводится хотя бы один товар
+                .xpath( PRODUCTS_XPATH).nodeCount( Matchers.greaterThan( 0))
+                // связанные с авторизацией ссылки
+                .xpath( LOGIN_LINK_XPATH).nodeCount( 0)
+                .xpath( LOGOUT_LINK_XPATH).nodeCount( 1)
+                .xpath( CART_LINK_XPATH).nodeCount( 1)
+                .xpath( ORDERS_LINK_XPATH).nodeCount( 1)
+                // присутствуют элементы для изменения количества товара в корзине
+                .xpath( PRODUCT_IN_CART_XPATH).nodeCount( Matchers.greaterThan( 0))
         ;
     }
 
@@ -73,6 +102,24 @@ public class MainControllerTest extends ControllerTest {
     }
 
     @Test
+    void changeInCartQuantity_noAuth() throws Exception {
+        wtc.post().uri( "/main/products/{productId}", EXISTS_PRODUCT_ID)
+                .contentType( MediaType.APPLICATION_FORM_URLENCODED)
+                .body( BodyInserters
+                        .fromFormData( "action", "plus")
+                        .with("search", EXISTS_PRODUCT_NAME)
+                        .with("sort", "ALPHA")
+                        .with("pageSize", "10")
+                        .with("pageNumber", "0")
+                )
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody().consumeWith( System.out::println) // вывод запроса и ответа
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
     void changeInCartQuantity_check() throws Exception {
         long productId = EXISTS_PRODUCT_ID;
         Consumer<String> act = ( action) -> {
