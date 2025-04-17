@@ -5,16 +5,29 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.*;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 public class ConfigControllerTest extends ControllerTest {
 
     @Test
+    void configProducts_noAuth() throws Exception {
+        wtc.get().uri( "/config")
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
     void configProducts_productsExists() throws Exception {
         wtc.get().uri( "/config")
                 .exchange()
@@ -32,12 +45,45 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
-    void createProduct_NoImage() throws Exception {
+    void createProduct_noCsrf() throws Exception {
         final String productName = "createProduct_NoImage";
         final String price = "904935.05";
         final String description = "createProduct_NoImage desc";
 
         wtc.post().uri( "/config/products")
+                .contentType( MediaType.MULTIPART_FORM_DATA)
+                .body( makeMultipartBody( productName, price, description))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody().consumeWith( b -> assertThat( b.getResponseBody()).asString().contains( "CSRF token"))
+        ;
+    }
+
+    @Test
+    void createProduct_noAuth() throws Exception {
+        final String productName = "createProduct_NoImage";
+        final String price = "904935.05";
+        final String description = "createProduct_NoImage desc";
+
+        wtc.mutateWith( csrf())
+            .post().uri( "/config/products")
+            .contentType( MediaType.MULTIPART_FORM_DATA)
+            .body( makeMultipartBody( productName, price, description))
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "admin")
+    void createProduct_NoImage() throws Exception {
+        final String productName = "createProduct_NoImage";
+        final String price = "904935.05";
+        final String description = "createProduct_NoImage desc";
+
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products")
                 .contentType( MediaType.MULTIPART_FORM_DATA)
                 .body( makeMultipartBody( productName, price, description))
                 .exchange()
@@ -56,6 +102,7 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
+    @WithMockUser( username = "admin")
     void createProduct_WithImage() throws Exception {
         final String productName = "createProduct_WithImage";
         final String price = "7384877.00";
@@ -63,7 +110,8 @@ public class ConfigControllerTest extends ControllerTest {
         final String filename = "createProduct_WithImage.png";
         byte[] fileData = "image_data".getBytes( StandardCharsets.UTF_8);
 
-        wtc.post().uri( "/config/products")
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products")
                 .contentType( MediaType.MULTIPART_FORM_DATA)
                 .body( makeMultipartBody( productName, price, description, filename, fileData))
                 .exchange()
@@ -117,6 +165,7 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
+    @WithMockUser( username = "admin")
     void createProduct_checkRollback() throws Exception {
         final String productName = "createProduct_checkRollback";
         // обеспечиваем ошибку при сохранении товара в БД (выполняется после сохранения изображения)
@@ -136,7 +185,8 @@ public class ConfigControllerTest extends ControllerTest {
                 .contentType( MediaType.IMAGE_PNG)
         ;
         //System.out.println( "\n\n* FILE *:\n" + builder.build().get( "file").toString());
-        wtc.post().uri( "/config/products")
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products")
                 .contentType( MediaType.MULTIPART_FORM_DATA)
                 .body( BodyInserters.fromMultipartData( builder.build()))
                 .exchange()
@@ -148,6 +198,30 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
+    void updateProduct_noAuth() throws Exception {
+        var pr = getProductById( EXISTS_PRODUCT_ID);
+        var productId = pr.getId();
+        var imageId = pr.getImageId();
+
+        final String productName = "updateProduct_check";
+        final String price = "90843.99";
+        final String description = "updateProduct_check desc";
+        final String filename = "updateProduct_check.jpg";
+        final String contentType = MediaType.IMAGE_JPEG.toString();
+        final byte[] fileData = "updateProduct_check_img".getBytes( StandardCharsets.UTF_8);
+
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products/{productId}", productId)
+                .contentType( MediaType.MULTIPART_FORM_DATA)
+                .body( makeMultipartBody( productName, price, description, filename, fileData))
+                .exchange()
+                .expectStatus().isFound()
+                .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "admin")
     void updateProduct_check() throws Exception {
         var pr = getProductById( EXISTS_PRODUCT_ID);
         var productId = pr.getId();
@@ -160,7 +234,8 @@ public class ConfigControllerTest extends ControllerTest {
         final String contentType = MediaType.IMAGE_JPEG.toString();
         final byte[] fileData = "updateProduct_check_img".getBytes( StandardCharsets.UTF_8);
 
-        wtc.post().uri( "/config/products/{productId}", productId)
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products/{productId}", productId)
                 .contentType( MediaType.MULTIPART_FORM_DATA)
                 .body( makeMultipartBody( productName, price, description, filename, fileData))
                 .exchange()
@@ -185,6 +260,7 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
+    @WithMockUser( username = "admin")
     void updateProduct_setImage() throws Exception {
         var productId = NO_IMAGE_PRODUCT_ID;
 
@@ -195,7 +271,8 @@ public class ConfigControllerTest extends ControllerTest {
         final String contentType = MediaType.IMAGE_JPEG.toString();
         final byte[] fileData = "updateProduct_setImage_img".getBytes( StandardCharsets.UTF_8);
 
-        wtc.post().uri( "/config/products/{productId}", productId)
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products/{productId}", productId)
                 .contentType( MediaType.MULTIPART_FORM_DATA)
                 .body( makeMultipartBody( productName, price, description, filename, fileData))
                 .exchange()
@@ -220,6 +297,7 @@ public class ConfigControllerTest extends ControllerTest {
 
 
     @Test
+    @WithMockUser( username = "admin")
     void updateProduct_delImage() throws Exception {
         var productId = EXISTS_PRODUCT_ID;
         var pr = getProductById( productId);
@@ -232,7 +310,8 @@ public class ConfigControllerTest extends ControllerTest {
         final String contentType = MediaType.IMAGE_JPEG.toString();
         final byte[] fileData = "updateProduct_delImage_img".getBytes( StandardCharsets.UTF_8);
 
-        wtc.post().uri( "/config/products/{productId}", productId)
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products/{productId}", productId)
                 .contentType( MediaType.MULTIPART_FORM_DATA)
                 .body( makeMultipartBody( productName, price, description, filename, fileData, true))
                 .exchange()
@@ -251,12 +330,14 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
+    @WithMockUser( username = "admin")
     void deleteProduct_check() throws Exception {
         var productId = UNSELLABLE_PRODUCT_ID;
         var pr = getProductById( productId);
         var imageId = pr.getImageId();
 
-        wtc.post().uri( "/config/products/{productId}", productId)
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products/{productId}", productId)
                 .body( BodyInserters.fromMultipartData( "_method", "delete"))
                 .exchange()
                 .expectStatus().isFound()
@@ -267,19 +348,19 @@ public class ConfigControllerTest extends ControllerTest {
         assertNull( "Image not deleted", getImageById( imageId));
     }
 
-
     @Test
+    @WithMockUser( username = "admin")
     void deleteProduct_notFound() throws Exception {
         var productId = NOT_EXISTS_DATA_ID;
 
-        wtc.post().uri( "/config/products/{productId}", productId)
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products/{productId}", productId)
                 .body( BodyInserters.fromMultipartData( "_method", "delete"))
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody( String.class).isEqualTo( null)
         ;
     }
-
 
     // тело запроса без передачи картинки
     private BodyInserters.MultipartInserter makeMultipartBody(

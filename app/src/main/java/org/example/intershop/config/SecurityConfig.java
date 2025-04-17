@@ -8,8 +8,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.csrf.XorServerCsrfTokenRequestAttributeHandler;
 import org.springframework.web.server.WebSession;
-import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -19,13 +19,17 @@ import java.net.URI;
 public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain( ServerHttpSecurity http) {
+        var csrfHandler = new XorServerCsrfTokenRequestAttributeHandler();
+        // should try to resolve the actual CSRF token from the body of multipart data requests
+        csrfHandler.setTokenFromMultipartDataEnabled( true);
         return http
             .authorizeExchange( exchanges -> exchanges
                 .pathMatchers( HttpMethod.GET, "/", "/products/**").permitAll()
                 .pathMatchers( HttpMethod.OPTIONS, "/", "/products/**").permitAll()
-                .pathMatchers("/config").hasRole( "ADMIN")
+                //.pathMatchers("/config").hasRole( "ADMIN")
                 .anyExchange().authenticated()
             )
+            .csrf( csrf -> csrf.csrfTokenRequestHandler( csrfHandler))
             .formLogin( Customizer.withDefaults())
             .logout( logout -> logout
                 .logoutUrl( "/logout")
