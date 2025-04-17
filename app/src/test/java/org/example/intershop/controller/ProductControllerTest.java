@@ -1,5 +1,6 @@
 package org.example.intershop.controller;
 
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -12,6 +13,7 @@ import java.util.function.Consumer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 public class ProductControllerTest extends ControllerTest {
 
@@ -125,10 +127,35 @@ public class ProductControllerTest extends ControllerTest {
     }
 
     @Test
+    void changeInCartQuantity_noCsrf() throws Exception {
+        wtc.post().uri( "/products/{productId}", EXISTS_PRODUCT_ID)
+                .contentType( MediaType.APPLICATION_FORM_URLENCODED)
+                .body( BodyInserters.fromFormData( "action", "plus"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody().consumeWith( b -> AssertionsForClassTypes.assertThat( b.getResponseBody()).asString().contains( "CSRF token"))
+        ;
+    }
+
+    @Test
+    void changeInCartQuantity_noAuth() throws Exception {
+        wtc.mutateWith( csrf())
+            .post().uri( "/products/{productId}", EXISTS_PRODUCT_ID)
+            .contentType( MediaType.APPLICATION_FORM_URLENCODED)
+            .body( BodyInserters.fromFormData( "action", "plus"))
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
     void changeInCartQuantity_check() throws Exception {
         long productId = EXISTS_PRODUCT_ID;
         Consumer<String> act = ( action) -> {
-            wtc.post().uri( "/products/{productId}", productId)
+            wtc.mutateWith( csrf())
+                    .post().uri( "/products/{productId}", productId)
                     .contentType( MediaType.APPLICATION_FORM_URLENCODED)
                     .body( BodyInserters.fromFormData( "action", action))
                     .exchange()

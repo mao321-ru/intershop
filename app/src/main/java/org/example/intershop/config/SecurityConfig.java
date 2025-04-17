@@ -2,6 +2,7 @@ package org.example.intershop.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -20,7 +21,8 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain( ServerHttpSecurity http) {
         return http
             .authorizeExchange( exchanges -> exchanges
-                .pathMatchers("/", "/products/**").permitAll()
+                .pathMatchers( HttpMethod.GET, "/", "/products/**").permitAll()
+                .pathMatchers( HttpMethod.OPTIONS, "/", "/products/**").permitAll()
                 .pathMatchers("/config").hasRole( "ADMIN")
                 .anyExchange().authenticated()
             )

@@ -2,10 +2,21 @@ package org.example.intershop.controller;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 
 public class OrderControllerTest extends ControllerTest {
 
     @Test
+    void findOrders_noAuth() throws Exception {
+        wtc.get().uri( "/orders")
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
     void findOrders_check() throws Exception {
         wtc.get().uri( "/orders")
             .exchange()
@@ -21,6 +32,16 @@ public class OrderControllerTest extends ControllerTest {
     }
 
     @Test
+    void getOrder_noAuth() throws Exception {
+        wtc.get().uri( "/orders/{orderId}", EXISTS_PRODUCT_ID)
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
     void getOrder_check() throws Exception {
         wtc.get().uri( "/orders/{orderId}", EXISTS_PRODUCT_ID)
             .exchange()

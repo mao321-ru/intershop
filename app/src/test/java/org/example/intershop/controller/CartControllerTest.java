@@ -4,16 +4,31 @@ import org.example.intershop.model.Order;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 public class CartControllerTest extends ControllerTest {
 
     @Test
+    void changeQuantity_noAuth() throws Exception {
+        wtc.mutateWith( csrf())
+                .post().uri( "/cart/products/{productId}", EXISTS_PRODUCT_ID)
+                .contentType( MediaType.APPLICATION_FORM_URLENCODED)
+                .body( BodyInserters.fromFormData( "action", "plus"))
+                .exchange()
+                .expectStatus().isFound()
+                .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
     void changeQuantity_check() throws Exception {
         final long productId = EXISTS_PRODUCT_ID;
         final String productName = EXISTS_PRODUCT_NAME;
@@ -38,6 +53,16 @@ public class CartControllerTest extends ControllerTest {
     }
 
     @Test
+    void findCardProducts_noAuth() throws Exception {
+        wtc.get().uri( "/cart")
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
     void findCardProducts_buyEnabled() throws Exception {
         final long productId = EXISTS_PRODUCT_ID;
         final String productName = EXISTS_PRODUCT_NAME;
@@ -50,22 +75,35 @@ public class CartControllerTest extends ControllerTest {
     }
 
     @Test
+    void buy_noAuth() throws Exception {
+        wtc.mutateWith( csrf())
+            .post().uri( "/cart/buy")
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/login" )
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "user")
     void buy_check() throws Exception {
         final long productId = EXISTS_PRODUCT_ID;
         final BigDecimal price = EXISTS_PRODUCT_PRICE;
         final long orderId = TEMP_DATA_START_ID;
 
-        wtc.post().uri( "/cart/buy")
-                .exchange()
-                .expectStatus().isNotFound()
+        wtc.mutateWith( csrf())
+            .post().uri( "/cart/buy")
+            .exchange()
+            .expectStatus().isNotFound()
         ;
 
         changeQty( productId, "plus");
 
-        wtc.post().uri( "/cart/buy")
-                .exchange()
-                .expectStatus().isFound()
-                .expectHeader().valueEquals( "Location", "/orders/" + orderId + "?isNew=1")
+        wtc.mutateWith( csrf())
+            .post().uri( "/cart/buy")
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/orders/" + orderId + "?isNew=1")
         ;
 
         Order order = getOrderById( orderId);
@@ -109,12 +147,13 @@ public class CartControllerTest extends ControllerTest {
     }
 
     private void changeQty( long productId, String action) throws Exception {
-        wtc.post().uri( "/cart/products/{productId}", productId)
-                .contentType( MediaType.APPLICATION_FORM_URLENCODED)
-                .body( BodyInserters.fromFormData( "action", action))
-                .exchange()
-                .expectStatus().isFound()
-                .expectHeader().valueEquals( "Location", "/cart")
+        wtc.mutateWith( csrf())
+            .post().uri( "/cart/products/{productId}", productId)
+            .contentType( MediaType.APPLICATION_FORM_URLENCODED)
+            .body( BodyInserters.fromFormData( "action", action))
+            .exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueEquals( "Location", "/cart")
         ;
     }
 

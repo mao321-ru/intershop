@@ -34,6 +34,7 @@
 		Передается параметр запроса action=[minus|plus]
 	-->
         <form sec:authorize="isAuthenticated()" class="product__inCart" method="post">
+            <input sec:authorize="isAuthenticated()" class="form__csrf" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button name="action" value="minus">-</button>
             <!-- В text количество товара в корзине -->
             <span class="product__inCartQuantity" name="quantity" th:text="${pr.inCartQuantity}"></span>
