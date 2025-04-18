@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.csrf.XorServerCsrfTokenRequestAttributeHandler;
 import org.springframework.web.server.WebSession;
@@ -17,6 +19,12 @@ import java.net.URI;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain( ServerHttpSecurity http) {
         var csrfHandler = new XorServerCsrfTokenRequestAttributeHandler();

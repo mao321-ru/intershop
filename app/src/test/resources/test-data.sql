@@ -3,7 +3,9 @@ delete from orders;
 delete from cart_products;
 delete from products;
 delete from images;
+delete from users;
 
+alter sequence users_user_id_seq restart with 1;
 alter sequence images_image_id_seq restart with 1;
 alter sequence products_product_id_seq restart with 1;
 alter sequence cart_products_cart_product_id_seq restart with 1;
@@ -11,6 +13,21 @@ alter sequence orders_order_id_seq restart with 1;
 alter sequence orders_order_number_seq restart with 1;
 alter sequence order_products_order_product_id_seq restart with 1;
 
+insert into
+    users
+(
+    login,
+    password_hash,
+    admin_flag
+)
+select
+    s.*
+from
+    (
+    select 'admin' as login, '-' as password_hash, 1 as admin_flag
+    union all select 'user', '-', 0
+    ) s
+;
 
 insert into
     images
@@ -69,6 +86,7 @@ union all select 1, 2, 1, 5.00
 
 
 -- id для временных данных (создавемые в процессе тестов) начинаются с 1001
+alter sequence users_user_id_seq restart with 1001;
 alter sequence images_image_id_seq restart with 1001;
 alter sequence products_product_id_seq restart with 1001;
 alter sequence cart_products_cart_product_id_seq restart with 1001;
