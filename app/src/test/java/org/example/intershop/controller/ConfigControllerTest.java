@@ -28,6 +28,16 @@ public class ConfigControllerTest extends ControllerTest {
 
     @Test
     @WithMockUser( username = "user")
+    void configProducts_noRole() throws Exception {
+        wtc.get().uri( "/config")
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody( String.class).isEqualTo( "Access Denied")
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void configProducts_productsExists() throws Exception {
         wtc.get().uri( "/config")
                 .exchange()
@@ -77,6 +87,23 @@ public class ConfigControllerTest extends ControllerTest {
 
     @Test
     @WithMockUser( username = "admin")
+    void createProduct_noRole() throws Exception {
+        final String productName = "createProduct_NoImage";
+        final String price = "904935.05";
+        final String description = "createProduct_NoImage desc";
+
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products")
+                .contentType( MediaType.MULTIPART_FORM_DATA)
+                .body( makeMultipartBody( productName, price, description))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody( String.class).isEqualTo( "Access Denied")
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void createProduct_NoImage() throws Exception {
         final String productName = "createProduct_NoImage";
         final String price = "904935.05";
@@ -102,7 +129,7 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
-    @WithMockUser( username = "admin")
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void createProduct_WithImage() throws Exception {
         final String productName = "createProduct_WithImage";
         final String price = "7384877.00";
@@ -165,7 +192,7 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
-    @WithMockUser( username = "admin")
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void createProduct_checkRollback() throws Exception {
         final String productName = "createProduct_checkRollback";
         // обеспечиваем ошибку при сохранении товара в БД (выполняется после сохранения изображения)
@@ -222,6 +249,30 @@ public class ConfigControllerTest extends ControllerTest {
 
     @Test
     @WithMockUser( username = "admin")
+    void updateProduct_noRole() throws Exception {
+        var pr = getProductById( EXISTS_PRODUCT_ID);
+        var productId = pr.getId();
+        var imageId = pr.getImageId();
+
+        final String productName = "updateProduct_check";
+        final String price = "90843.99";
+        final String description = "updateProduct_check desc";
+        final String filename = "updateProduct_check.jpg";
+        final String contentType = MediaType.IMAGE_JPEG.toString();
+        final byte[] fileData = "updateProduct_check_img".getBytes( StandardCharsets.UTF_8);
+
+        wtc.mutateWith( csrf())
+                .post().uri( "/config/products/{productId}", productId)
+                .contentType( MediaType.MULTIPART_FORM_DATA)
+                .body( makeMultipartBody( productName, price, description, filename, fileData))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody( String.class).isEqualTo( "Access Denied")
+        ;
+    }
+
+    @Test
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void updateProduct_check() throws Exception {
         var pr = getProductById( EXISTS_PRODUCT_ID);
         var productId = pr.getId();
@@ -260,7 +311,7 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
-    @WithMockUser( username = "admin")
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void updateProduct_setImage() throws Exception {
         var productId = NO_IMAGE_PRODUCT_ID;
 
@@ -295,9 +346,8 @@ public class ConfigControllerTest extends ControllerTest {
         assertTrue( "Unexpected fileData", Arrays.equals( fileData, img.getFileData()));
     }
 
-
     @Test
-    @WithMockUser( username = "admin")
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void updateProduct_delImage() throws Exception {
         var productId = EXISTS_PRODUCT_ID;
         var pr = getProductById( productId);
@@ -330,7 +380,7 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
-    @WithMockUser( username = "admin")
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void deleteProduct_check() throws Exception {
         var productId = UNSELLABLE_PRODUCT_ID;
         var pr = getProductById( productId);
@@ -349,7 +399,7 @@ public class ConfigControllerTest extends ControllerTest {
     }
 
     @Test
-    @WithMockUser( username = "admin")
+    @WithMockUser( username = "admin", roles = { "ADMIN"})
     void deleteProduct_notFound() throws Exception {
         var productId = NOT_EXISTS_DATA_ID;
 

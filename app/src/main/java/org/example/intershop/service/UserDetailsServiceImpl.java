@@ -21,10 +21,11 @@ public class UserDetailsServiceImpl implements ReactiveUserDetailsService {
     @Override
     public Mono<UserDetails> findByUsername( String username) {
         return repo.findByLogin( username)
-                .map( u ->
-                    new org.springframework.security.core.userdetails.User(
-                        u.getLogin(), u.getPasswordHash(), List.of()
-                    )
+                .map( u -> org.springframework.security.core.userdetails.User
+                    .withUsername( u.getLogin())
+                    .password( u.getPasswordHash())
+                    .roles( u.getAdminFlag() == 1 ? "ADMIN" : "USER")
+                    .build()
                 );
     }
 

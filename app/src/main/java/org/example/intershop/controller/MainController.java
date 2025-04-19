@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.intershop.service.ProductService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class ConfigController {
     private final ProductService srv;
 
     @GetMapping( "/config")
+    @PreAuthorize( "hasRole('ADMIN')")
     Mono<Rendering> configProducts() {
         log.debug( "configProducts");
         return Mono.just(
@@ -37,6 +39,7 @@ public class ConfigController {
     }
 
     @PostMapping( "/config/products")
+    @PreAuthorize( "hasRole('ADMIN')")
     public Mono<ResponseEntity<Void>> createProduct(ProductCreateDto pd) {
         log.debug( "createProduct");
         return srv.createProduct( pd)
@@ -48,6 +51,7 @@ public class ConfigController {
     }
 
     @PostMapping( "/config/products/{productId}")
+    @PreAuthorize( "hasRole('ADMIN')")
     public Mono<ResponseEntity<Void>> changeProduct(@PathVariable Long productId, ProductUpdateDto pd) {
         log.debug(
             "changeProduct: productId={}, method={}, delImage={}, pd.getProductId={}",
