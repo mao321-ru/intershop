@@ -13,6 +13,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,11 +25,14 @@ public class CartController {
 
     @GetMapping( { "/cart"})
     Mono<String> findCartProducts(
+        ServerWebExchange exchange,
         Model model
     ) {
         log.debug( "findCartProducts");
-        return
-            srv.getCart( srv.findCartProducts())
+        return exchange.getPrincipal()
+            .map( Principal::getName)
+            .doOnNext( s -> log.debug( "userLogin: {}", s))
+            .flatMap( userLogin -> srv.getCart( srv.findCartProducts( userLogin)))
             .map( cartInfo -> {
                 model.addAttribute("cart", cartInfo);
                 return "cart";
@@ -49,15 +53,23 @@ public class CartController {
                     var resp = exchange.getResponse();
                     resp.setStatusCode( HttpStatus.FOUND);
                     resp.getHeaders().setLocation( URI.create("/cart"));
-                    return productSrv.changeInCartQuantity( productId, delta)
+                    return exchange.getPrincipal()
+                        .map( Principal::getName)
+                        .doOnNext( s -> log.debug( "userLogin: {}", s))
+                        .flatMap( userLogin -> productSrv.changeInCartQuantity( userLogin, productId, delta))
                         .then( resp.setComplete());
                 });
     }
 
     @PostMapping( { "/cart/buy"})
-    Mono<ResponseEntity<Void>> buy() {
+    Mono<ResponseEntity<Void>> buy(
+        ServerWebExchange exchange
+    ) {
         log.debug( "buy");
-        return srv.buy()
+        return exchange.getPrincipal()
+            .map( Principal::getName)
+            .doOnNext( s -> log.debug( "userLogin: {}", s))
+            .flatMap( srv::buy)
             .map( orderId ->
                 ResponseEntity.status( HttpStatus.FOUND)
                     .location( URI.create( "/orders/" + orderId + "?isNew=1"))
@@ -70,6 +82,7 @@ public class CartController {
     // Более информационное сообщение об ошибке, т.ч. для ошибок платежного сервиса
     @ExceptionHandler( RuntimeException.class)
     public Mono<ResponseEntity<String>> handleException( RuntimeException e) {
+        log.error( "HTTP 500 response: %s: %s".formatted( e.getMessage(), e.getCause().getMessage()));
         return Mono.just(
             ResponseEntity.internalServerError().body(
                 e.getCause() != null

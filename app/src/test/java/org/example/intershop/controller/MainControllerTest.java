@@ -59,6 +59,7 @@ public class MainControllerTest extends ControllerTest {
         ;
     }
 
+
     @Test
     void findProducts_byNameOrDesc() throws Exception {
         final String search = "findProducts_byNameOrDesc_search";
@@ -101,6 +102,42 @@ public class MainControllerTest extends ControllerTest {
         act.accept( List.of( 0, pageSize), List.of( pageSize, 1));
         act.accept( List.of( 1, pageSize), List.of( 1, 0));
         act.accept( List.of( 0, PRODUCTS_COUNT), List.of( PRODUCTS_COUNT, 0));
+    }
+
+    @Test
+    // у пользователя нет товаров в корзине
+    @WithMockUser( username = "user")
+    void findProducts_emptyCart() throws Exception {
+        wtc.get() .uri( ub -> ub.path( "/")
+                        // отображаем все товары на одной странице
+                        .queryParam( "pageSize", 1000)
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType( "text/html;charset=UTF-8")
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                .xpath( PRODUCT_IN_CART_QTY_EXISTS_XPATH).nodeCount( 0)
+        ;
+    }
+
+    @Test
+    // у пользователя есть товары в корзине
+    @WithMockUser( username = "user3")
+    void findProducts_nonEmptyCart() throws Exception {
+        wtc.get() .uri( ub -> ub.path( "/")
+                    // отображаем все товары на одной странице
+                    .queryParam( "pageSize", 1000)
+                    .build()
+                )
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType( "text/html;charset=UTF-8")
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                .xpath( PRODUCT_IN_CART_QTY_EXISTS_XPATH).nodeCount( Matchers.greaterThan( 0))
+        ;
     }
 
     @Test

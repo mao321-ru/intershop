@@ -21,8 +21,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional( readOnly = true)
-    public Mono<OrderDto> getOrder( Long orderId) {
-        return repo.findById( orderId)
+    public Mono<OrderDto> getOrder(Long orderId, String userLogin) {
+        return repo.findByIdAndLogin( orderId, userLogin)
             .flatMap( ord ->
                 repo.findOrderProductByOrderId( orderId)
                     .collectList()
@@ -36,8 +36,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional( readOnly = true)
-    public Mono<Orders> findOrders() {
-        return repo.findAll()
+    public Mono<Orders> findOrders( String userLogin) {
+        return repo.findByLogin( userLogin)
             .flatMap( ord ->
                 repo.findOrderProductByOrderId( ord.getId())
                     .collectList()

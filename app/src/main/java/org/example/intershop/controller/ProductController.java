@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,10 +26,15 @@ public class ProductController {
 
     @GetMapping( { "/products/{productId}"})
     Mono<Rendering> getProduct(
-        @PathVariable Long productId
+        @PathVariable Long productId,
+        ServerWebExchange exchange
     ) {
         log.debug( "getProduct: productId: {}", productId);
-        return srv.getProduct( productId)
+        return exchange.getPrincipal()
+            .map( Principal::getName)
+            .defaultIfEmpty( "")
+            .doOnNext( s -> log.debug( "userLogin: {}", s))
+            .flatMap( userLogin -> srv.getProduct( productId, userLogin))
             .map( pr -> Rendering.view("item")
                     .modelAttribute( "pr", pr)
                     .build())
@@ -52,7 +58,10 @@ public class ProductController {
                 var resp = exchange.getResponse();
                 resp.setStatusCode( HttpStatus.FOUND);
                 resp.getHeaders().setLocation( URI.create("/products/" + productId));
-                return srv.changeInCartQuantity( productId, delta)
+                return exchange.getPrincipal()
+                    .map( Principal::getName)
+                    .doOnNext( s -> log.debug( "userLogin: {}", s))
+                    .flatMap( userLogin -> srv.changeInCartQuantity( userLogin, productId, delta))
                     .then( resp.setComplete());
             });
     }

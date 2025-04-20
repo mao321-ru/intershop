@@ -16,9 +16,9 @@ public interface ProductService {
 
     Flux<ProductDto> findProducts(Sort sort);
 
-    Mono<SliceProductDto> findProducts(String search, Pageable pageable);
+    Mono<SliceProductDto> findProducts(String search, Pageable pageable, String userLogin);
 
-    Mono<ProductDto> getProduct(Long productId);
+    Mono<ProductDto> getProduct(Long productId, String userLogin);
 
     Mono<ProductDto> createProduct(ProductCreateDto dto);
 
@@ -28,5 +28,5 @@ public interface ProductService {
 
     Mono<Boolean> deleteProduct( Long productId);
 
-    Mono<Void> changeInCartQuantity( Long productId, Integer delta);
+    Mono<Void> changeInCartQuantity(String userLogin, Long productId, Integer delta);
 }

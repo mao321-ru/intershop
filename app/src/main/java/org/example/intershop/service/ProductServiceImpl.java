@@ -15,6 +15,7 @@ import org.example.intershop.repository.CartProductRepository;
 import org.example.intershop.repository.ImageRepository;
 import org.example.intershop.repository.ProductRepository;
 
+import org.example.intershop.repository.UserRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -43,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repo;
     private final ImageRepository imageRepo;
     private final CartProductRepository cartRepo;
+    private final UserRepository userRepo;
 
     @Override
     @Transactional( readOnly = true)
@@ -52,9 +54,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable( value = "products", key = "{ #search, #pg.getPageSize(), #pg.getOffset(), #pg.getSort() }")
+    @Cacheable( value = "products", key = "{ #userLogin, #search, #pg.getPageSize(), #pg.getOffset(), #pg.getSort() }")
     @Transactional( readOnly = true)
-    public Mono<SliceProductDto> findProducts(String search, Pageable pg) {
+    public Mono<SliceProductDto> findProducts(String search, Pageable pg, String userLogin) {
         final String likeStr = search != null && ! search.isEmpty() ? "%" + search + "%" : "%";
         final String orderBy = pg.getSort().isUnsorted()
                 ? null
@@ -67,11 +69,22 @@ public class ProductServiceImpl implements ProductService {
                 """
                 select
                     p.*,
-                    cp.quantity as in_cart_quantity
+                    cr.quantity as in_cart_quantity
                 from
                     products p
-                    left join cart_products cp
-                        on cp.product_id = p.product_id
+                    left join
+                        (
+                        select
+                            cp.product_id,
+                            cp.quantity
+                        from
+                            users u
+                            join cart_products cp
+                                on cp.user_id = u.user_id
+                        where
+                            u.login = :login
+                        ) cr
+                        on cr.product_id = p.product_id
                 where
                     upper( p.product_name) like upper( :namePat)
                     or upper( p.description) like upper( :descPat)
@@ -83,6 +96,7 @@ public class ProductServiceImpl implements ProductService {
                 .replace( "$(limitCnt)", String.valueOf( pg.getPageSize() + 1))
                 .replace( "$(offset)", pg.getOffset() > 0 ? "offset " + pg.getOffset() : "")
             )
+            .bind( "login", userLogin)
             .bind( "namePat", likeStr)
             .bind( "descPat", likeStr)
             .map(( row, metadata) -> Product.builder()
@@ -107,10 +121,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable( value = "product", key = "#productId")
+    @Cacheable( value = "product", key = "{ #userLogin, #productId }")
     @Transactional( readOnly = true)
-    public Mono<ProductDto> getProduct(Long productId) {
-        return repo.findById( productId)
+    public Mono<ProductDto> getProduct(Long productId, String userLogin) {
+        return repo.findByIdForLogin( productId, userLogin)
                 .map( ProductMapper::toProductDto);
     }
 
@@ -170,7 +184,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Caching( evict = {
             @CacheEvict( value = "image", key = "#dto.getProductId()"),
-            @CacheEvict( value = "product", key = "#dto.getProductId()"),
+            @CacheEvict( value = "product", allEntries = true),
             @CacheEvict( value = "products", allEntries = true),
             @CacheEvict( value = "cart", allEntries = true)
     })
@@ -207,7 +221,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Caching( evict = {
             @CacheEvict( value = "image", key = "#productId"),
-            @CacheEvict( value = "product", key = "#productId"),
+            @CacheEvict( value = "product", allEntries = true),
             @CacheEvict( value = "products", allEntries = true),
             @CacheEvict( value = "cart", allEntries = true)
     })
@@ -225,37 +239,39 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Caching( evict = {
-        @CacheEvict( value = "product", key = "#productId"),
+        @CacheEvict( value = "product", key = "{ #userLogin, #productId }"),
         @CacheEvict( value = "products", allEntries = true),
-        @CacheEvict( value = "cart", allEntries = true)
+        @CacheEvict( value = "cart", key = "#userLogin")
     })
     @Transactional
-    public Mono<Void> changeInCartQuantity( Long productId, Integer delta) {
-        return repo.findById( productId)
-                .flatMap( pr -> {
-                    log.debug( "inCartQuantity: {}", pr.getInCartQuantity());
-                    Integer oldQty = pr.getInCartQuantity();
-                    // Число товаров, которое должно быть после изменения
-                    int qty = delta == null ? 0 : ( oldQty != null ? oldQty : 0) + delta;
-                    Mono<Void> res = null;
-                    if( qty > 0) {
-                        if( oldQty == null) {
-                            var cp = CartProduct.builder()
-                                    .productId( pr.getId())
-                                    .quantity( qty)
-                                    .build();
-                            res = cartRepo.save( cp).then();
-                        }
-                        else {
-                            res = cartRepo.setQuantity( pr.getId(), qty);
-                        }
+    public Mono<Void> changeInCartQuantity(String userLogin, Long productId, Integer delta) {
+        return
+            repo.findByIdForLogin( productId, userLogin)
+            .flatMap( pr -> {
+                log.debug( "userId: {}, inCartQuantity: {}", pr.getUserId(), pr.getInCartQuantity());
+                Integer oldQty = pr.getInCartQuantity();
+                // Число товаров, которое должно быть после изменения
+                int qty = delta == null ? 0 : ( oldQty != null ? oldQty : 0) + delta;
+                Mono<Void> res = null;
+                if( qty > 0) {
+                    if( oldQty == null) {
+                        var cp = CartProduct.builder()
+                                .userId( pr.getUserId())
+                                .productId( pr.getId())
+                                .quantity( qty)
+                                .build();
+                        res = cartRepo.save( cp).then();
                     }
-                    else if ( oldQty != null) {
-                        res = cartRepo.deleteByProductId( pr.getId());
+                    else {
+                        res = cartRepo.setQuantity( pr.getId(), qty);
                     }
-                    return res;
-                })
-                .then();
+                }
+                else if ( oldQty != null) {
+                    res = cartRepo.deleteByProductId( pr.getId());
+                }
+                return res;
+            })
+            .then();
     }
 
 }

@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.result.view.Rendering;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,10 +24,14 @@ public class OrderController {
 
     @GetMapping( "/orders")
     Mono<String> findOrders(
+        ServerWebExchange exchange,
         Model model
     ) {
         log.debug( "findOrders");
-        return srv.findOrders()
+        return exchange.getPrincipal()
+            .map( Principal::getName)
+            .doOnNext( s -> log.debug( "userLogin: {}", s))
+            .flatMap( userLogin -> srv.findOrders( userLogin))
             .map( o -> {
                 model.addAttribute( "orders", o.orders());
                 model.addAttribute( "total", o.total());
@@ -35,10 +42,14 @@ public class OrderController {
     @GetMapping( { "/orders/{orderId}"})
     Mono<Rendering> getOrder(
         @PathVariable Long orderId,
-        @RequestParam( defaultValue = "0") int isNew
+        @RequestParam( defaultValue = "0") int isNew,
+        ServerWebExchange exchange
     ) {
         log.debug( "getOrder: orderId: {}, isNew={}", orderId, isNew);
-        return srv.getOrder( orderId)
+        return exchange.getPrincipal()
+            .map( Principal::getName)
+            .doOnNext( s -> log.debug( "userLogin: {}", s))
+            .flatMap( userLogin -> srv.getOrder(orderId, userLogin))
             .map( ord ->
                 Rendering.view("order")
                     .modelAttribute( "ord", ord)

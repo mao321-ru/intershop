@@ -28,6 +28,8 @@ public class Order {
     @Column( "order_number")
     private Long number;
 
+    private Long userId;
+
     @Column( "order_total")
     private BigDecimal total;
 

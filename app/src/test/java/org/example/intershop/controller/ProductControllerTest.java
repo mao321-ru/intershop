@@ -42,6 +42,15 @@ public class ProductControllerTest extends ControllerTest {
     }
 
     @Test
+    void getProduct_notFound() throws Exception {
+        final long productId = NOT_EXISTS_DATA_ID;
+        wtc.get().uri( "/products/{productId}", productId)
+                .exchange()
+                .expectStatus().isNotFound()
+        ;
+    }
+
+    @Test
     @WithMockUser( username = "user")
     void getProduct_auth() throws Exception {
         final long productId = EXISTS_PRODUCT_ID;
@@ -51,7 +60,7 @@ public class ProductControllerTest extends ControllerTest {
             .expectHeader().contentType( "text/html;charset=UTF-8")
             .expectBody()
             //.consumeWith( System.out::println) // вывод запроса и ответа
-            // выводится хотя бы один товар
+            // выводится один товар
             .xpath( PRODUCTS_XPATH).nodeCount( 1)
             .xpath( PR_TEXT_XPF.formatted( "productName", EXISTS_PRODUCT_NAME))
                 .nodeCount( 1)
@@ -67,11 +76,35 @@ public class ProductControllerTest extends ControllerTest {
     }
 
     @Test
-    void getProduct_notFound() throws Exception {
-        final long productId = NOT_EXISTS_DATA_ID;
+    @WithMockUser( username = "user3")
+    void getProduct_inCart() throws Exception {
+        final long productId = USER3_IN_CART_PRODUCT_ID;
         wtc.get().uri( "/products/{productId}", productId)
                 .exchange()
-                .expectStatus().isNotFound()
+                .expectStatus().isOk()
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                // выводится один товар
+                .xpath( PRODUCTS_XPATH).nodeCount( 1)
+                // с указанным количеством в корзине
+                .xpath( PR_TEXT_XPF.formatted( "inCartQuantity", USER3_IN_CART_PRODUCT_QTY)).nodeCount( 1)
+        ;
+    }
+
+    @Test
+    // у пользователя пустая корзина
+    @WithMockUser( username = "user")
+    void getProduct_emptyCart() throws Exception {
+        // товар в корзине у другого пользователя
+        final long productId = USER3_IN_CART_PRODUCT_ID;
+        wtc.get().uri( "/products/{productId}", productId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                //.consumeWith( System.out::println) // вывод запроса и ответа
+                // выводится товар с количеством в корзине 0
+                .xpath( PRODUCTS_XPATH).nodeCount( 1)
+                .xpath( PR_TEXT_XPF.formatted( "inCartQuantity", 0)).nodeCount( 1)
         ;
     }
 

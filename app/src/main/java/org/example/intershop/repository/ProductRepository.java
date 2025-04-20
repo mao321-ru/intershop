@@ -11,13 +11,42 @@ import java.math.BigDecimal;
 
 public interface ProductRepository extends R2dbcRepository<Product, Long> {
 
-    // перекрыт стандартный поиск по Id для заполняения вычисляемой колонки
-    @Query( "SELECT p.*, (select cp.quantity from cart_products cp where cp.product_id = p.product_id) as in_cart_quantity FROM products p WHERE p.product_id = :product_id LIMIT 2")
-    Mono<Product> findById( Long productId);
+    // перекрыт стандартный поиск по Id для заполнения вычисляемых колонок
+    @Query(
+        "select " +
+            "p.*, " +
+            "cp.quantity as in_cart_quantity " +
+        "from " +
+            "( " +
+            "select " +
+                "pr.*, " +
+                "(select u.user_id from users u where u.login = :login) as user_id " +
+            "from " +
+                "products pr " +
+            "where " +
+                "pr.product_id = :productId " +
+            ") p " +
+            "left join cart_products cp " +
+                "on cp.user_id = p.user_id " +
+                    "and cp.product_id = p.product_id " +
+        "limit 2"
+    )
+    Mono<Product> findByIdForLogin( Long productId, String login);
 
     // продукты в корзине
-    @Query( "select p.*, cp.quantity as in_cart_quantity from products p join cart_products cp on cp.product_id = p.product_id order by p.product_name")
-    Flux<Product> findInCart();
+    @Query(
+        "select " +
+            "p.*, cp.quantity as in_cart_quantity " +
+        "from " +
+            "users u " +
+            "join cart_products cp on cp.user_id = u.user_id " +
+            "join products p on p.product_id = cp.product_id " +
+        "where " +
+            "u.login = :login " +
+        "order by " +
+            "p.product_name"
+    )
+    Flux<Product> findInCartByLogin( String login);
 
     // исключаем из обновления вычисляемое поле inCartQuantity
     @Modifying

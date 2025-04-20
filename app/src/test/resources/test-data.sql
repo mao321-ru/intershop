@@ -26,6 +26,8 @@ from
     (
     select 'admin' as login, '-' as password_hash, 1 as admin_flag
     union all select 'user', '-', 0
+    union all select 'user2', '-', 0
+    union all select 'user3', '-', 0
     ) s
 ;
 
@@ -63,14 +65,28 @@ union all select 'Непродававшийся (для удаления)', 18.
 ;
 
 insert into
+    cart_products
+(
+    user_id,
+    product_id,
+    quantity
+)
+select
+    (select u.user_id from users u where u.login = 'user3') as user_id,
+    (select p.product_id from products p where p.product_name = 'Мыло DURU') as product_id,
+    3
+;
+
+insert into
     orders
 (
+    user_id,
     order_total
 )
-values
-(
+select
+    (select u.user_id from users u where u.login = 'user') as user_id,
     25.02
-);
+;
 
 insert into
     order_products

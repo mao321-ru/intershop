@@ -21,9 +21,11 @@ public class CartProduct {
     @Column( "cart_product_id")
     private Long id;
 
-    private Integer quantity;
+    private Long userId;
 
     private Long productId;
+
+    private Integer quantity;
 
     @Override
     public boolean equals( Object o) {

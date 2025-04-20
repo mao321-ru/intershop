@@ -10,8 +10,8 @@ public interface OrderService {
 
     record Orders(List<OrderDto> orders, BigDecimal total) {}
 
-    Mono<OrderDto> getOrder(Long orderId);
+    Mono<OrderDto> getOrder(Long orderId, String userLogin);
 
-    Mono<Orders> findOrders();
+    Mono<Orders> findOrders( String userLogin);
 
 }

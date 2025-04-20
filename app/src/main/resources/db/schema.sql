@@ -31,18 +31,35 @@ create table if not exists products(
 -- Товары в корзине
 create table if not exists cart_products(
     cart_product_id bigserial primary key,
+    user_id bigint not null references users,
+    product_id bigint not null references products,
     quantity integer not null check( quantity > 0),
-    product_id bigint not null unique references products,
-    create_time timestamp with time zone default current_timestamp not null
+    create_time timestamp with time zone default current_timestamp not null,
+    constraint cart_products_uk unique ( user_id, product_id)
 );
+
+-- индекс для FK
+create index if not exists
+    cart_products_ix_product_id
+on
+    cart_products( product_id)
+;
 
 -- Заказы
 create table if not exists orders(
     order_id bigserial primary key,
+    user_id bigint not null references users,
     order_number bigserial not null,
     order_total numeric(38,2) not null check( order_total >= 0),
     create_time timestamp with time zone default current_timestamp not null
 );
+
+-- индекс для FK
+create index if not exists
+    orders_ix_user_id
+on
+    orders( user_id)
+;
 
 -- Товары в заказе
 create table if not exists order_products(

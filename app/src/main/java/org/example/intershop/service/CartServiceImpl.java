@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.BitSet;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +29,11 @@ public class CartServiceImpl implements CartService {
     private final PaymentApi paySrv;
 
     @Override
-    @Cacheable( value = "cart")
+    @Cacheable( value = "cart", key = "#userLogin")
     @Transactional( readOnly = true)
-    public Mono<CartProducts> findCartProducts() {
-        return productRepo.findInCart()
+    public Mono<CartProducts> findCartProducts(String userLogin) {
+        return
+            productRepo.findInCartByLogin( userLogin)
             .map( ProductMapper::toProductDto)
             .collectList()
             .map( products -> {
@@ -84,20 +84,38 @@ public class CartServiceImpl implements CartService {
     @Caching( evict = {
             @CacheEvict( value = "product", allEntries = true),
             @CacheEvict( value = "products", allEntries = true),
-            @CacheEvict( value = "cart", allEntries = true)
+            @CacheEvict( value = "cart", key = "#userLogin")
     })
     @Transactional
-    public Mono<Long> buy() {
+    public Mono<Long> buy( String userLogin) {
         final DatabaseClient dc = etm.getDatabaseClient();
         return
             // создает заказ и возвращает его Id в случае наличия товаров в корзине
-            dc.sql( "insert into orders ( order_total) select 0 from cart_products limit 1")
+            dc.sql("""
+                insert into
+                    orders
+                (
+                    user_id,
+                    order_total
+                )
+                select
+                    u.user_id,
+                    0 as order_total
+                from
+                    users u
+                    join cart_products cp
+                        on cp.user_id = u.user_id
+                where
+                    u.login = :login
+                limit 1
+                """)
+                .bind( "login", userLogin)
                 .filter( s -> s.returnGeneratedValues("order_id"))
                 .map( row -> row.get("order_id", Long.class))
                 .one()
             .flatMap( orderId -> {
                     log.trace( "order inserted: orderId: {}", orderId);
-                    // добавляем товары из корзины в заказ
+                    // добавляем товары из корзины пользователя в заказ
                     return dc.sql("""
                         insert into
                             order_products
@@ -108,14 +126,18 @@ public class CartServiceImpl implements CartService {
                             amount
                         )
                         select
-                            :orderId as order_id,
+                            o.order_id,
                             cp.product_id,
                             cp.quantity,
                             cp.quantity * p.price as amount
                         from
-                            cart_products cp
+                            orders o
+                            join cart_products cp
+                                on cp.user_id = o.user_id
                             join products p
                                 on p.product_id = cp.product_id
+                        where
+                            o.order_id = :orderId
                         """)
                             .bind( "orderId", orderId)
                             .fetch()
@@ -153,14 +175,17 @@ public class CartServiceImpl implements CartService {
                         delete from
                             cart_products cp
                         where
-                            cp.product_id in
+                            ( cp.user_id, cp.product_id) in
                                 (
                                 select
+                                    o.user_id,
                                     op.product_id
                                 from
-                                    order_products op
+                                    orders o
+                                    join order_products op
+                                        on op.order_id = o.order_id
                                 where
-                                    op.order_id = :orderId
+                                    o.order_id = :orderId
                                 )
                         """)
                             .bind( "orderId", orderId)

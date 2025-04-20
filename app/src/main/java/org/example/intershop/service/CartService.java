@@ -20,10 +20,10 @@ public interface CartService {
         String buyDisabledReason
     ) {}
 
-    Mono<CartProducts> findCartProducts();
+    Mono<CartProducts> findCartProducts( String userLogin);
 
     Mono<Cart> getCart( Mono<CartProducts> cartProducts);
 
-    Mono<Long> buy();
+    Mono<Long> buy( String userLogin);
 
 }

@@ -38,6 +38,10 @@ public class ControllerTest extends IntegrationTest {
     // Id непродававшегося товара (для проверки удаления)
     protected final long UNSELLABLE_PRODUCT_ID = 5L;
 
+    // Id и количество товара в корзине у пользователя user3
+    protected final long USER3_IN_CART_PRODUCT_ID = 2L;
+    protected final int USER3_IN_CART_PRODUCT_QTY = 3;
+
     // элемент для перехода на следующую страницу
     protected final String NEXT_PAGE_XPATH = "//*[@class=\"form__nextPage\"]";
 
@@ -62,6 +66,12 @@ public class ControllerTest extends IntegrationTest {
     // выбор элементов изменения количества товара в корзине
     protected final String PRODUCT_IN_CART_XPATH = PR_FIELD_XPF.formatted( "inCart");
 
+    // выбор элементов с количеством товара в корзине
+    protected final String PRODUCT_IN_CART_QTY_XPATH = PR_FIELD_XPF.formatted( "inCartQuantity");
+
+    // выбор элементов с количеством товара в корзине отличным от 0
+    protected final String PRODUCT_IN_CART_QTY_EXISTS_XPATH = PRODUCT_IN_CART_QTY_XPATH + "[text() != '' and text() != '0']";
+
     // выбор элемента с указанным значением/текстом/src поля товара, например PR_VAL_XPF.formatted( "productName", "Мыло DURU")
     protected final String PR_VAL_XPF = PR_FIELD_XPF + "[@value=\"%s\"]";
     protected final String PR_TEXT_XPF = PR_FIELD_XPF + "[text()=\"%s\"]";
@@ -70,8 +80,8 @@ public class ControllerTest extends IntegrationTest {
     protected final String TOTAL_XPATH = "//*[@class=\"total\"]";
     protected final String TOTAL_TEXT_XPF = TOTAL_XPATH + "[text()=\"%s\"]";
 
-    // Тестовые данные: Id заказа
-    protected final long EXISTS_ORDER_ID = 1L;
+    // Тестовые данные: Id существующего заказа у пользователя user
+    protected final long USER_EXISTS_ORDER_ID = 1L;
     protected final int EXISTS_ORDER_PRODUCT_COUNT = 2;
     protected final BigDecimal EXISTS_ORDER_TOTAL = new BigDecimal( "25.02");
 

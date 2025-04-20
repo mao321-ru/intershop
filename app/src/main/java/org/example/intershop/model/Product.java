@@ -33,6 +33,9 @@ public class Product {
     private Long imageId;
 
     // вычисляемая колонка
+    private Long userId;
+
+    // вычисляемая колонка
     private Integer inCartQuantity;
 
     @Override
