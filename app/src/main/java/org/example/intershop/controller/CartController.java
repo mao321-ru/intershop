@@ -79,17 +79,4 @@ public class CartController {
         ;
     }
 
-    // Более информационное сообщение об ошибке, т.ч. для ошибок платежного сервиса
-    @ExceptionHandler( RuntimeException.class)
-    public Mono<ResponseEntity<String>> handleException( RuntimeException e) {
-        log.error( "HTTP 500 response: %s: %s".formatted( e.getMessage(), e.getCause().getMessage()));
-        return Mono.just(
-            ResponseEntity.internalServerError().body(
-                e.getCause() != null
-                    ? "%s: %s".formatted( e.getMessage(), e.getCause().getMessage())
-                    : e.getMessage()
-            )
-        );
-    }
-
 }
