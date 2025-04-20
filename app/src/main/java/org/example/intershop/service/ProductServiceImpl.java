@@ -252,7 +252,7 @@ public class ProductServiceImpl implements ProductService {
                 Integer oldQty = pr.getInCartQuantity();
                 // Число товаров, которое должно быть после изменения
                 int qty = delta == null ? 0 : ( oldQty != null ? oldQty : 0) + delta;
-                Mono<Void> res = null;
+                Mono<Void> res = Mono.empty();
                 if( qty > 0) {
                     if( oldQty == null) {
                         var cp = CartProduct.builder()
