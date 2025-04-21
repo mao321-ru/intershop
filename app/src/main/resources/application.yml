@@ -49,4 +49,18 @@ spring:
     schema-locations: classpath:db/schema.sql
     data-locations: classpath:db/initial-data.sql
 
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8087/realms/master # Адрес сервера авторизации для получения токена
+        registration:
+          intershop: # Описание клиента OAuth2
+            provider: keycloak
+            authorizationGrantType: client_credentials
+            client-id: intershop
+            client-secret: klflKSD2KZQ2VAPMFO2KJFeQdOLRmZoY
+            clientAuthenticationMethod: client_secret_post # Способ передачи секрета
+
   profiles.active: dev

@@ -10,9 +10,15 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.core.AbstractOAuth2Token;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -27,6 +33,7 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepo;
 
     private final PaymentApi paySrv;
+    private final ReactiveOAuth2AuthorizedClientManager authManager;
 
     @Override
     @Cacheable( value = "cart", key = "#userLogin")
@@ -46,14 +53,34 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Mono<Cart> getCart(Mono<CartProducts> cartProducts) {
-        return cartProducts.flatMap( cp -> {
+        //// "ручной" запрос баланса для тестирования настроек OAuth2
+        var authTestReq =
+            authManager.authorize( OAuth2AuthorizeRequest
+                .withClientRegistrationId( "intershop")
+                .principal( "system")
+                .build()
+            )
+            .map( OAuth2AuthorizedClient::getAccessToken)
+            .map( AbstractOAuth2Token::getTokenValue)
+            .flatMap( token -> {
+                WebClient webClient = WebClient.create("http://localhost:8086");
+                return webClient.get()
+                        .uri("/api/balance")
+                        .header( HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .retrieve()
+                        .bodyToMono( String.class);
+            })
+            .doOnNext( resp -> log.debug( "paysrv WebClient resp: {}", resp))
+        ;
+        return authTestReq.then( cartProducts).flatMap( cp -> {
+        ////return cartProducts.flatMap( cp -> {
             log.debug("cart total: {}", cp.total());
             return
                 cp.products().isEmpty()
-                // в случае пустой корзины не обращаемся к платежному сервису
-                ? Mono.just(new Cart(cp.products(), cp.total(), true, ""))
-                // проверка баланса для оплаты корзины
-                : paySrv.getBalance()
+                    // в случае пустой корзины не обращаемся к платежному сервису
+                    ? Mono.just(new Cart(cp.products(), cp.total(), true, ""))
+                    // проверка баланса для оплаты корзины
+                    : paySrv.getBalance()
                 .map(bl -> {
                     BigDecimal balance = bl.getAmount();
                     log.debug("balance: {}", balance);

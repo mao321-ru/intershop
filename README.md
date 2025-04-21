@@ -81,11 +81,28 @@
 
 - запустить Redis
 
-При доступности Docker можно запустить Redis в контейнере командой:
+При доступности Docker можно запустить в контейнере командой:
 
 ```cmd
   docker run -d -p 6379:6379 redis:7.4.2-alpine3.21
 ```
+- запустить локальный авторизационный сервер Keycloak
+
+При доступности Docker можно запустить в контейнере командой:
+
+```cmd
+  docker run -d -p 8087:8080 --name keycloak \
+      -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+      -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
+      quay.io/keycloak/keycloak:26.1.3 start-dev
+```
+
+После запуска авторизационный сервер будет доступно по URL (пользователь admin, пароль admin):
+[http://localhost:8087](http://localhost:8087)
+
+Нужно залогиниться и с помощью Clients -> Import client импортировать настройки клиента intershop из файла:
+
+./app/intershop.json
 
 - выполнить [сборку приложения](#Сборка-приложения)
 

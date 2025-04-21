@@ -6,5 +6,10 @@ logging:
 spring:
   application:
     name: paysrv
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8087/realms/master
 
   profiles.active: dev
