@@ -1,10 +1,6 @@
 # URL платежного сервиса
 paysrv.url: http://localhost:8086
 
-spring:
-  data:
-    redis:
-      url: redis://localhost:6379
+spring.data.redis.url: redis://localhost:6379
 
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/intershopdb_dev
+spring.r2dbc.url: r2dbc:postgresql://localhost:5432/intershopdb_dev
