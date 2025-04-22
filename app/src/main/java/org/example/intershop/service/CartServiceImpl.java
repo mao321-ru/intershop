@@ -33,7 +33,6 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepo;
 
     private final PaymentApi paySrv;
-    private final ReactiveOAuth2AuthorizedClientManager authManager;
 
     @Override
     @Cacheable( value = "cart", key = "#userLogin")
@@ -53,27 +52,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Mono<Cart> getCart(Mono<CartProducts> cartProducts) {
-        //// "ручной" запрос баланса для тестирования настроек OAuth2
-        var authTestReq =
-            authManager.authorize( OAuth2AuthorizeRequest
-                .withClientRegistrationId( "intershop")
-                .principal( "system")
-                .build()
-            )
-            .map( OAuth2AuthorizedClient::getAccessToken)
-            .map( AbstractOAuth2Token::getTokenValue)
-            .flatMap( token -> {
-                WebClient webClient = WebClient.create("http://localhost:8086");
-                return webClient.get()
-                        .uri("/api/balance")
-                        .header( HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .retrieve()
-                        .bodyToMono( String.class);
-            })
-            .doOnNext( resp -> log.debug( "paysrv WebClient resp: {}", resp))
-        ;
-        return authTestReq.then( cartProducts).flatMap( cp -> {
-        ////return cartProducts.flatMap( cp -> {
+        return cartProducts.flatMap( cp -> {
             log.debug("cart total: {}", cp.total());
             return
                 cp.products().isEmpty()

@@ -5,6 +5,7 @@ import com.example.payclient.api.PaymentApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 
@@ -15,8 +16,8 @@ public class PaysrvConfig {
     private String serverUrl;
 
     @Bean
-    ApiClient apiClient() {
-        var apiClient = new ApiClient();
+    ApiClient apiClient( WebClient authWebClient) {
+        var apiClient = new ApiClient( authWebClient);
         apiClient.setBasePath( serverUrl);
         return apiClient;
     }

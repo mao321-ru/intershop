@@ -1,5 +1,6 @@
 package org.example.intershop.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager;
@@ -7,9 +8,15 @@ import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.WebClient;
+
 
 @Configuration
 public class OAuth2ClientConfig {
+
+    @Value( "${spring.security.oauth2.client.registration.intershop.client-id}")
+    private String clientRegistrationId;
 
     @Bean
     ReactiveOAuth2AuthorizedClientManager auth2AuthorizedClientManager(
@@ -27,4 +34,15 @@ public class OAuth2ClientConfig {
 
         return manager;
     }
+
+    @Bean( "authWebClient")
+    WebClient webClient( ReactiveOAuth2AuthorizedClientManager clientRegistrations) {
+        ServerOAuth2AuthorizedClientExchangeFilterFunction oauth =
+                new ServerOAuth2AuthorizedClientExchangeFilterFunction( clientRegistrations);
+        oauth.setDefaultClientRegistrationId( clientRegistrationId);
+        return WebClient.builder()
+                .filter(oauth)
+                .build();
+    }
+
 }
