@@ -1,6 +1,12 @@
 # intershop: "Витрина интернет-магазина"
 
-Демонстрационное веб-приложение с использованием Spring Boot / Spring WebFlux / Spring Data R2DBC / PostgreSQL / Redis.
+Демонстрационное веб-приложение с использованием:
+- Spring Boot
+- Spring WebFlux
+- Spring Data R2DBC
+- PostgreSQL
+- Redis
+- Keycloak
 
 ## Установка приложения в Docker
 
@@ -104,9 +110,9 @@
 После запуска авторизационный сервер будет доступно по URL (пользователь admin, пароль admin):
 [http://localhost:8087](http://localhost:8087)
 
-Нужно залогиниться и с помощью Clients -> Import client импортировать настройки клиента intershop из файла:
+Нужно залогиниться и нажав на стрелку выбора realm у Keycloak master (слева сверху) -> Create realm -> Resource file -> Browse импортировать настройки dev-realm из файла (фактически используется клиент intershop):
 
-./app/intershop.json
+./keycloak/import/dev-realm.json
 
 - выполнить [сборку приложения](#Сборка-приложения)
 

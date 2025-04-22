@@ -54,9 +54,9 @@ spring:
       client:
         provider:
           keycloak:
-            token-uri: http://localhost:8087/realms/master/protocol/openid-connect/token
-            user-info-uri: http://localhost:8087/realms/master/protocol/openid-connect/userinfo
-            jwk-set-uri: http://localhost:8087/realms/master/protocol/openid-connect/certs
+            token-uri: ${keycloak.url}/realms/dev-realm/protocol/openid-connect/token
+            user-info-uri: ${keycloak.url}/realms/dev-realm/protocol/openid-connect/userinfo
+            jwk-set-uri: ${keycloak.url}/realms/dev-realm/protocol/openid-connect/certs
         registration:
           intershop: # Описание клиента OAuth2
             provider: keycloak

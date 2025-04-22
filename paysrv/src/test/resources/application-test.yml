@@ -1,3 +1,6 @@
+# URL авторизационного сервера Keycloak
+keycloak.url: http://localhost:8087
+
 # Начальный баланс (для настройки упрощенной реализации)
 paysrv.init.balance: 100.75
 
