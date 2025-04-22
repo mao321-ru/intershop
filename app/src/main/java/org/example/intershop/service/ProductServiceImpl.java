@@ -263,11 +263,11 @@ public class ProductServiceImpl implements ProductService {
                         res = cartRepo.save( cp).then();
                     }
                     else {
-                        res = cartRepo.setQuantity( pr.getId(), qty);
+                        res = cartRepo.setQuantity( pr.getUserId(), pr.getId(), qty);
                     }
                 }
                 else if ( oldQty != null) {
-                    res = cartRepo.deleteByProductId( pr.getId());
+                    res = cartRepo.deleteProduct( pr.getUserId(), pr.getId());
                 }
                 return res;
             })

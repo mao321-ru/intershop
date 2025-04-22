@@ -10,11 +10,11 @@ import reactor.core.publisher.Mono;
 public interface CartProductRepository extends R2dbcRepository<CartProduct, Long> {
 
     @Modifying
-    @Query("UPDATE cart_products cp SET quantity = :quantity WHERE cp.product_id = :productId")
-    Mono<Void> setQuantity( Long productId, Integer quantity);
+    @Query("UPDATE cart_products cp SET quantity = :quantity WHERE cp.user_id = :userId and cp.product_id = :productId")
+    Mono<Void> setQuantity( Long userId, Long productId, Integer quantity);
 
     @Modifying
-    @Query("DELETE from cart_products cp WHERE cp.product_id = :productId")
-    Mono<Void> deleteByProductId( Long productId);
+    @Query("DELETE from cart_products cp WHERE cp.user_id = :userId and cp.product_id = :productId")
+    Mono<Void> deleteProduct( Long userId, Long productId);
 
 }
