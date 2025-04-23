@@ -1,11 +1,9 @@
 package org.example.paysrv.controller;
 
-import org.example.paysrv.domain.Balance;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.math.BigDecimal;
 import java.util.function.BiConsumer;
 
 public class PaymentApiControllerTest extends ControllerTest {
@@ -13,6 +11,7 @@ public class PaymentApiControllerTest extends ControllerTest {
     @Test
     void getBalance_check() throws Exception {
         wtc.get().uri( "/api/balance")
+            .headers( headers -> headers.setBearerAuth( getAccessToken()))
             .exchange()
             .expectStatus().isOk()
             .expectHeader().contentType( MediaType.APPLICATION_JSON)
@@ -23,8 +22,10 @@ public class PaymentApiControllerTest extends ControllerTest {
 
     @Test
     void pay_check() throws Exception {
+        String accessToken = getAccessToken();
         BiConsumer<Double,Boolean> check = ( amt, res) -> {
             wtc.put().uri( "/api/pay")
+                .headers( headers -> headers.setBearerAuth( accessToken))
                 .contentType( MediaType.APPLICATION_JSON)
                 .bodyValue( "{\"amount\":%s}".formatted( amt))
                 .exchange()
