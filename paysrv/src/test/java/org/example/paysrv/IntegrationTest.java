@@ -2,6 +2,8 @@ package org.example.paysrv;
 
 import com.jayway.jsonpath.JsonPath;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -15,13 +17,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public abstract class IntegrationTest {
+    private static final Logger log = LoggerFactory.getLogger( IntegrationTest.class);
 
     @Autowired
     WebTestClient wtc;
 
     // Using Singleton Container for all tests
     static KeycloakContainer keycloak = new KeycloakContainer( "quay.io/keycloak/keycloak:26.1.3")
-            .withRealmImportFile("/dev-realm-test.json");
+            .withRealmImportFile("/keycloak/paysrv-test.realm.json");
 
     // Start containers and uses Ryuk Container to remove containers when JVM process running the tests exited
     static {
@@ -32,7 +35,7 @@ public abstract class IntegrationTest {
     static void registerDynamicProperties(DynamicPropertyRegistry registry) {
         registry.add(
             "spring.security.oauth2.resourceserver.jwt.issuer-uri", () ->
-                keycloak.getAuthServerUrl() + "/realms/dev-realm"
+                keycloak.getAuthServerUrl() + "/realms/paysrv-test"
         );
     }
 
@@ -40,8 +43,8 @@ public abstract class IntegrationTest {
         String jsonText =
             wtc.mutate().baseUrl( keycloak.getAuthServerUrl()).build()
             .post()
-            .uri("/realms/dev-realm/protocol/openid-connect/token")
-            .bodyValue("grant_type=client_credentials&client_id=intershop&client_secret=test-secret")
+            .uri("/realms/paysrv-test/protocol/openid-connect/token")
+            .bodyValue("grant_type=client_credentials&client_id=intershop&client_secret=**********")
             .header("Content-Type", "application/x-www-form-urlencoded")
             .exchange()
             .expectBody(String.class)
@@ -53,6 +56,7 @@ public abstract class IntegrationTest {
             .returnResult()
             .getResponseBody()
         ;
+        log.debug( "access token JSON: " + jsonText);
         return JsonPath.parse( jsonText).read( "$.access_token").toString();
     }
 
