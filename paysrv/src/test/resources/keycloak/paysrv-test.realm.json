@@ -88,6 +88,26 @@
       }
     ],
     "client": {
+      "paysrv": [
+        {
+          "id": "194f8e0b-7904-467d-8c83-2bf3d3c1fb18",
+          "name": "pay",
+          "description": "Выполнение платежей",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "dd83326b-084f-4582-aff3-dfe5f8cdb8c3",
+          "attributes": {}
+        },
+        {
+          "id": "dc8311dc-d21d-4f57-9b8b-af72ec672ad3",
+          "name": "get_balance",
+          "description": "Получение баланса",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "dd83326b-084f-4582-aff3-dfe5f8cdb8c3",
+          "attributes": {}
+        }
+      ],
       "realm-management": [
         {
           "id": "b0a6fe82-b477-49e6-9754-b109209b379d",
@@ -301,8 +321,10 @@
         }
       ],
       "security-admin-console": [],
+      "balance_only_tclient": [],
       "admin-cli": [],
       "intershop": [],
+      "no_roles_tclient": [],
       "account-console": [],
       "broker": [
         {
@@ -402,7 +424,8 @@
           "containerId": "6ad5fa3d-1c6c-41af-9bb4-c8b79cbc8a8d",
           "attributes": {}
         }
-      ]
+      ],
+      "pay_only_tclient": []
     }
   },
   "groups": [],
@@ -460,6 +483,27 @@
   "webAuthnPolicyPasswordlessExtraOrigins": [],
   "users": [
     {
+      "id": "0a2b99a4-f566-47ab-8e7f-07c46aeadf14",
+      "username": "service-account-balance_only_tclient",
+      "emailVerified": false,
+      "createdTimestamp": 1745515602659,
+      "enabled": true,
+      "totp": false,
+      "serviceAccountClientId": "balance_only_tclient",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-paysrv-test"
+      ],
+      "clientRoles": {
+        "paysrv": [
+          "get_balance"
+        ]
+      },
+      "notBefore": 0,
+      "groups": []
+    },
+    {
       "id": "419f6def-64b5-40b4-acfc-db1c7f5a2264",
       "username": "service-account-intershop",
       "emailVerified": false,
@@ -467,6 +511,65 @@
       "enabled": true,
       "totp": false,
       "serviceAccountClientId": "intershop",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-paysrv-test"
+      ],
+      "clientRoles": {
+        "paysrv": [
+          "pay",
+          "get_balance"
+        ]
+      },
+      "notBefore": 0,
+      "groups": []
+    },
+    {
+      "id": "41b58aa3-ca8d-421f-884e-fbd259d47967",
+      "username": "service-account-no_roles_tclient",
+      "emailVerified": false,
+      "createdTimestamp": 1745515453441,
+      "enabled": true,
+      "totp": false,
+      "serviceAccountClientId": "no_roles_tclient",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-paysrv-test"
+      ],
+      "notBefore": 0,
+      "groups": []
+    },
+    {
+      "id": "7f4b168f-b1c0-41df-95b9-a0968a369858",
+      "username": "service-account-pay_only_tclient",
+      "emailVerified": false,
+      "createdTimestamp": 1745515748481,
+      "enabled": true,
+      "totp": false,
+      "serviceAccountClientId": "pay_only_tclient",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-paysrv-test"
+      ],
+      "clientRoles": {
+        "paysrv": [
+          "pay"
+        ]
+      },
+      "notBefore": 0,
+      "groups": []
+    },
+    {
+      "id": "482e8785-4722-4ac4-a966-3fd928f60390",
+      "username": "service-account-paysrv",
+      "emailVerified": false,
+      "createdTimestamp": 1745502305383,
+      "enabled": true,
+      "totp": false,
+      "serviceAccountClientId": "paysrv",
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
@@ -646,6 +749,64 @@
       ]
     },
     {
+      "id": "dbb7c445-c3fe-4eb0-bc03-e73c04f9265a",
+      "clientId": "balance_only_tclient",
+      "name": "Get balance only test client",
+      "description": "Тестовый клиент с ролью get_balance сервиса paysrv",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "/*"
+      ],
+      "webOrigins": [
+        "/*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1745515602",
+        "backchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "+",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "service_account",
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "organization",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
       "id": "3d2d01ec-70c5-4921-b625-027b974d56b0",
       "clientId": "broker",
       "name": "${client_broker}",
@@ -691,8 +852,8 @@
     {
       "id": "a72348ee-6ab3-4b03-9e2a-c0cf972cc691",
       "clientId": "intershop",
-      "name": "Intershop Demo",
-      "description": "Client for Intershop Demo application",
+      "name": "Intershop application",
+      "description": "Main application (shop) of Intershop Demo",
       "rootUrl": "",
       "adminUrl": "",
       "baseUrl": "",
@@ -723,7 +884,185 @@
         "client.secret.creation.time": "1745243027",
         "backchannel.logout.session.required": "true",
         "post.logout.redirect.uris": "+",
+        "frontchannel.logout.session.required": "true",
         "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "service_account",
+        "web-origins",
+        "acr",
+        "roles",
+        "basic"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "organization",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "37faa7f9-84c4-4b9b-9cb9-a68cefcb1ad4",
+      "clientId": "no_roles_tclient",
+      "name": "No roles test client",
+      "description": "Тестовый клиент без доступа к сервису платежей paysrv",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "/*"
+      ],
+      "webOrigins": [
+        "/*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1745515453",
+        "backchannel.logout.session.required": "true",
+        "frontchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "+",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "service_account",
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "organization",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "ca537a64-963d-4c1a-9ea2-2cea7a1184dc",
+      "clientId": "pay_only_tclient",
+      "name": "Pay role only test client",
+      "description": "Тестовый клиент с ролью pay платежного сервиса paysrv",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "/*"
+      ],
+      "webOrigins": [
+        "/*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1745515748",
+        "backchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "+",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "service_account",
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "organization",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "dd83326b-084f-4582-aff3-dfe5f8cdb8c3",
+      "clientId": "paysrv",
+      "name": "Payment service",
+      "description": "Payment service of Intershop Demo",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "/*"
+      ],
+      "webOrigins": [
+        "/*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1745502305",
+        "backchannel.logout.session.required": "true",
+        "frontchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "+",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
       },
       "authenticationFlowBindingOverrides": {},
@@ -1593,14 +1932,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-role-list-mapper",
+            "oidc-usermodel-property-mapper",
+            "oidc-full-name-mapper",
+            "oidc-address-mapper",
             "saml-user-property-mapper",
             "oidc-usermodel-attribute-mapper",
-            "oidc-usermodel-property-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
-            "oidc-address-mapper",
             "saml-user-attribute-mapper",
-            "oidc-full-name-mapper"
+            "oidc-sha256-pairwise-sub-mapper",
+            "saml-role-list-mapper"
           ]
         }
       },
@@ -1647,14 +1986,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
+            "oidc-full-name-mapper",
+            "oidc-sha256-pairwise-sub-mapper",
+            "oidc-usermodel-attribute-mapper",
             "oidc-usermodel-property-mapper",
             "saml-user-attribute-mapper",
-            "oidc-full-name-mapper",
-            "oidc-address-mapper",
-            "oidc-usermodel-attribute-mapper",
             "saml-user-property-mapper",
-            "saml-role-list-mapper",
-            "oidc-sha256-pairwise-sub-mapper"
+            "oidc-address-mapper",
+            "saml-role-list-mapper"
           ]
         }
       },

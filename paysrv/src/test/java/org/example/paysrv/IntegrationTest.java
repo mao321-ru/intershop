@@ -39,25 +39,33 @@ public abstract class IntegrationTest {
         );
     }
 
-    protected String getAccessToken() {
+    protected String getAccessToken( String clientId) {
         String jsonText =
             wtc.mutate().baseUrl( keycloak.getAuthServerUrl()).build()
             .post()
             .uri("/realms/paysrv-test/protocol/openid-connect/token")
-            .bodyValue("grant_type=client_credentials&client_id=intershop&client_secret=**********")
+            .bodyValue(
+                "grant_type=client_credentials&client_id=%s&client_secret=**********".formatted( clientId)
+            )
             .header("Content-Type", "application/x-www-form-urlencoded")
             .exchange()
             .expectBody(String.class)
             .consumeWith( r -> {
                 assertThat( r.getStatus())
-                    .withFailMessage( "Bad status for get auth token from Keycloak")
+                    .withFailMessage( "Bad status on get Keycloak token for: " + clientId)
                     .isEqualTo( HttpStatus.OK);
             })
             .returnResult()
             .getResponseBody()
         ;
-        log.debug( "access token JSON: " + jsonText);
+        log.debug( "get access token for: {}", clientId);
         return JsonPath.parse( jsonText).read( "$.access_token").toString();
     }
+
+    protected String getAccessToken() {
+        // клиент с полными правами к сервису
+        return getAccessToken( "intershop");
+    }
+
 
 }

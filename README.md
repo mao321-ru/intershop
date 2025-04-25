@@ -110,7 +110,7 @@
 После запуска авторизационный сервер будет доступно по URL (пользователь admin, пароль admin):
 [http://localhost:8087](http://localhost:8087)
 
-Нужно залогиниться и нажав на стрелку выбора realm у Keycloak master (слева сверху) -> Create realm -> Resource file -> Browse импортировать настройки dev-realm из файла (фактически используется клиент intershop):
+Нужно залогиниться и нажав на стрелку выбора realm у Keycloak master (слева сверху) -> Create realm -> Resource file -> Browse импортировать настройки dev-realm из файла. В dev-realm фактически используются клиенты intershop и paysrv, при этом доступ к API сервера ресурсов paysrv определяется выданными в Keycloak ролями get_balance и pay, заведенными у клиента paysrv.
 
 ./keycloak/import/dev-realm.json
 

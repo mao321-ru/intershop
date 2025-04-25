@@ -6,13 +6,12 @@ import org.example.paysrv.domain.Balance;
 import org.example.paysrv.domain.Purchase;
 import org.example.paysrv.service.PaymentService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.math.BigDecimal;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +21,7 @@ public class PaymentApiController implements PaymentApi {
     private final PaymentService srv;
 
     @Override
+    @PreAuthorize( "hasRole('GET_BALANCE')")
     public Mono<ResponseEntity<Balance>> getBalance(
             final ServerWebExchange exchange
     ) {
@@ -31,6 +31,7 @@ public class PaymentApiController implements PaymentApi {
     }
 
     @Override
+    @PreAuthorize( "hasRole('PAY')")
     public Mono<ResponseEntity<Void>> pay(
             Mono<Purchase> purchase,
             final ServerWebExchange exchange

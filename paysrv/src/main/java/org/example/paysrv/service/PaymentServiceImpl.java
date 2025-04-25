@@ -3,6 +3,8 @@ package org.example.paysrv.service;
 import org.example.paysrv.domain.Balance;
 import org.example.paysrv.domain.Purchase;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
