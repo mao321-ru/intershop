@@ -46,7 +46,7 @@ public class CartServiceImpl implements CartService {
                 BigDecimal total = products.stream()
                     .map( p -> p.getPrice().multiply( BigDecimal.valueOf( p.getInCartQuantity())))
                     .reduce( BigDecimal.ZERO, BigDecimal::add);
-                return new CartProducts( products, total);
+                return new CartProducts( userLogin, products, total);
             });
     }
 
@@ -59,7 +59,7 @@ public class CartServiceImpl implements CartService {
                     // в случае пустой корзины не обращаемся к платежному сервису
                     ? Mono.just(new Cart(cp.products(), cp.total(), true, ""))
                     // проверка баланса для оплаты корзины
-                    : paySrv.getBalance()
+                    : paySrv.getBalance( cp.userLogin())
                 .map(bl -> {
                     BigDecimal balance = bl.getAmount();
                     log.debug("balance: {}", balance);
@@ -173,7 +173,7 @@ public class CartServiceImpl implements CartService {
                             .doOnNext( total -> log.trace( "amount for pay: {}", total))
                     )
                     // списание платы через платежный сервис
-                    .flatMap( total -> paySrv.pay( new Purchase().amount( total))
+                    .flatMap( total -> paySrv.pay( new Purchase().accountId( userLogin).amount( total))
                         .onErrorMap( e -> new RuntimeException( "Error on pay request", e))
                     )
                     // удаляем из корзины товары, которые добавили в заказ

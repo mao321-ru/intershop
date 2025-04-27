@@ -16,7 +16,8 @@
   docker compose up --build --detach
 ```
 После установки приложения нужно добавить товары на витрину (заходить под пользователем admin пароль admin):
-[/config](http://localhost:8085/config)
+
+[http://localhost:8085/config](http://localhost:8085/config)
 
 Витрина с товарами мазазина доступна по URL:
 
@@ -101,10 +102,7 @@
 При доступности Docker можно запустить в контейнере командой:
 
 ```cmd
-  docker run -d -p 8087:8080 --name keycloak \
-      -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
-      -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
-      quay.io/keycloak/keycloak:26.1.3 start-dev
+  docker run -d -p 8087:8080 --name keycloak -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.1.3 start-dev
 ```
 
 После запуска авторизационный сервер будет доступно по URL (пользователь admin, пароль admin):

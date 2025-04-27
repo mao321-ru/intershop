@@ -9,6 +9,7 @@ import java.util.List;
 public interface CartService {
 
     record CartProducts(
+            String userLogin,
             List<ProductDto> products,
             BigDecimal total
     ) {}

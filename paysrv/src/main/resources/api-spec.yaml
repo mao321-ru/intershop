@@ -7,12 +7,22 @@ tags:
   - name: payment
     description: Оплата покупок
 paths:
-  /api/balance:
+  /api/accounts/{accountId}/balance:
     get:
       tags:
         - payment
       operationId: getBalance
-      summary: Получить баланс на счете
+      summary: Получить баланс на счете клиента
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: Уникальный идентификатор счета клиента
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]+$'
+            minLength: 1
+            maxLength: 50
       responses:
         '200':
           description: Успешный ответ
@@ -25,7 +35,7 @@ paths:
       tags:
         - payment
       operationId: pay
-      summary: Оплатить покупку
+      summary: Оплатить покупку со счета клиента
       requestBody:
         required: true
         content:
@@ -51,9 +61,16 @@ components:
     Purchase:
       type: object
       properties:
+        accountId:
+          type: string
+          description: Идентификатор счета для списания
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 50
         amount:
           type: number
           format: double
           example: 150.00
       required:
+        - accountId
         - amount

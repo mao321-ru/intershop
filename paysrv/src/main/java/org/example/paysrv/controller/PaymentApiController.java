@@ -23,10 +23,11 @@ public class PaymentApiController implements PaymentApi {
     @Override
     @PreAuthorize( "hasRole('GET_BALANCE')")
     public Mono<ResponseEntity<Balance>> getBalance(
+            String accountId,
             final ServerWebExchange exchange
     ) {
-        Balance balance = srv.getBalance();
-        log.debug( "getBalance: amount: {}", balance.getAmount());
+        Balance balance = srv.getBalance( accountId);
+        log.debug( "getBalance: accountId: {}, amount: {}", accountId, balance.getAmount());
         return Mono.just( ResponseEntity.ok( balance));
     }
 
@@ -37,12 +38,14 @@ public class PaymentApiController implements PaymentApi {
             final ServerWebExchange exchange
     ) {
         return purchase
-            .doOnNext( p -> log.debug( "pay: amount: {}", p.getAmount()))
-            .map( p->
-                srv.pay( p)
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.badRequest().build()
-            );
+            .doOnNext( p -> log.debug( "pay: accountId: {}, amount: {}", p.getAccountId(), p.getAmount()))
+            .map( p-> {
+                boolean isOk = srv.pay( p);
+                log.debug( "pay successful: {}", isOk);
+                return isOk
+                    ? ResponseEntity.ok().build()
+                    : ResponseEntity.badRequest().build();
+            });
     }
 
 }
