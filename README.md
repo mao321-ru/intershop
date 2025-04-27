@@ -43,6 +43,9 @@
 
 Порядок выполнения:
 
+- выполнить [Запуск локального авторизационного сервера Keycloak](#Запуск локального авторизационного сервера Keycloak)
+  (если сервер не будет запущен 2 теста завершатся с ошибками)
+
 - запустить в консоли платежный сервис для использования в тестах
 
 ```cmd
@@ -65,6 +68,23 @@
 ```cmd
    ./gradlew clean bootJar
 ```
+
+## Запуск локального авторизационного сервера Keycloak
+
+При доступности Docker можно запустить в контейнере командой:
+
+```cmd
+  docker run -d -p 8087:8080 --name keycloak -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.1.3 start-dev
+```
+
+После запуска авторизационный сервер будет доступно по URL (пользователь admin, пароль admin):
+[http://localhost:8087](http://localhost:8087)
+
+Нужно залогиниться и нажав на стрелку выбора realm у Keycloak master (слева сверху) -> Create realm -> Resource file -> Browse импортировать настройки dev-realm из файла
+
+./keycloak/import/dev-realm.json
+
+В dev-realm фактически используются клиенты intershop и paysrv, при этом доступ к API сервера ресурсов paysrv определяется выданными в Keycloak ролями get_balance и pay, заведенными у клиента paysrv.
 
 ## Установка приложения
 
@@ -97,20 +117,8 @@
 ```cmd
   docker run -d -p 6379:6379 redis:7.4.2-alpine3.21
 ```
-- запустить локальный авторизационный сервер Keycloak
 
-При доступности Docker можно запустить в контейнере командой:
-
-```cmd
-  docker run -d -p 8087:8080 --name keycloak -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.1.3 start-dev
-```
-
-После запуска авторизационный сервер будет доступно по URL (пользователь admin, пароль admin):
-[http://localhost:8087](http://localhost:8087)
-
-Нужно залогиниться и нажав на стрелку выбора realm у Keycloak master (слева сверху) -> Create realm -> Resource file -> Browse импортировать настройки dev-realm из файла. В dev-realm фактически используются клиенты intershop и paysrv, при этом доступ к API сервера ресурсов paysrv определяется выданными в Keycloak ролями get_balance и pay, заведенными у клиента paysrv.
-
-./keycloak/import/dev-realm.json
+- выполнить [Запуск локального авторизационного сервера Keycloak](#Запуск локального авторизационного сервера Keycloak)
 
 - выполнить [сборку приложения](#Сборка-приложения)
 
